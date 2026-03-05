@@ -12,17 +12,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const ALLOWED_ORIGINS = [
   'http://localhost:3000', 'http://localhost:5173',
   'http://127.0.0.1:3000', 'http://127.0.0.1:5173',
-  'https://app.sjinnovation.com', 'https://sjinnovation.com',
-  'https://control-tower.sjinnovation.com',
-  'https://dashboard.sjinnovation.us', 'https://sjinnovation.us',
-  'https://controltower.collabai.software',
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const isAllowed = origin && (
     origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.app') ||
-    origin.endsWith('.sjinnovation.com') || origin === 'https://sjinnovation.com' ||
-    origin.endsWith('.sjinnovation.us') || origin === 'https://sjinnovation.us' ||
     origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')
   );
   return {

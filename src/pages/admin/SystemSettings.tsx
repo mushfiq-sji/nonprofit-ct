@@ -121,7 +121,7 @@ export default function SystemSettings() {
                   branding: { ...settings.branding, companyName: e.target.value },
                 })
               }
-              placeholder="CollabAi"
+              placeholder="Control Tower"
               disabled={isProcessing}
             />
           </div>
@@ -154,7 +154,7 @@ export default function SystemSettings() {
                   branding: { ...settings.branding, supportEmail: e.target.value },
                 })
               }
-              placeholder="support@collabai.software"
+              placeholder="support@example.com"
               disabled={isProcessing}
             />
           </div>
@@ -551,7 +551,7 @@ export default function SystemSettings() {
                   email: { ...settings.email, fromName: e.target.value },
                 })
               }
-              placeholder="CollabAi"
+              placeholder="Control Tower"
               disabled={isProcessing}
             />
           </div>
@@ -568,7 +568,7 @@ export default function SystemSettings() {
                   email: { ...settings.email, fromEmail: e.target.value },
                 })
               }
-              placeholder="noreply@collabai.software"
+              placeholder="noreply@example.com"
               disabled={isProcessing}
             />
           </div>

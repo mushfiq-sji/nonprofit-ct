@@ -63,7 +63,7 @@ serve(async (req) => {
 
     // Get chat history
     let messages: { role: 'user' | 'assistant' | 'system'; content: string }[] = [
-      { role: 'system', content: 'You are a helpful AI assistant for CollabAI platform. Be concise and helpful.' }
+      { role: 'system', content: 'You are a helpful AI assistant for the Control Tower platform. Be concise and helpful.' }
     ]
 
     if (include_history) {

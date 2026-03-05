@@ -72,7 +72,7 @@ const PM_ACTIONS: QuickAction[] = [
   {
     label: "Team Capacity",
     icon: BarChart3,
-    to: "/productivity",
+    to: "/dashboard",
     description: "Review team load",
   },
 ];
@@ -87,7 +87,7 @@ const IC_ACTIONS: QuickAction[] = [
   {
     label: "Log Time",
     icon: Clock,
-    to: "/productivity",
+    to: "/tasks",
     description: "Record your hours",
   },
   {

@@ -77,7 +77,7 @@ serve(async (req) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               text: `*${title}*\n${message}`,
-              username: 'CollabAI Notifications',
+              username: 'Control Tower Notifications',
             }),
           })
 

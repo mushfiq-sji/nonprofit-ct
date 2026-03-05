@@ -9,14 +9,6 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5173',
-  'https://app.sjinnovation.com',
-  'https://sjinnovation.com',
-  'https://control-tower.sjinnovation.com',
-  // sjinnovation.us production domains
-  'https://dashboard.sjinnovation.us',
-  'https://sjinnovation.us',
-  // collabai.software production domain
-  'https://controltower.collabai.software',
 ];
 
 /**
@@ -27,16 +19,10 @@ export function getCorsHeaders(origin: string | null): Record<string, string> {
   // Allow Lovable preview domains
   const isLovablePreview = origin?.endsWith('.lovableproject.com') || origin?.endsWith('.lovable.app');
   
-  // Allow any sjinnovation.com subdomain
-  const isSJInnovationCom = origin?.endsWith('.sjinnovation.com') || origin === 'https://sjinnovation.com';
-  
-  // Allow any sjinnovation.us subdomain
-  const isSJInnovationUs = origin?.endsWith('.sjinnovation.us') || origin === 'https://sjinnovation.us';
-  
   // Allow localhost
   const isLocalhost = origin?.startsWith('http://localhost:') || origin?.startsWith('http://127.0.0.1:');
-  
-  const isAllowed = origin && (isLovablePreview || isSJInnovationCom || isSJInnovationUs || isLocalhost);
+
+  const isAllowed = origin && (isLovablePreview || isLocalhost);
   const allowedOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
 
   return {

@@ -200,7 +200,7 @@ serve(async (req) => {
     const state = crypto.randomUUID();
 
     // Store state in database for verification
-    const defaultAppUrl = Deno.env.get("APP_URL") || "https://controltowerdemo.collabai.software";
+    const defaultAppUrl = Deno.env.get("APP_URL") || "http://localhost:8080";
     await supabase.from("oauth_states").insert({
       state,
       user_id: user.id,

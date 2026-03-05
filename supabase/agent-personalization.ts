@@ -65,8 +65,6 @@ export async function loadUserPersonalization(
 /**
  * Parse file references from additional_prompt text
  * Looks for patterns like:
- * - CommonSJ/SJInnovation.txt
- * - CommonSJ/What_is_CollabAI_.txt
  * - Anything that looks like a file path
  */
 export function parseFileReferences(text: string): string[] {

@@ -54,32 +54,38 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          display_order: number | null
           icon: string | null
           id: string
           is_active: boolean | null
           name: string
           slug: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          display_order?: number | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
           name: string
           slug?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          display_order?: number | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
           slug?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -96,13 +102,16 @@ export type Database = {
           latency_ms: number | null
           metadata: Json | null
           model: string | null
+          model_used: string | null
           output: Json | null
+          provider_used: string | null
           run_type: string | null
           started_at: string | null
           status: string | null
           token_metrics: Json | null
           tokens_used: number | null
           trigger_type: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -117,13 +126,16 @@ export type Database = {
           latency_ms?: number | null
           metadata?: Json | null
           model?: string | null
+          model_used?: string | null
           output?: Json | null
+          provider_used?: string | null
           run_type?: string | null
           started_at?: string | null
           status?: string | null
           token_metrics?: Json | null
           tokens_used?: number | null
           trigger_type?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -138,13 +150,16 @@ export type Database = {
           latency_ms?: number | null
           metadata?: Json | null
           model?: string | null
+          model_used?: string | null
           output?: Json | null
+          provider_used?: string | null
           run_type?: string | null
           started_at?: string | null
           status?: string | null
           token_metrics?: Json | null
           tokens_used?: number | null
           trigger_type?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -166,6 +181,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_enabled: boolean | null
           metadata: Json | null
           model: string | null
           name: string
@@ -181,6 +197,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name: string
@@ -196,6 +213,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name?: string
@@ -1105,38 +1123,53 @@ export type Database = {
       }
       meeting_action_items: {
         Row: {
+          assignee_email: string | null
           assignee_id: string | null
           created_at: string
           description: string | null
           due_date: string | null
+          extracted_from_transcript: boolean | null
+          extraction_confidence: number | null
           id: string
           meeting_id: string
           priority: string | null
           status: string | null
+          task_id: string | null
+          text: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          assignee_email?: string | null
           assignee_id?: string | null
           created_at?: string
           description?: string | null
           due_date?: string | null
+          extracted_from_transcript?: boolean | null
+          extraction_confidence?: number | null
           id?: string
           meeting_id: string
           priority?: string | null
           status?: string | null
+          task_id?: string | null
+          text?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          assignee_email?: string | null
           assignee_id?: string | null
           created_at?: string
           description?: string | null
           due_date?: string | null
+          extracted_from_transcript?: boolean | null
+          extraction_confidence?: number | null
           id?: string
           meeting_id?: string
           priority?: string | null
           status?: string | null
+          task_id?: string | null
+          text?: string | null
           title?: string
           updated_at?: string
         }
@@ -1190,6 +1223,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "meeting_agenda_items_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_attendees: {
+        Row: {
+          attended: boolean | null
+          created_at: string
+          email: string | null
+          id: string
+          meeting_id: string
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attended?: boolean | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          meeting_id: string
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attended?: boolean | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          meeting_id?: string
+          name?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendees_meeting_id_fkey"
             columns: ["meeting_id"]
             isOneToOne: false
             referencedRelation: "meetings"
@@ -1866,6 +1937,7 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string
+          created_by: string | null
           department_id: string | null
           description: string | null
           id: string
@@ -1877,6 +1949,7 @@ export type Database = {
         Insert: {
           color?: string | null
           created_at?: string
+          created_by?: string | null
           department_id?: string | null
           description?: string | null
           id?: string
@@ -1888,6 +1961,7 @@ export type Database = {
         Update: {
           color?: string | null
           created_at?: string
+          created_by?: string | null
           department_id?: string | null
           description?: string | null
           id?: string
@@ -1949,6 +2023,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          metadata: Json | null
           role: string | null
           updated_at: string
         }
@@ -1958,6 +2033,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          metadata?: Json | null
           role?: string | null
           updated_at?: string
         }
@@ -1967,6 +2043,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          metadata?: Json | null
           role?: string | null
           updated_at?: string
         }
@@ -2082,6 +2159,48 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "project_checklists_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_client_access: {
+        Row: {
+          access_level: string | null
+          client_id: string
+          created_at: string
+          granted_by: string | null
+          id: string
+          project_id: string
+        }
+        Insert: {
+          access_level?: string | null
+          client_id: string
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          project_id: string
+        }
+        Update: {
+          access_level?: string | null
+          client_id?: string
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_client_access_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_client_access_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"

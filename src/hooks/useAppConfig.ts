@@ -183,8 +183,8 @@ export function useResetAppConfig() {
         },
         email: {
           enableEmailNotifications: true,
-          fromName: "CollabAi",
-          fromEmail: "noreply@collabai.software",
+          fromName: "Control Tower",
+          fromEmail: "noreply@example.com",
         },
         system: {
           maintenanceMode: false,

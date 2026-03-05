@@ -12,16 +12,13 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5173',
-  'https://controltowerdemo.collabai.software',
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const isLovablePreview = origin?.endsWith('.lovableproject.com') || origin?.endsWith('.lovable.app');
-  const isSJInnovation = origin?.endsWith('.sjinnovation.com') || origin?.endsWith('.sjinnovation.us');
   const isLocalhost = origin?.startsWith('http://localhost:') || origin?.startsWith('http://127.0.0.1:');
-  const isCollabai = origin?.endsWith('.collabai.software');
-  
-  const isAllowed = origin && (isLovablePreview || isSJInnovation || isLocalhost || isCollabai || ALLOWED_ORIGINS.includes(origin));
+
+  const isAllowed = origin && (isLovablePreview || isLocalhost || ALLOWED_ORIGINS.includes(origin));
   const allowedOrigin = isAllowed ? origin : ALLOWED_ORIGINS[0];
 
   return {

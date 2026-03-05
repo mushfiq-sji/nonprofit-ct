@@ -8,12 +8,9 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 // Inline CORS handling (edge functions can't import from parent directories)
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const isLovablePreview = origin?.endsWith('.lovableproject.com') || origin?.endsWith('.lovable.app');
-  const isSJInnovationCom = origin?.endsWith('.sjinnovation.com') || origin === 'https://sjinnovation.com';
-  const isSJInnovationUs = origin?.endsWith('.sjinnovation.us') || origin === 'https://sjinnovation.us';
   const isLocalhost = origin?.startsWith('http://localhost:') || origin?.startsWith('http://127.0.0.1:');
-  const isCollabAI = origin?.endsWith('.collabai.software') || origin === 'https://collabai.software';
-  
-  const isAllowed = origin && (isLovablePreview || isSJInnovationCom || isSJInnovationUs || isLocalhost || isCollabAI);
+
+  const isAllowed = origin && (isLovablePreview || isLocalhost);
   const allowedOrigin = isAllowed ? origin : 'http://localhost:3000';
 
   return {

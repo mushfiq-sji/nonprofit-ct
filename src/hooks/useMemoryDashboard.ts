@@ -1,6 +1,7 @@
 /**
  * Admin Memory Dashboard – aggregates for Memory Dashboard page.
- * Data: agent_memories, embeddings, knowledge_embeddings, pipeline stats, vector_search_logs.
+ * Uses (supabase as any) for tables not in generated types:
+ * agent_memories, knowledge_embeddings, vector_search_logs columns.
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,13 +47,13 @@ async function fetchMemoryDashboard(): Promise<MemoryDashboardData> {
     knowledgeEmbeddingsCountRes,
     searchLogsRes,
   ] = await Promise.all([
-    supabase
+    (supabase as any)
       .from("agent_memories")
       .select("id, memory_type, memory_category, source_type", { count: "exact", head: true })
       .eq("is_active", true),
     supabase.from("embeddings").select("id", { count: "exact", head: true }),
-    supabase.from("knowledge_embeddings").select("id", { count: "exact", head: true }),
-    supabase
+    (supabase as any).from("knowledge_embeddings").select("id", { count: "exact", head: true }),
+    (supabase as any)
       .from("vector_search_logs")
       .select("id, duration_ms, top_score, user_id")
       .limit(500),
@@ -60,29 +61,29 @@ async function fetchMemoryDashboard(): Promise<MemoryDashboardData> {
 
   const totalMemories = memoriesRes.count ?? 0;
   const embeddingsCount = (embeddingsCountRes.count ?? 0) + (knowledgeEmbeddingsCountRes.count ?? 0);
-  const searchLogs = searchLogsRes.data ?? [];
+  const searchLogs = (searchLogsRes.data ?? []) as any[];
 
   const withScores = searchLogs.filter(
-    (r: { top_score?: number | null }) => r.top_score != null
-  ) as { top_score: number }[];
+    (r: any) => r.top_score != null
+  );
   const avgRelevancePct =
     withScores.length > 0
-      ? (withScores.reduce((s, r) => s + r.top_score, 0) / withScores.length) * 100
+      ? (withScores.reduce((s: number, r: any) => s + r.top_score, 0) / withScores.length) * 100
       : 0;
 
   const withLatency = searchLogs.filter(
-    (r: { duration_ms?: number | null }) => r.duration_ms != null
-  ) as { duration_ms: number }[];
+    (r: any) => r.duration_ms != null
+  );
   const avgQueryLatencyMs =
     withLatency.length > 0
       ? Math.round(
-          withLatency.reduce((s, r) => s + r.duration_ms, 0) / withLatency.length
+          withLatency.reduce((s: number, r: any) => s + r.duration_ms, 0) / withLatency.length
         )
       : null;
 
   const distinctUserIds = new Set(
-    (searchLogs as { user_id?: string | null }[])
-      .map((r) => r.user_id)
+    searchLogs
+      .map((r: any) => r.user_id)
       .filter(Boolean)
   );
   const servingUsers = distinctUserIds.size;

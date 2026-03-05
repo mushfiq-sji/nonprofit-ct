@@ -14,14 +14,20 @@ export interface ProjectClientAccessRow {
   client_name: string | null;
   access_token: string;
   is_active: boolean;
-  project_slug: string | null;
-  login_count: number;
-  last_login_at: string | null;
   created_at: string;
   updated_at: string;
-  revoked_at: string | null;
-  revoked_by: string | null;
   created_by: string | null;
+  // Optional fields that may or may not exist in DB
+  project_slug?: string | null;
+  login_count?: number;
+  last_login_at?: string | null;
+  revoked_at?: string | null;
+  revoked_by?: string | null;
+  can_approve?: boolean;
+  can_comment?: boolean;
+  can_upload?: boolean;
+  access_level?: string;
+  client_id?: string;
 }
 
 export function useProjectClientAccess(projectId: string) {
@@ -34,7 +40,7 @@ export function useProjectClientAccess(projectId: string) {
         .eq("project_id", projectId)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data || []) as ProjectClientAccessRow[];
+      return (data || []) as unknown as ProjectClientAccessRow[];
     },
     enabled: !!projectId,
   });
@@ -111,7 +117,7 @@ export function useRevokeClientAccess() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("project_client_access")
         .update({
           is_active: false,
@@ -135,7 +141,7 @@ export function useRestoreClientAccess() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ accessId, projectId }: { accessId: string; projectId: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("project_client_access")
         .update({
           is_active: true,

@@ -4,23 +4,25 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface MeetingFile {
   id: string;
-  meeting_id: string | null;
-  provider: string;
-  external_meeting_id: string | null;
-  file_type: string;
+  meeting_id: string;
+  file_type: string | null;
   file_name: string;
   file_size: number | null;
-  file_path: string | null;
   storage_path: string | null;
-  download_url: string | null;
-  transcript_text: string | null;
-  transcript_content: any;
-  is_processed: boolean | null;
-  has_embeddings: boolean | null;
-  processing_status: string | null;
-  metadata: any;
+  source: string | null;
   created_at: string;
-  updated_at: string;
+  // Optional extended fields (may not exist in DB)
+  provider?: string;
+  external_meeting_id?: string | null;
+  file_path?: string | null;
+  download_url?: string | null;
+  transcript_text?: string | null;
+  transcript_content?: any;
+  is_processed?: boolean | null;
+  has_embeddings?: boolean | null;
+  processing_status?: string | null;
+  metadata?: any;
+  updated_at?: string;
 }
 
 export function useMeetingFiles(meetingId?: string) {
@@ -38,7 +40,7 @@ export function useMeetingFiles(meetingId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as MeetingFile[];
+      return (data || []) as unknown as MeetingFile[];
     },
     enabled: !!meetingId,
   });
@@ -55,7 +57,7 @@ export function useMeetingFile(fileId: string) {
         .single();
 
       if (error) throw error;
-      return data as MeetingFile;
+      return data as unknown as MeetingFile;
     },
     enabled: !!fileId,
   });
@@ -67,7 +69,7 @@ export function useUpdateMeetingFile() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<MeetingFile> }) => {
-      const { data: file, error } = await supabase
+      const { data: file, error } = await (supabase as any)
         .from("meeting_files")
         .update(data)
         .eq("id", id)
@@ -79,17 +81,10 @@ export function useUpdateMeetingFile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meeting-files"] });
-      toast({
-        title: "Success",
-        description: "Meeting file updated successfully",
-      });
+      toast({ title: "Success", description: "Meeting file updated successfully" });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }
@@ -100,26 +95,15 @@ export function useDeleteMeetingFile() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("meeting_files")
-        .delete()
-        .eq("id", id);
-
+      const { error } = await supabase.from("meeting_files").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meeting-files"] });
-      toast({
-        title: "Success",
-        description: "Meeting file deleted successfully",
-      });
+      toast({ title: "Success", description: "Meeting file deleted successfully" });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 }
@@ -133,23 +117,15 @@ export function useProcessMeetingFile() {
       const { data, error } = await supabase.functions.invoke("zoom-transcript-processing", {
         body: { file_id: fileId, use_generic_table: true, provider },
       });
-
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meeting-files"] });
-      toast({
-        title: "Success",
-        description: "Meeting file processing started",
-      });
+      toast({ title: "Success", description: "Meeting file processing started" });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: `Processing failed: ${error.message}`,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: `Processing failed: ${error.message}`, variant: "destructive" });
     },
   });
 }

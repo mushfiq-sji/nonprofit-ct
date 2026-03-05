@@ -16,7 +16,7 @@ export function useKeyResultLastUpdates(krIds: string[]) {
     queryKey: ["okr-key-result-last-updates", krIds.slice().sort().join(",")],
     queryFn: async (): Promise<Record<string, LastUpdate>> => {
       if (!krIds.length) return {};
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("okr_key_results")
         .select("id,updated_at")
         .in("id", krIds)

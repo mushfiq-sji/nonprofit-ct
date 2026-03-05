@@ -66,20 +66,19 @@ async function fetchAgentMemoriesForPatterns(): Promise<{
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const weekAgoIso = weekAgo.toISOString();
 
-  const { data: all, error } = await supabase
+  const { data: all, error } = await (supabase as any)
     .from("agent_memories")
     .select("id, memory_category, memory_type, importance_score, access_count, content, summary, consolidated, created_at, updated_at, last_accessed_at")
     .or("is_active.is.null,is_active.eq.true");
 
   if (error) throw error;
-  const rows = all ?? [];
+  const rows = (all ?? []) as any[];
 
-  const thisWeek = rows.filter((r) => r.created_at && r.created_at >= weekAgoIso).length;
-  const consolidatedThisWeek = rows.filter((r) => {
-    const row = r as { updated_at?: string | null };
+  const thisWeek = rows.filter((r: any) => r.created_at && r.created_at >= weekAgoIso).length;
+  const consolidatedThisWeek = rows.filter((r: any) => {
     return (
       r.consolidated === true &&
-      (row.updated_at ? row.updated_at >= weekAgoIso : !!(r.created_at && r.created_at >= weekAgoIso))
+      (r.updated_at ? r.updated_at >= weekAgoIso : !!(r.created_at && r.created_at >= weekAgoIso))
     );
   }).length;
 

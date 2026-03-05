@@ -73,7 +73,7 @@ export function usePodsWithMembers(search?: string) {
     queryKey: [...podKeys.withMembers(), search ?? ''],
     queryFn: async (): Promise<PodWithStats[]> => {
       // Use the view if available, otherwise compute manually
-      let query = supabase
+      let query = (supabase as any)
         .from('pods_with_stats')
         .select('*')
         .order('name');
@@ -291,7 +291,7 @@ export function useCreatePod() {
           is_active: true,
         }));
 
-        const { error: membersError } = await supabase
+        const { error: membersError } = await (supabase as any)
           .from('pod_employees')
           .insert(membersToInsert);
 
@@ -351,7 +351,7 @@ export function useUpdatePod() {
       // Update members if provided
       if (data.members !== undefined) {
         // Delete existing manual members
-        await supabase
+        await (supabase as any)
           .from('pod_employees')
           .delete()
           .eq('pod_id', id)
@@ -366,7 +366,7 @@ export function useUpdatePod() {
             is_active: true,
           }));
 
-          const { error: membersError } = await supabase
+          const { error: membersError } = await (supabase as any)
             .from('pod_employees')
             .insert(membersToInsert);
 
@@ -440,7 +440,7 @@ export function useSyncPodEmployeesFromHR() {
 
   return useMutation({
     mutationFn: async (): Promise<any> => {
-      const { data, error } = await supabase.rpc('sync_pod_employees_from_hr');
+      const { data, error } = await (supabase as any).rpc('sync_pod_employees_from_hr');
       if (error) throw error;
       return data;
     },

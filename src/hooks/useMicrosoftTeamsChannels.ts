@@ -55,7 +55,7 @@ export function useMicrosoftTeamsChannels(options: UseChannelsOptions = {}) {
         throw error;
       }
       console.log('[useMicrosoftTeamsChannels] Fetched channels:', data?.length ?? 0);
-      return data as StoredChannel[];
+      return (data || []) as unknown as StoredChannel[];
     },
     enabled: !!user?.id && autoRefresh,
     staleTime: 0, // Always consider data stale

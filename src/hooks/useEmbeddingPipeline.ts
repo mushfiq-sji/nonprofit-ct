@@ -62,7 +62,7 @@ export function useEmbeddingPipelineSetting() {
   const query = useQuery({
     queryKey: PIPELINE_QUERY_KEY,
     queryFn: async (): Promise<boolean> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("system_settings")
         .select("value")
         .eq("category", SETTING_CATEGORY)
@@ -79,7 +79,7 @@ export function useEmbeddingPipelineSetting() {
 
   const mutation = useMutation({
     mutationFn: async (enabled: boolean) => {
-      const { error } = await supabase.from("system_settings").upsert(
+      const { error } = await (supabase as any).from("system_settings").upsert(
         {
           category: SETTING_CATEGORY,
           key: SETTING_KEY,

@@ -71,7 +71,7 @@ export function useUserOAuthTokens() {
     queryFn: async (): Promise<UserOAuthToken[]> => {
       if (!user) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_oauth_tokens')
         .select(SAFE_TOKEN_COLUMNS)
         .eq('user_id', user.id)
@@ -93,7 +93,7 @@ export function useUserOAuthToken(providerSlug: string) {
     queryFn: async (): Promise<UserOAuthToken | null> => {
       if (!user) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_oauth_tokens')
         .select(SAFE_TOKEN_COLUMNS)
         .eq('user_id', user.id)

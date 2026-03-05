@@ -41,7 +41,7 @@ export function useMicrosoftTeams() {
         throw error;
       }
       console.log('[useMicrosoftTeams] Fetched teams:', data?.length ?? 0);
-      return data as StoredTeam[];
+      return (data || []) as unknown as StoredTeam[];
     },
     enabled: !!user?.id,
     staleTime: 0, // Always consider data stale

@@ -174,6 +174,7 @@ export type Database = {
       }
       ai_agents: {
         Row: {
+          avatar: string | null
           category: string | null
           category_id: string | null
           created_at: string
@@ -182,14 +183,17 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_enabled: boolean | null
+          memory_enabled: boolean | null
           metadata: Json | null
           model: string | null
           name: string
+          slug: string | null
           system_prompt: string | null
           tools: Json | null
           updated_at: string
         }
         Insert: {
+          avatar?: string | null
           category?: string | null
           category_id?: string | null
           created_at?: string
@@ -198,14 +202,17 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_enabled?: boolean | null
+          memory_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name: string
+          slug?: string | null
           system_prompt?: string | null
           tools?: Json | null
           updated_at?: string
         }
         Update: {
+          avatar?: string | null
           category?: string | null
           category_id?: string | null
           created_at?: string
@@ -214,9 +221,11 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_enabled?: boolean | null
+          memory_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name?: string
+          slug?: string | null
           system_prompt?: string | null
           tools?: Json | null
           updated_at?: string
@@ -236,9 +245,11 @@ export type Database = {
           agent_id: string | null
           content: string
           created_at: string
+          feedback: string | null
           id: string
           metadata: Json | null
           model: string | null
+          rating: number | null
           role: string
           session_id: string | null
           tokens_used: number | null
@@ -248,9 +259,11 @@ export type Database = {
           agent_id?: string | null
           content: string
           created_at?: string
+          feedback?: string | null
           id?: string
           metadata?: Json | null
           model?: string | null
+          rating?: number | null
           role: string
           session_id?: string | null
           tokens_used?: number | null
@@ -260,9 +273,11 @@ export type Database = {
           agent_id?: string | null
           content?: string
           created_at?: string
+          feedback?: string | null
           id?: string
           metadata?: Json | null
           model?: string | null
+          rating?: number | null
           role?: string
           session_id?: string | null
           tokens_used?: number | null
@@ -546,14 +561,18 @@ export type Database = {
       deals: {
         Row: {
           client_id: string | null
+          closed_at: string | null
           contact_id: string | null
           created_at: string
           expected_close_date: string | null
+          follow_up_status: string | null
           id: string
+          last_contacted_at: string | null
           metadata: Json | null
           notes: string | null
           owner_id: string | null
           probability: number | null
+          source: string | null
           stage: string | null
           title: string
           updated_at: string
@@ -561,14 +580,18 @@ export type Database = {
         }
         Insert: {
           client_id?: string | null
+          closed_at?: string | null
           contact_id?: string | null
           created_at?: string
           expected_close_date?: string | null
+          follow_up_status?: string | null
           id?: string
+          last_contacted_at?: string | null
           metadata?: Json | null
           notes?: string | null
           owner_id?: string | null
           probability?: number | null
+          source?: string | null
           stage?: string | null
           title: string
           updated_at?: string
@@ -576,14 +599,18 @@ export type Database = {
         }
         Update: {
           client_id?: string | null
+          closed_at?: string | null
           contact_id?: string | null
           created_at?: string
           expected_close_date?: string | null
+          follow_up_status?: string | null
           id?: string
+          last_contacted_at?: string | null
           metadata?: Json | null
           notes?: string | null
           owner_id?: string | null
           probability?: number | null
+          source?: string | null
           stage?: string | null
           title?: string
           updated_at?: string
@@ -1010,34 +1037,52 @@ export type Database = {
       }
       knowledge_files: {
         Row: {
+          category_id: string | null
+          chunk_count: number | null
           created_at: string
           entry_id: string | null
           file_name: string
           file_size: number | null
           file_type: string | null
           id: string
+          processed_at: string | null
+          processing_error: string | null
           processing_status: string | null
           storage_path: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
+          category_id?: string | null
+          chunk_count?: number | null
           created_at?: string
           entry_id?: string | null
           file_name: string
           file_size?: number | null
           file_type?: string | null
           id?: string
+          processed_at?: string | null
+          processing_error?: string | null
           processing_status?: string | null
           storage_path?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
+          category_id?: string | null
+          chunk_count?: number | null
           created_at?: string
           entry_id?: string | null
           file_name?: string
           file_size?: number | null
           file_type?: string | null
           id?: string
+          processed_at?: string | null
+          processing_error?: string | null
           processing_status?: string | null
           storage_path?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1355,6 +1400,7 @@ export type Database = {
       }
       meeting_participants: {
         Row: {
+          attendance_status: string | null
           created_at: string
           email: string | null
           id: string
@@ -1365,6 +1411,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          attendance_status?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -1375,6 +1422,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          attendance_status?: string | null
           created_at?: string
           email?: string | null
           id?: string
@@ -1618,10 +1666,12 @@ export type Database = {
       }
       meetings: {
         Row: {
+          category: string | null
           client_id: string | null
           created_at: string
           description: string | null
           duration_minutes: number | null
+          energy_level: string | null
           external_id: string | null
           external_meeting_id: string | null
           external_uuid: string | null
@@ -1634,11 +1684,14 @@ export type Database = {
           metadata: Json | null
           organizer_id: string
           project_id: string | null
+          project_name: string | null
           provider: string | null
           scheduled_at: string | null
+          sentiment_score: number | null
           series_id: string | null
           slug: string | null
           status: string | null
+          tags: string[] | null
           title: string
           updated_at: string
           zoom_id: string | null
@@ -1648,10 +1701,12 @@ export type Database = {
           zoom_uuid: string | null
         }
         Insert: {
+          category?: string | null
           client_id?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
+          energy_level?: string | null
           external_id?: string | null
           external_meeting_id?: string | null
           external_uuid?: string | null
@@ -1664,11 +1719,14 @@ export type Database = {
           metadata?: Json | null
           organizer_id: string
           project_id?: string | null
+          project_name?: string | null
           provider?: string | null
           scheduled_at?: string | null
+          sentiment_score?: number | null
           series_id?: string | null
           slug?: string | null
           status?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string
           zoom_id?: string | null
@@ -1678,10 +1736,12 @@ export type Database = {
           zoom_uuid?: string | null
         }
         Update: {
+          category?: string | null
           client_id?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number | null
+          energy_level?: string | null
           external_id?: string | null
           external_meeting_id?: string | null
           external_uuid?: string | null
@@ -1694,11 +1754,14 @@ export type Database = {
           metadata?: Json | null
           organizer_id?: string
           project_id?: string | null
+          project_name?: string | null
           provider?: string | null
           scheduled_at?: string | null
+          sentiment_score?: number | null
           series_id?: string | null
           slug?: string | null
           status?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string
           zoom_id?: string | null
@@ -2169,27 +2232,60 @@ export type Database = {
       project_client_access: {
         Row: {
           access_level: string | null
+          access_token: string | null
+          can_approve: boolean | null
+          can_comment: boolean | null
+          can_upload: boolean | null
+          client_email: string | null
           client_id: string
+          client_name: string | null
           created_at: string
+          expires_at: string | null
           granted_by: string | null
           id: string
+          is_active: boolean | null
+          last_accessed_at: string | null
+          portal_sections: Json | null
           project_id: string
+          updated_at: string | null
         }
         Insert: {
           access_level?: string | null
+          access_token?: string | null
+          can_approve?: boolean | null
+          can_comment?: boolean | null
+          can_upload?: boolean | null
+          client_email?: string | null
           client_id: string
+          client_name?: string | null
           created_at?: string
+          expires_at?: string | null
           granted_by?: string | null
           id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          portal_sections?: Json | null
           project_id: string
+          updated_at?: string | null
         }
         Update: {
           access_level?: string | null
+          access_token?: string | null
+          can_approve?: boolean | null
+          can_comment?: boolean | null
+          can_upload?: boolean | null
+          client_email?: string | null
           client_id?: string
+          client_name?: string | null
           created_at?: string
+          expires_at?: string | null
           granted_by?: string | null
           id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          portal_sections?: Json | null
           project_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -2634,6 +2730,33 @@ export type Database = {
           },
         ]
       }
+      system_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Relationships: []
+      }
       task_attachments: {
         Row: {
           created_at: string
@@ -3048,35 +3171,47 @@ export type Database = {
         Row: {
           created_at: string
           download_url: string | null
+          file_name: string | null
           file_size: number | null
           file_type: string | null
           file_url: string | null
+          has_embeddings: boolean | null
           id: string
           meeting_id: string | null
+          processing_status: string | null
           recording_type: string | null
           status: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
           download_url?: string | null
+          file_name?: string | null
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          has_embeddings?: boolean | null
           id?: string
           meeting_id?: string | null
+          processing_status?: string | null
           recording_type?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
           download_url?: string | null
+          file_name?: string | null
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          has_embeddings?: boolean | null
           id?: string
           meeting_id?: string | null
+          processing_status?: string | null
           recording_type?: string | null
           status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {

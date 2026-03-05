@@ -209,7 +209,7 @@ export function useUpdateIntegration() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('organization_integrations')
         .upsert(
           {
@@ -219,7 +219,7 @@ export function useUpdateIntegration() {
             enabled,
             connection_status: 'connected',
             last_tested_at: new Date().toISOString(),
-          } as Record<string, unknown>,
+          },
           { onConflict: 'user_id,provider_id' }
         )
         .select()

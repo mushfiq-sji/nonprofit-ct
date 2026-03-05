@@ -35,8 +35,6 @@ export interface SearchAnalyticsData {
   queryMetrics: QueryMetrics;
 }
 
-// Placeholder query metrics until we have real tracking (e.g. vector_search_logs or similar).
-// Replace with real data from your query-metrics table or Edge Function when available.
 const SIMULATED_QUERY_METRICS: QueryMetrics = {
   avgLatencyMs: 142,
   p95LatencyMs: 285,
@@ -49,15 +47,15 @@ const SIMULATED_QUERY_METRICS: QueryMetrics = {
 
 async function fetchSearchAnalytics(): Promise<SearchAnalyticsData> {
   const [embeddingsRes, memoriesRes] = await Promise.all([
-    supabase.from("embeddings").select("id, entity_type"),
-    supabase.from("agent_memories").select("id, importance_score, access_count").eq("is_active", true),
+    supabase.from("embeddings").select("id, source_type"),
+    (supabase as any).from("agent_memories").select("id, importance_score, access_count").eq("is_active", true),
   ]);
 
   if (embeddingsRes.error) throw embeddingsRes.error;
   if (memoriesRes.error) throw memoriesRes.error;
 
-  const embeddingRows = embeddingsRes.data ?? [];
-  const memoryRows = memoriesRes.data ?? [];
+  const embeddingRows = (embeddingsRes.data ?? []) as any[];
+  const memoryRows = (memoriesRes.data ?? []) as any[];
 
   const totalEmbeddings = embeddingRows.length;
   const totalMemories = memoryRows.length;
@@ -65,7 +63,7 @@ async function fetchSearchAnalytics(): Promise<SearchAnalyticsData> {
 
   const byType = new Map<string, number>();
   for (const r of embeddingRows) {
-    const t = r.entity_type ?? "unknown";
+    const t = r.source_type ?? "unknown";
     byType.set(t, (byType.get(t) ?? 0) + 1);
   }
   const totalForPct = totalEmbeddings || 1;
@@ -76,15 +74,15 @@ async function fetchSearchAnalytics(): Promise<SearchAnalyticsData> {
   }));
 
   const withScore = memoryRows.filter(
-    (r) => r.importance_score != null
-  ) as { importance_score: number }[];
+    (r: any) => r.importance_score != null
+  );
   const avgRelevancePct =
     withScore.length > 0
-      ? (withScore.reduce((s, r) => s + r.importance_score, 0) / withScore.length) * 100
+      ? (withScore.reduce((s: number, r: any) => s + r.importance_score, 0) / withScore.length) * 100
       : 0;
 
   const totalAccesses = memoryRows.reduce(
-    (s, r) => s + (typeof r.access_count === "number" ? r.access_count : 0),
+    (s: number, r: any) => s + (typeof r.access_count === "number" ? r.access_count : 0),
     0
   );
 

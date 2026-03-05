@@ -30,7 +30,7 @@ export function useSendGridConfig() {
   return useQuery({
     queryKey: queryKeys.sendgrid.config,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("sendgrid_config")
         .select("id, from_email, from_name, is_enabled, enable_open_tracking, enable_click_tracking, created_at, updated_at")
         .limit(1)
@@ -72,14 +72,14 @@ export function useUpdateSendGridConfig() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: UpdateSendGridConfigInput) => {
-      const { data: config } = await supabase
+      const { data: config } = await (supabase as any)
         .from("sendgrid_config")
         .select("id")
         .limit(1)
         .maybeSingle();
 
       if (!config) {
-        const { data: inserted, error: insErr } = await supabase
+        const { data: inserted, error: insErr } = await (supabase as any)
           .from("sendgrid_config")
           .insert({
             from_email: input.from_email,
@@ -105,7 +105,7 @@ export function useUpdateSendGridConfig() {
       if (input.api_key !== undefined && input.api_key !== "") {
         updatePayload.api_key = input.api_key;
       }
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("sendgrid_config")
         .update(updatePayload)
         .eq("id", config.id)

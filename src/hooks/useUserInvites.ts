@@ -18,7 +18,7 @@ export function useUserInvites() {
   return useQuery({
     queryKey: ["user_invites"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("user_invites")
         .select("*")
         .is("used_at", null)
@@ -26,10 +26,9 @@ export function useUserInvites() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-
       return (data || []) as UserInvite[];
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 }
 
@@ -40,24 +39,17 @@ export function useCreateUserInvite() {
   return useMutation({
     mutationFn: async (params: { email: string; role: string }) => {
       const { data: currentUser } = await supabase.auth.getUser();
+      if (!currentUser.user) throw new Error("Not authenticated");
 
-      if (!currentUser.user) {
-        throw new Error("Not authenticated");
-      }
-
-      // Check if email is already registered
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("id")
         .eq("email", params.email)
         .single();
 
-      if (existingProfile) {
-        throw new Error("User with this email already exists");
-      }
+      if (existingProfile) throw new Error("User with this email already exists");
 
-      // Check if there's already a pending invite
-      const { data: existingInvite } = await supabase
+      const { data: existingInvite } = await (supabase as any)
         .from("user_invites")
         .select("id")
         .eq("email", params.email)
@@ -65,25 +57,19 @@ export function useCreateUserInvite() {
         .gte("expires_at", new Date().toISOString())
         .single();
 
-      if (existingInvite) {
-        throw new Error("An active invitation for this email already exists");
-      }
+      if (existingInvite) throw new Error("An active invitation for this email already exists");
 
-      // Create the invite
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("user_invites")
-        .insert([
-          {
-            email: params.email,
-            role: params.role,
-            invited_by: currentUser.user.id,
-          },
-        ])
+        .insert([{
+          email: params.email,
+          role: params.role,
+          invited_by: currentUser.user.id,
+        }])
         .select()
         .single();
 
       if (error) throw error;
-
       return data as UserInvite;
     },
     onSuccess: (data) => {
@@ -103,11 +89,10 @@ export function useDeleteUserInvite() {
 
   return useMutation({
     mutationFn: async (inviteId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("user_invites")
         .delete()
         .eq("id", inviteId);
-
       if (error) throw error;
     },
     onSuccess: () => {
@@ -121,14 +106,13 @@ export function useDeleteUserInvite() {
   });
 }
 
-// Resend an invite (creates a new token with extended expiry)
+// Resend an invite
 export function useResendUserInvite() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (inviteId: string) => {
-      // Get the current invite
-      const { data: invite, error: fetchError } = await supabase
+      const { data: invite, error: fetchError } = await (supabase as any)
         .from("user_invites")
         .select("*")
         .eq("id", inviteId)
@@ -136,17 +120,15 @@ export function useResendUserInvite() {
 
       if (fetchError) throw fetchError;
 
-      // Update with new expiry and token
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from("user_invites")
         .update({
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          token: crypto.randomUUID(), // Generate new token
+          token: crypto.randomUUID(),
         })
         .eq("id", inviteId);
 
       if (updateError) throw updateError;
-
       return invite;
     },
     onSuccess: () => {

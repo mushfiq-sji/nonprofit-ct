@@ -38,7 +38,7 @@ interface OrgIntegrationConfig {
 async function getGoogleAccessToken(userId: string): Promise<string> {
 
   // Get user's OAuth token
-  const { data: tokenData, error: tokenError } = await supabase
+  const { data: tokenData, error: tokenError } = await (supabase as any)
     .from('user_oauth_tokens')
     .select('access_token, refresh_token, expires_at')
     .eq('user_id', userId)
@@ -86,7 +86,7 @@ async function getGoogleAccessToken(userId: string): Promise<string> {
         access_token = refreshData.access_token;
 
         // Update token in database
-        await supabase
+        await (supabase as any)
           .from('user_oauth_tokens')
           .update({
             access_token: refreshData.access_token,

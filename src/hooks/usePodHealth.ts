@@ -69,7 +69,7 @@ export function usePodHealth() {
       });
 
       // Get latest productivity records (current week or most recent)
-      const { data: productivity } = await supabase
+      const { data: productivity } = await (supabase as any)
         .from('productivity_records')
         .select('employee_email, utilization_pct, efficiency_score')
         .order('week_start', { ascending: false })
@@ -185,7 +185,7 @@ export function usePodHealthRecords() {
 
       // Get productivity data
       const emails = [...emailMap.values()];
-      const { data: productivity } = await supabase
+      const { data: productivity } = await (supabase as any)
         .from('productivity_records')
         .select('employee_email, utilization_pct, efficiency_score')
         .in('employee_email', emails)
@@ -287,7 +287,7 @@ export function usePodMemberPerformance(podId: string | undefined) {
       });
 
       const emails = (employees || []).map((e: any) => e.email).filter(Boolean);
-      const { data: productivity } = await supabase
+      const { data: productivity } = await (supabase as any)
         .from('productivity_records')
         .select('employee_email, utilization_pct, efficiency_score')
         .in('employee_email', emails)
@@ -354,7 +354,7 @@ export function useAssignPodManager() {
       employeeId: string | null;
     }): Promise<void> => {
       // First, remove existing manager role from this pod
-      await supabase
+      await (supabase as any)
         .from('pod_employees')
         .update({ role: 'member' })
         .eq('pod_id', podId)
@@ -372,14 +372,14 @@ export function useAssignPodManager() {
 
         if (existing) {
           // Update existing
-          const { error } = await supabase
+          const { error } = await (supabase as any)
             .from('pod_employees')
             .update({ role: 'manager' })
             .eq('id', existing.id);
           if (error) throw error;
         } else {
           // Insert new
-          const { error } = await supabase.from('pod_employees').insert({
+          const { error } = await (supabase as any).from('pod_employees').insert({
             pod_id: podId,
             employee_id: employeeId,
             role: 'manager',

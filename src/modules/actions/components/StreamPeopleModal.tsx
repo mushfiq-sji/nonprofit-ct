@@ -33,7 +33,7 @@ export function StreamPeopleModal({
   const { data: members, isLoading } = useQuery({
     queryKey: ["tasks", "streamMembers", streamId],
     queryFn: async (): Promise<MemberRow[]> => {
-      const { data: rows, error } = await supabase
+      const { data: rows, error } = await (supabase as any)
         .from("task_stream_members")
         .select("id, user_id, role")
         .eq("stream_id", streamId)

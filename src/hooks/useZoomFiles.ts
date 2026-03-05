@@ -36,7 +36,7 @@ export function useZoomFiles(meetingId?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as ZoomFile[];
+      return (data || []) as unknown as ZoomFile[];
     },
     enabled: !!meetingId,
   });
@@ -53,7 +53,7 @@ export function useZoomFile(fileId: string) {
         .single();
 
       if (error) throw error;
-      return data as ZoomFile;
+      return data as unknown as ZoomFile;
     },
     enabled: !!fileId,
   });
@@ -65,7 +65,7 @@ export function useUpdateZoomFile() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<ZoomFile> }) => {
-      const { data: file, error } = await supabase
+      const { data: file, error } = await (supabase as any)
         .from('zoom_files')
         .update(data)
         .eq('id', id)

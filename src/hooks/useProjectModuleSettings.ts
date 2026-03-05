@@ -42,7 +42,7 @@ const ENABLED_KEY = ["enabled-project-modules"];
 const CATEGORY = "project_modules";
 
 async function fetchModuleToggles(): Promise<Record<string, boolean>> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("system_settings")
     .select("key, value")
     .eq("category", CATEGORY);
@@ -99,7 +99,7 @@ export function useToggleProjectModule() {
 
   return useMutation({
     mutationFn: async ({ key, enabled }: { key: string; enabled: boolean }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("system_settings")
         .upsert(
           {

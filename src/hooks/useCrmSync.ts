@@ -17,8 +17,8 @@ export function useCrmSync() {
       invalidateKeys.clients(queryClient);
       queryClient.invalidateQueries({ queryKey: ["crm-connection-status"] });
       if (data?.success) {
-        const total = (data.results ?? []).reduce(
-          (sum: number, r: { inbound?: number; outbound?: number }) =>
+        const total = ((data.results ?? []) as any[]).reduce(
+          (sum: number, r: any) =>
             sum + (r.inbound ?? 0) + (r.outbound ?? 0),
           0
         );

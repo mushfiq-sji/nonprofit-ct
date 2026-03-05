@@ -22,7 +22,7 @@ export function useRoles() {
   return useQuery({
     queryKey: queryKeys.admin.roles,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("roles")
         .select("*")
         .order("created_at", { ascending: false });
@@ -38,7 +38,7 @@ export function useRole(id: string) {
   return useQuery({
     queryKey: ["roles", "detail", id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("roles")
         .select("*")
         .eq("id", id)
@@ -57,7 +57,7 @@ export function useCreateRole() {
 
   return useMutation({
     mutationFn: async (data: RoleFormData) => {
-      const { data: role, error } = await supabase
+      const { data: role, error } = await (supabase as any)
         .from("roles")
         .insert({
           name: data.name,
@@ -87,7 +87,7 @@ export function useUpdateRole() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: RoleFormData }) => {
-      const { data: role, error } = await supabase
+      const { data: role, error } = await (supabase as any)
         .from("roles")
         .update({
           name: data.name,
@@ -118,7 +118,7 @@ export function useDeleteRole() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("roles").delete().eq("id", id);
+      const { error } = await (supabase as any).from("roles").delete().eq("id", id);
 
       if (error) throw error;
     },

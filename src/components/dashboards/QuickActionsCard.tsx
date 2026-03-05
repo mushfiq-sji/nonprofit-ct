@@ -45,8 +45,8 @@ const OWNER_ACTIONS: QuickAction[] = [
   {
     label: "Log Issue",
     icon: AlertTriangle,
-    to: "/eos/issues",
-    description: "Raise an EOS issue",
+    to: "/tasks/new",
+    description: "Raise an issue",
   },
 ];
 

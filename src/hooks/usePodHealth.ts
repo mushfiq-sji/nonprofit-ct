@@ -141,6 +141,7 @@ export function usePodMemberPerformance(podId: string | undefined) {
         .map((pe: any) => {
           const emp = pe.employee_id ? employeeMap.get(pe.employee_id) : null;
           if (!emp) return null;
+
           return {
             employee_id: pe.employee_id || '',
             employee_name: emp.full_name || emp.email,

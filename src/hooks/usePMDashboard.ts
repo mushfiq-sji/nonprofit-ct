@@ -14,25 +14,15 @@ export interface PodCapacity {
 
 /**
  * Queries the pm_team_capacity view for all pods.
- * Requires productivity_records rows for the current week.
+ * Note: Returns empty array (productivity_records table removed in Phase 3)
  */
 export function usePMTeamCapacity(podId?: string) {
   return useQuery({
     queryKey: queryKeys.dashboard.pmCapacity(podId),
     queryFn: async (): Promise<PodCapacity[]> => {
-      // pm_team_capacity is a view not yet in generated types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let query = (supabase as any)
-        .from("pm_team_capacity")
-        .select("*");
-
-      if (podId) {
-        query = query.eq("pod_id", podId);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return (data ?? []) as PodCapacity[];
+      // pm_team_capacity view no longer available after productivity_records removal
+      // Return empty array for now - can be reimplemented if needed
+      return [];
     },
     staleTime: cacheConfig.staleTime.short,
   });

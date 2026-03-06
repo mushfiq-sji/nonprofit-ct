@@ -1,5 +1,4 @@
 import type { CrmProviderSlug, CrmContact, CrmIntegrationConfig, SyncResult } from "./types.ts";
-import { fetchHubSpotContacts, pushHubSpotContact } from "./adapters/hubspot.ts";
 
 const CRM_SLUGS: CrmProviderSlug[] = [
   "salesforce-npsp",
@@ -21,23 +20,19 @@ export function isCrmProviderSlug(slug: string): slug is CrmProviderSlug {
 }
 
 export async function fetchCrmContacts(
-  slug: CrmProviderSlug,
-  config: CrmIntegrationConfig,
-  since?: number
+  _slug: CrmProviderSlug,
+  _config: CrmIntegrationConfig,
+  _since?: number
 ): Promise<CrmContact[]> {
-  if (slug === "hubspot-nonprofit" || slug === "hubspot") {
-    return fetchHubSpotContacts(config, since);
-  }
+  // No CRM adapters implemented yet — add adapters here as needed
   return [];
 }
 
 export async function pushCrmContact(
   slug: CrmProviderSlug,
-  config: CrmIntegrationConfig,
-  contact: CrmContact
+  _config: CrmIntegrationConfig,
+  _contact: CrmContact
 ): Promise<SyncResult> {
-  if (slug === "hubspot-nonprofit" || slug === "hubspot") {
-    return pushHubSpotContact(config, contact);
-  }
+  // No CRM adapters implemented yet — add adapters here as needed
   return { success: false, processed: 0, message: `No adapter for ${slug}` };
 }

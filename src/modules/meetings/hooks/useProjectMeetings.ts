@@ -29,7 +29,7 @@ export function useProjectMeetings(projectId: string) {
   return useQuery({
     queryKey: [PROJECT_MEETINGS_KEY, projectId],
     queryFn: async (): Promise<ProjectMeetingAssignment[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("meeting_assignments")
         .select(
           "*, meeting:meetings(id, title, scheduled_at, status, duration_minutes, slug)"

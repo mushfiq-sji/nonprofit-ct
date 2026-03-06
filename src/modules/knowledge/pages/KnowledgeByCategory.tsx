@@ -295,7 +295,7 @@ export default function KnowledgeByCategory() {
                 <div className="font-medium text-muted-foreground">
                   Last Updated
                 </div>
-                <div>{formatDate(category.updated_at)}</div>
+                <div>{formatDate(category.created_at)}</div>
               </div>
             </CardContent>
           </Card>

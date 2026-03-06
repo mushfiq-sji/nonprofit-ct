@@ -130,13 +130,13 @@ export default function MemoryDashboard() {
   const { data: queueStats, isLoading: queueLoading } = useQuery({
     queryKey: ["admin", "memory-dashboard", "queue"],
     queryFn: async (): Promise<QueueStats> => {
-      const { data, error } = await supabase.from("embedding_queue").select("status");
+      const { data, error } = await (supabase as any).from("embedding_queue").select("status");
       if (error) throw error;
-      const rows = data ?? [];
-      const pending = rows.filter((r) => r.status === "pending").length;
-      const processing = rows.filter((r) => r.status === "processing").length;
-      const completed = rows.filter((r) => r.status === "completed").length;
-      const failed = rows.filter((r) => r.status === "failed").length;
+      const rows = (data ?? []) as any[];
+      const pending = rows.filter((r: any) => r.status === "pending").length;
+      const processing = rows.filter((r: any) => r.status === "processing").length;
+      const completed = rows.filter((r: any) => r.status === "completed").length;
+      const failed = rows.filter((r: any) => r.status === "failed").length;
       const total = completed + failed;
       const successRatePct = total > 0 ? (completed / total) * 100 : 0;
       return { pending, processing, completed, failed, total: rows.length, successRatePct };

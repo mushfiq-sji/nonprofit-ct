@@ -82,7 +82,7 @@ export default function CommonKnowledgeManagement() {
   const { data: entries = [], isLoading } = useQuery({
     queryKey: ["admin", "common-knowledge", searchQuery],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from("common_knowledge")
         .select("*")
         .order("created_at", { ascending: false });
@@ -113,7 +113,7 @@ export default function CommonKnowledgeManagement() {
   // Create mutation
   const createEntry = useMutation({
     mutationFn: async (data: Partial<CommonKnowledge>) => {
-      const { data: entry, error } = await supabase
+      const { data: entry, error } = await (supabase as any)
         .from("common_knowledge")
         .insert([data as any])
         .select()
@@ -145,7 +145,7 @@ export default function CommonKnowledgeManagement() {
       id: string;
       data: Partial<CommonKnowledge>;
     }) => {
-      const { data: entry, error } = await supabase
+      const { data: entry, error } = await (supabase as any)
         .from("common_knowledge")
         .update(data)
         .eq("id", id)
@@ -172,7 +172,7 @@ export default function CommonKnowledgeManagement() {
   // Delete mutation
   const deleteEntry = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("common_knowledge").delete().eq("id", id);
+      const { error } = await (supabase as any).from("common_knowledge").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

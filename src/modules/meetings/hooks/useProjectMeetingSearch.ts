@@ -31,7 +31,7 @@ export function useProjectMeetingSearch(projectId: string, query: string) {
   return useQuery({
     queryKey: [PROJECT_MEETING_SEARCH_KEY, projectId, query],
     queryFn: async (): Promise<ProjectMeetingSearchResult[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("meeting_assignments")
         .select(
           "*, meeting:meetings!inner(id, title, scheduled_at, status, duration_minutes, slug)"

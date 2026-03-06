@@ -33,7 +33,7 @@ export function useMeetingZoomLink(meetingId: string) {
   return useQuery({
     queryKey: [ZOOM_LINK_KEY, meetingId],
     queryFn: async (): Promise<ZoomFileRow[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("meeting_files")
         .select(
           "id, meeting_id, provider, file_type, file_name, file_size, download_url, transcript_text, processing_status, created_at, updated_at"

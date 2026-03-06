@@ -27,7 +27,7 @@ export default function GeminiRAGConfig() {
   const { data: corpora = [], isLoading: loadingCorpora, error: corporaError } = useQuery({
     queryKey: ["gemini-corpora"],
     queryFn: async (): Promise<GeminiCorpus[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("gemini_corpora")
         .select("id, name, display_name, is_active, updated_at, created_at")
         .order("created_at", { ascending: false });
@@ -39,13 +39,13 @@ export default function GeminiRAGConfig() {
   const { data: syncLogs = [], isLoading: loadingLogs, error: logsError } = useQuery({
     queryKey: ["gemini-sync-logs"],
     queryFn: async (): Promise<GeminiSyncLog[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("gemini_sync_logs")
         .select("id, corpus_id, status, started_at, completed_at, error_message")
         .order("started_at", { ascending: false })
         .limit(50);
       if (error) throw error;
-      return (data || []) as GeminiSyncLog[];
+      return (data || []) as unknown as GeminiSyncLog[];
     },
   });
 

@@ -101,7 +101,7 @@ export default function AIUsageAnalytics() {
       const startDate = getDateRangeFilter();
 
       // Build query for usage logs - join with ai_models only (no FK to auth.users)
-      let query = supabase
+      let query = (supabase as any)
         .from("ai_usage_logs")
         .select(
           `
@@ -129,7 +129,7 @@ export default function AIUsageAnalytics() {
       const { data: profilesData } = await supabase
         .from("profiles")
         .select("id, email")
-        .in("id", userIds);
+        .in("id", userIds as string[]);
 
       const userEmailMap = new Map<string, string>();
       (profilesData || []).forEach((profile: any) => {

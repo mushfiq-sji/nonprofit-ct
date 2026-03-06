@@ -70,7 +70,7 @@ export default function KnowledgeFiles() {
   const { data: files = [], isLoading } = useQuery({
     queryKey: ["admin", "knowledge-files", searchQuery, statusFilter, sourceFilter],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from("knowledge_files")
         .select(`
           *,

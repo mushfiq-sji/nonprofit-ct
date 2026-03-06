@@ -42,6 +42,8 @@ import type { Database } from '@/integrations/supabase/types';
 
 type KnowledgeCategory = Database['public']['Tables']['knowledge_categories']['Row'];
 type CategoryWithStats = KnowledgeCategory & {
+  icon?: string;
+  color?: string;
   stats?: {
     entry_count: number;
     published_count: number;

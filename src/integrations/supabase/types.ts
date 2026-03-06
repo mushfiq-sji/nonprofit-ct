@@ -3358,6 +3358,7 @@ export type Database = {
           agency_role: string | null
           created_at: string
           id: string
+          is_eos_user: boolean | null
           role: string | null
           updated_at: string
           user_id: string
@@ -3366,6 +3367,7 @@ export type Database = {
           agency_role?: string | null
           created_at?: string
           id?: string
+          is_eos_user?: boolean | null
           role?: string | null
           updated_at?: string
           user_id: string
@@ -3374,6 +3376,7 @@ export type Database = {
           agency_role?: string | null
           created_at?: string
           id?: string
+          is_eos_user?: boolean | null
           role?: string | null
           updated_at?: string
           user_id?: string
@@ -3504,14 +3507,16 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       data_source_type:
         | "manual"
+        | "hubspot"
         | "salesforce"
+        | "zoho"
+        | "pipedrive"
         | "blackbaud"
         | "bloomerang"
         | "neon"
         | "virtuous"
         | "donorperfect"
         | "kindful"
-        | "little_green_light"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3642,14 +3647,16 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       data_source_type: [
         "manual",
+        "hubspot",
         "salesforce",
+        "zoho",
+        "pipedrive",
         "blackbaud",
         "bloomerang",
         "neon",
         "virtuous",
         "donorperfect",
         "kindful",
-        "little_green_light",
       ],
     },
   },

@@ -147,29 +147,29 @@ export function useCreateAgent() {
     mutationFn: async (data: AgentFormData) => {
       const slug = data.slug || data.name.toLowerCase().replace(/\s+/g, "-");
 
+      const insertPayload = {
+        name: data.name,
+        slug,
+        description: data.description || null,
+        category: data.category,
+        system_prompt: data.system_prompt,
+        is_enabled: data.is_enabled,
+        memory_enabled: data.memory_enabled,
+        avatar: data.avatar || null,
+        welcome_message: data.welcome_message || null,
+        conversation_starters: data.conversation_starters || [],
+        tool_code_interpreter: data.tool_code_interpreter ?? false,
+        tool_file_search: data.tool_file_search ?? true,
+        tool_web_search: data.tool_web_search ?? false,
+        tool_image_generation: data.tool_image_generation ?? false,
+        tool_mcp: data.tool_mcp ?? false,
+        mcp_server_ids: data.mcp_server_ids || [],
+        tools_config: data.tools_config || [],
+      };
+
       const { data: agent, error } = await supabase
         .from("ai_agents")
-        .insert({
-          name: data.name,
-          slug,
-          description: data.description || null,
-          category: data.category,
-          system_prompt: data.system_prompt,
-          is_enabled: data.is_enabled,
-          memory_enabled: data.memory_enabled,
-          // Conversation fields
-          avatar: data.avatar || null,
-          welcome_message: data.welcome_message || null,
-          conversation_starters: data.conversation_starters || [],
-          // Tool configuration
-          tool_code_interpreter: data.tool_code_interpreter ?? false,
-          tool_file_search: data.tool_file_search ?? true,
-          tool_web_search: data.tool_web_search ?? false,
-          tool_image_generation: data.tool_image_generation ?? false,
-          tool_mcp: data.tool_mcp ?? false,
-          mcp_server_ids: data.mcp_server_ids || [],
-          tools_config: data.tools_config || [],
-        })
+        .insert(insertPayload as any)
         .select()
         .single();
 

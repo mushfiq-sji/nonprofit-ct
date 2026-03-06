@@ -50,6 +50,277 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_conversations: {
+        Row: {
+          agent_id: string
+          created_at: string
+          id: string
+          is_archived: boolean | null
+          is_pinned: boolean | null
+          last_message_at: string | null
+          message_count: number | null
+          metadata: Json | null
+          summary: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          last_message_at?: string | null
+          message_count?: number | null
+          metadata?: Json | null
+          summary?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          last_message_at?: string | null
+          message_count?: number | null
+          metadata?: Json | null
+          summary?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_learning_events: {
+        Row: {
+          agent_action_taken: string | null
+          agent_id: string
+          behavior_change: Json | null
+          created_at: string | null
+          event_description: string
+          event_type: string
+          feedback_text: string | null
+          feedback_type: string | null
+          id: string
+          related_conversation_id: string | null
+          related_memory_id: string | null
+          related_message_id: string | null
+          user_id: string
+        }
+        Insert: {
+          agent_action_taken?: string | null
+          agent_id: string
+          behavior_change?: Json | null
+          created_at?: string | null
+          event_description: string
+          event_type: string
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          related_conversation_id?: string | null
+          related_memory_id?: string | null
+          related_message_id?: string | null
+          user_id: string
+        }
+        Update: {
+          agent_action_taken?: string | null
+          agent_id?: string
+          behavior_change?: Json | null
+          created_at?: string | null
+          event_description?: string
+          event_type?: string
+          feedback_text?: string | null
+          feedback_type?: string | null
+          id?: string
+          related_conversation_id?: string | null
+          related_memory_id?: string | null
+          related_message_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_learning_events_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_learning_events_related_memory_id_fkey"
+            columns: ["related_memory_id"]
+            isOneToOne: false
+            referencedRelation: "agent_memories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_memories: {
+        Row: {
+          access_count: number | null
+          agent_id: string
+          consolidated: boolean | null
+          content: string
+          created_at: string | null
+          embedding: string | null
+          id: string
+          importance_score: number | null
+          is_active: boolean | null
+          last_accessed_at: string | null
+          memory_category: string | null
+          memory_type: string
+          metadata: Json | null
+          source_id: string | null
+          source_type: string | null
+          summary: string | null
+          superseded_by: string | null
+          updated_at: string | null
+          user_id: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          access_count?: number | null
+          agent_id: string
+          consolidated?: boolean | null
+          content: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          importance_score?: number | null
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          memory_category?: string | null
+          memory_type: string
+          metadata?: Json | null
+          source_id?: string | null
+          source_type?: string | null
+          summary?: string | null
+          superseded_by?: string | null
+          updated_at?: string | null
+          user_id: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          access_count?: number | null
+          agent_id?: string
+          consolidated?: boolean | null
+          content?: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          importance_score?: number | null
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          memory_category?: string | null
+          memory_type?: string
+          metadata?: Json | null
+          source_id?: string | null
+          source_type?: string | null
+          summary?: string | null
+          superseded_by?: string | null
+          updated_at?: string | null
+          user_id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_memories_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_memories_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "agent_memories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_messages: {
+        Row: {
+          citations: Json | null
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_streaming: boolean | null
+          latency_ms: number | null
+          metadata: Json | null
+          model_used: string | null
+          provider_used: string | null
+          role: string
+          stream_completed_at: string | null
+          tokens_input: number | null
+          tokens_output: number | null
+          tool_call_status: string | null
+          tool_calls: Json | null
+          tool_results: Json | null
+        }
+        Insert: {
+          citations?: Json | null
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_streaming?: boolean | null
+          latency_ms?: number | null
+          metadata?: Json | null
+          model_used?: string | null
+          provider_used?: string | null
+          role: string
+          stream_completed_at?: string | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+          tool_call_status?: string | null
+          tool_calls?: Json | null
+          tool_results?: Json | null
+        }
+        Update: {
+          citations?: Json | null
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_streaming?: boolean | null
+          latency_ms?: number | null
+          metadata?: Json | null
+          model_used?: string | null
+          provider_used?: string | null
+          role?: string
+          stream_completed_at?: string | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+          tool_call_status?: string | null
+          tool_calls?: Json | null
+          tool_results?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "agent_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_agent_categories: {
         Row: {
           created_at: string
@@ -177,58 +448,91 @@ export type Database = {
           avatar: string | null
           category: string | null
           category_id: string | null
+          conversation_starters: Json | null
           created_at: string
           created_by: string | null
           description: string | null
           id: string
           is_active: boolean | null
+          is_default: boolean | null
           is_enabled: boolean | null
+          mcp_server_ids: string[] | null
           memory_enabled: boolean | null
           metadata: Json | null
           model: string | null
           name: string
           slug: string | null
           system_prompt: string | null
+          tool_code_interpreter: boolean | null
+          tool_file_search: boolean | null
+          tool_image_generation: boolean | null
+          tool_mcp: boolean | null
+          tool_web_search: boolean | null
           tools: Json | null
+          tools_config: Json | null
           updated_at: string
+          usage_count: number | null
+          welcome_message: string | null
         }
         Insert: {
           avatar?: string | null
           category?: string | null
           category_id?: string | null
+          conversation_starters?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           is_enabled?: boolean | null
+          mcp_server_ids?: string[] | null
           memory_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name: string
           slug?: string | null
           system_prompt?: string | null
+          tool_code_interpreter?: boolean | null
+          tool_file_search?: boolean | null
+          tool_image_generation?: boolean | null
+          tool_mcp?: boolean | null
+          tool_web_search?: boolean | null
           tools?: Json | null
+          tools_config?: Json | null
           updated_at?: string
+          usage_count?: number | null
+          welcome_message?: string | null
         }
         Update: {
           avatar?: string | null
           category?: string | null
           category_id?: string | null
+          conversation_starters?: Json | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           is_enabled?: boolean | null
+          mcp_server_ids?: string[] | null
           memory_enabled?: boolean | null
           metadata?: Json | null
           model?: string | null
           name?: string
           slug?: string | null
           system_prompt?: string | null
+          tool_code_interpreter?: boolean | null
+          tool_file_search?: boolean | null
+          tool_image_generation?: boolean | null
+          tool_mcp?: boolean | null
+          tool_web_search?: boolean | null
           tools?: Json | null
+          tools_config?: Json | null
           updated_at?: string
+          usage_count?: number | null
+          welcome_message?: string | null
         }
         Relationships: [
           {
@@ -3192,6 +3496,56 @@ export type Database = {
         }
         Relationships: []
       }
+      user_agent_personalizations: {
+        Row: {
+          additional_prompt: string | null
+          agent_id: string
+          attached_knowledge_files: string[] | null
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          max_context_files: number | null
+          relevance_threshold: number | null
+          updated_at: string
+          use_all_knowledge: boolean | null
+          user_id: string
+        }
+        Insert: {
+          additional_prompt?: string | null
+          agent_id: string
+          attached_knowledge_files?: string[] | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          max_context_files?: number | null
+          relevance_threshold?: number | null
+          updated_at?: string
+          use_all_knowledge?: boolean | null
+          user_id: string
+        }
+        Update: {
+          additional_prompt?: string | null
+          agent_id?: string
+          attached_knowledge_files?: string[] | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          max_context_files?: number | null
+          relevance_threshold?: number | null
+          updated_at?: string
+          use_all_knowledge?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_agent_personalizations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_knowledge_files: {
         Row: {
           created_at: string
@@ -3353,6 +3707,62 @@ export type Database = {
           },
         ]
       }
+      user_preferences: {
+        Row: {
+          agent_id: string | null
+          confidence_score: number | null
+          created_at: string | null
+          evidence_count: number | null
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          learned_from: string | null
+          preference_key: string
+          preference_value: Json
+          times_used: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          evidence_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          learned_from?: string | null
+          preference_key: string
+          preference_value: Json
+          times_used?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          evidence_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          learned_from?: string | null
+          preference_key?: string
+          preference_value?: Json
+          times_used?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_role_preferences: {
         Row: {
           agency_role: string | null
@@ -3492,15 +3902,115 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      agent_learning_summary: {
+        Row: {
+          agent_id: string | null
+          correction_count: number | null
+          feedback_count: number | null
+          negative_feedback: number | null
+          positive_feedback: number | null
+          reinforcement_count: number | null
+          total_events: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_learning_events_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_memory_stats: {
+        Row: {
+          agent_id: string | null
+          avg_importance: number | null
+          episodic_count: number | null
+          last_memory_access: string | null
+          long_term_count: number | null
+          semantic_count: number | null
+          short_term_count: number | null
+          total_accesses: number | null
+          total_memories: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_memories_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preference_coverage: {
+        Row: {
+          avg_confidence: number | null
+          explicit_count: number | null
+          inferred_count: number | null
+          observed_count: number | null
+          total_preferences: number | null
+          total_usage: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      consolidate_short_term_memories: {
+        Args: { p_agent_id: string; p_days_old?: number; p_user_id: string }
+        Returns: number
+      }
+      get_or_create_conversation: {
+        Args: {
+          p_agent_id: string
+          p_conversation_id?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      get_relevant_memories: {
+        Args: {
+          p_agent_id: string
+          p_limit?: number
+          p_memory_types?: string[]
+          p_query_embedding: string
+          p_similarity_threshold?: number
+          p_user_id: string
+        }
+        Returns: {
+          content: string
+          created_at: string
+          importance_score: number
+          memory_id: string
+          memory_type: string
+          similarity: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_memory_access: {
+        Args: { memory_ids: string[] }
+        Returns: undefined
+      }
+      prune_short_term_memories: {
+        Args: {
+          p_agent_id: string
+          p_days_old?: number
+          p_importance_threshold?: number
+          p_user_id: string
+        }
+        Returns: number
+      }
+      refresh_conversation_stats: {
+        Args: { p_conversation_id: string }
+        Returns: undefined
       }
     }
     Enums: {

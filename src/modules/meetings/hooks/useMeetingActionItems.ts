@@ -73,7 +73,7 @@ export function useActionItemStats() {
   return useQuery({
     queryKey: [ACTION_ITEMS_KEY, "stats", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("meeting_takeaways")
         .select("*")
         .eq("takeaway_type", "action_item")

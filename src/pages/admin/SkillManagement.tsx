@@ -156,7 +156,7 @@ function CreateSkillDialog({ open, onOpenChange }: CreateSkillDialogProps) {
 
   const createSkill = useMutation({
     mutationFn: async (data: { name: string; category?: string; description?: string }) => {
-      const { data: result, error } = await supabase
+      const { data: result, error } = await (supabase as any)
         .from("skills")
         .insert([
           {

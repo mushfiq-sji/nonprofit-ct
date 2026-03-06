@@ -58,7 +58,7 @@ function useMeetingTranscripts(search: string) {
       // Fetch all transcript turns
       const { data: turns, error } = await supabase
         .from("meeting_transcripts")
-        .select("meeting_id, speaker, content, created_at")
+        .select("meeting_id, content, created_at")
         .order("created_at", { ascending: true });
 
       if (error) throw error;
@@ -66,13 +66,14 @@ function useMeetingTranscripts(search: string) {
 
       // Group by meeting_id
       const grouped = new Map<string, { speakers: Set<string>; turns: { speaker: string; content: string }[]; created_at: string }>();
-      for (const t of turns) {
+      for (const t of turns as any[]) {
         if (!grouped.has(t.meeting_id)) {
           grouped.set(t.meeting_id, { speakers: new Set(), turns: [], created_at: t.created_at });
         }
         const g = grouped.get(t.meeting_id)!;
-        if (t.speaker) g.speakers.add(t.speaker);
-        g.turns.push({ speaker: t.speaker || "Unknown", content: t.content || "" });
+        const speaker = t.speaker || "Unknown";
+        g.speakers.add(speaker);
+        g.turns.push({ speaker, content: t.content || "" });
       }
 
       // Fetch meeting details

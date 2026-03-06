@@ -76,7 +76,7 @@ export default function UserManagement() {
     setLoading(true);
     try {
       // Fetch all profiles
-      const { data: profiles, error: profilesError } = await supabase
+      const { data: profiles, error: profilesError } = await (supabase as any)
         .from("profiles")
         .select("id, email, full_name, avatar_url, created_at, is_active, deactivated_at, deactivated_by")
         .order("created_at", { ascending: false });
@@ -210,7 +210,7 @@ export default function UserManagement() {
         return;
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("profiles")
         .update({
           is_active: !currentStatus,

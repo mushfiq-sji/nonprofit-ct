@@ -40,7 +40,7 @@ function useProjectDocuments(projectId: string) {
   return useQuery({
     queryKey: ["project-knowledge", projectId],
     queryFn: async (): Promise<ProjectDocument[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("unified_documents")
         .select("id, title, file_name, file_type, file_size, processing_status, chunk_count, created_at")
         .eq("owner_type", "project")

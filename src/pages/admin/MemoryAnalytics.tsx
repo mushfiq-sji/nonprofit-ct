@@ -51,13 +51,13 @@ export default function MemoryAnalytics() {
   } = useQuery({
     queryKey: ["memory-search-logs"],
     queryFn: async (): Promise<VectorSearchLog[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("vector_search_logs")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
-      return (data || []) as VectorSearchLog[];
+      return (data || []) as unknown as VectorSearchLog[];
     },
   });
 

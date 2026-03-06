@@ -118,7 +118,7 @@ export default function AIModelManagement() {
         id: p.id,
         name: p.name,
         slug: p.slug,
-        enabled: p.enabled,
+        enabled: (p as any).enabled ?? p.is_active,
         created_at: p.created_at,
         integration_provider_id: null,
         integration_provider_name: null,
@@ -160,7 +160,7 @@ export default function AIModelManagement() {
     try {
       const { error } = await supabase
         .from("ai_providers")
-        .update({ enabled })
+        .update({ is_active: enabled } as any)
         .eq("id", providerId);
 
       if (error) throw error;

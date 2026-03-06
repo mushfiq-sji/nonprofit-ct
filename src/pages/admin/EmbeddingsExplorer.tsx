@@ -107,15 +107,15 @@ function usePipelineStats() {
     queryKey: ["admin-embedding-pipeline-stats"],
     queryFn: async (): Promise<PipelineStats> => {
       const [queueRes, chunksRes] = await Promise.all([
-        supabase.from("embedding_queue").select("status"),
+        (supabase as any).from("embedding_queue").select("status"),
         supabase.from("embeddings").select("id", { count: "exact", head: true }),
       ]);
-      const queueItems = queueRes.data ?? [];
+      const queueItems = (queueRes.data ?? []) as any[];
       const totalChunks = chunksRes.count ?? 0;
-      const pending = queueItems.filter((q) => q.status === "pending").length;
-      const processing = queueItems.filter((q) => q.status === "processing").length;
-      const completed = queueItems.filter((q) => q.status === "completed").length;
-      const failed = queueItems.filter((q) => q.status === "failed").length;
+      const pending = queueItems.filter((q: any) => q.status === "pending").length;
+      const processing = queueItems.filter((q: any) => q.status === "processing").length;
+      const completed = queueItems.filter((q: any) => q.status === "completed").length;
+      const failed = queueItems.filter((q: any) => q.status === "failed").length;
       const total = queueItems.length;
       return {
         pending,
@@ -148,22 +148,22 @@ function useEmbeddingList(
       total: number;
     }> => {
       // 1) All queue rows
-      const { data: queueRows, error: queueErr } = await supabase
+      const { data: queueRows, error: queueErr } = await (supabase as any)
         .from("embedding_queue")
         .select("id, entity_type, entity_id, status, created_at, completed_at")
         .order("created_at", { ascending: false });
 
       if (queueErr) throw queueErr;
-      const queue = (queueRows ?? []) as EmbeddingQueueRow[];
+      const queue = (queueRows ?? []) as unknown as EmbeddingQueueRow[];
 
       // 2) Chunk counts and distinct sources from embeddings (for fallback when queue is empty)
-      const { data: embData } = await supabase
+      const { data: embData } = await (supabase as any)
         .from("embeddings")
         .select("entity_type, entity_id, created_at");
 
       const chunkMap = new Map<string, number>();
       const embLatest = new Map<string, string>();
-      (embData ?? []).forEach((r: { entity_type: string; entity_id: string; created_at?: string }) => {
+      (embData ?? []).forEach((r: any) => {
         const key = `${r.entity_type}:${r.entity_id}`;
         chunkMap.set(key, (chunkMap.get(key) ?? 0) + 1);
         const existing = embLatest.get(key);
@@ -430,15 +430,15 @@ export default function EmbeddingsExplorer() {
 
   const retryFailed = useMutation({
     mutationFn: async () => {
-      const { data: failed } = await supabase
+      const { data: failed } = await (supabase as any)
         .from("embedding_queue")
         .select("id")
         .eq("status", "failed");
       if (!failed?.length) return;
-      await supabase
+      await (supabase as any)
         .from("embedding_queue")
         .update({ status: "pending", error_message: null, attempts: 0 })
-        .in("id", failed.map((r) => r.id));
+        .in("id", failed.map((r: any) => r.id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-embedding-pipeline-stats"] });

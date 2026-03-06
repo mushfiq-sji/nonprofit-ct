@@ -1,5 +1,5 @@
 /**
- * DataSourceBadge - Shows where a record originated (HubSpot, Salesforce, manual, etc.)
+ * DataSourceBadge - Shows where a record originated (external CRM, manual, etc.)
  * Variants: inline (table rows), card (detail pages), minimal (icon only)
  */
 
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow, format } from "date-fns";
 
-export type DataSourceProvider = "manual" | "hubspot" | "salesforce" | "zoho" | "pipedrive" | string;
+export type DataSourceProvider = "manual" | "salesforce" | "bloomerang" | "neon_crm" | "little_green_light" | string;
 
 interface DataSourceBadgeProps {
   dataSource?: string | null;
@@ -20,11 +20,11 @@ interface DataSourceBadgeProps {
 }
 
 const PROVIDER_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  hubspot: { label: "HubSpot", color: "hsl(16, 100%, 50%)", icon: "🔗" },
   salesforce: { label: "Salesforce", color: "hsl(210, 100%, 56%)", icon: "☁️" },
-  zoho: { label: "Zoho", color: "hsl(4, 90%, 58%)", icon: "📊" },
-  pipedrive: { label: "Pipedrive", color: "hsl(145, 63%, 42%)", icon: "📈" },
-  freshsales: { label: "Freshsales", color: "hsl(199, 89%, 48%)", icon: "🔵" },
+  bloomerang: { label: "Bloomerang", color: "hsl(145, 63%, 42%)", icon: "🌸" },
+  neon_crm: { label: "Neon CRM", color: "hsl(280, 70%, 55%)", icon: "💎" },
+  little_green_light: { label: "Little Green Light", color: "hsl(120, 60%, 40%)", icon: "🟢" },
+  salesforce_npsp: { label: "Salesforce NPSP", color: "hsl(210, 100%, 56%)", icon: "☁️" },
   manual: { label: "Manual", color: "hsl(var(--muted-foreground))", icon: "" },
 };
 

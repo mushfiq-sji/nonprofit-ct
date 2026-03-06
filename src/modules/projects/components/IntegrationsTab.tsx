@@ -36,7 +36,7 @@ function ProviderSyncButton({
   slug: string;
   connected: boolean;
 }) {
-  const isProjectProvider = slug === "activecollab" || slug === "jira";
+  const isProjectProvider = slug === "jira";
   const { mutate, isPending } = useSyncProjects(slug);
 
   if (!isProjectProvider) {

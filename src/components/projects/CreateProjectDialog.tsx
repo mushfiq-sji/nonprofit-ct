@@ -14,8 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Loader2, Search, CalendarIcon, Users } from "lucide-react";
+import { Plus, Loader2, CalendarIcon, Users } from "lucide-react";
 import {
   useCreateProject,
   useProjectStatuses,
@@ -53,8 +52,6 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
   const { data: categories = [] } = useProjectCategories();
   const createProject = useCreateProject();
 
-  const [searchActiveCollabQuery, setSearchActiveCollabQuery] = useState("");
-  const [searchActiveCollabEnabled, setSearchActiveCollabEnabled] = useState(false);
   const [form, setForm] = useState<ProjectFormData & {
     client_email?: string;
     client_phone?: string;
@@ -142,8 +139,6 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
           project_complexity: "",
           team_member_ids: [],
         });
-        setSearchActiveCollabQuery("");
-        setSearchActiveCollabEnabled(false);
         if (project?.slug) navigate(`/projects/${project.slug}`);
       },
     });
@@ -163,46 +158,10 @@ export function CreateProjectDialog({ trigger }: CreateProjectDialogProps) {
         <DialogHeader>
           <DialogTitle>Create New Project</DialogTitle>
           <DialogDescription>
-            Capture the basic details to set up a new project record. You can search for an existing
-            ActiveCollab project or create a new one manually.
+            Capture the basic details to set up a new project record.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Search ActiveCollab Project: checkbox toggles visibility of search input + button */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="search-ac"
-                checked={searchActiveCollabEnabled}
-                onCheckedChange={(v) => setSearchActiveCollabEnabled(!!v)}
-              />
-              <Label htmlFor="search-ac" className="text-sm font-medium cursor-pointer">
-                Search ActiveCollab Project
-              </Label>
-            </div>
-            {searchActiveCollabEnabled && (
-              <div className="flex gap-2 pl-6">
-                <Input
-                  className="flex-1"
-                  placeholder="Search for ActiveCollab project..."
-                  value={searchActiveCollabQuery}
-                  onChange={(e) => setSearchActiveCollabQuery(e.target.value)}
-                  disabled={createProject.isPending}
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="shrink-0"
-                  onClick={() => {
-                    /* TODO: call ActiveCollab search API */
-                  }}
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </div>
-            )}
-          </div>
 
           {/* Row 1: Project Name *, Client Name * */}
           <div className="grid grid-cols-2 gap-4">

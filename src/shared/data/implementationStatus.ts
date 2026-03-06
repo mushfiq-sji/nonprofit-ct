@@ -176,7 +176,7 @@ export const implementationStatus: ModuleStatus[] = [
     edgeFunctions: [
       { name: "Task API (api-v1-tasks) — full CRUD with filters, pagination", status: "done" },
       { name: "AI task assistant", status: "not-started" },
-      { name: "ActiveCollab sync (sync-projects-activecollab)", status: "done" },
+      { name: "External project sync (Jira integration)", status: "in-progress" },
     ],
     qaChecklist: [
       { description: "Create a task from /tasks, verify it appears in the list", tested: false },
@@ -367,7 +367,7 @@ export const implementationStatus: ModuleStatus[] = [
     name: "Projects",
     phase: 5,
     owner: "Zia",
-    summary: "Full CRUD with milestones, members, risks, billing. Client portal, ActiveCollab/Jira sync. IntegrationsTab, TasksTab, KnowledgePage all wired to real data.",
+    summary: "Full CRUD with milestones, members, risks, billing. Client portal, Jira sync. IntegrationsTab, TasksTab, KnowledgePage all wired to real data.",
     pipeline: {
       development: { status: "done", owner: "Zia", notes: "Core done, client portal live, integrations + tasks wired to real Supabase, knowledge tab wired to unified_documents" },
       qa: { status: "not-started", owner: "Zia", notes: "Test via Lovable QA module" },
@@ -393,7 +393,7 @@ export const implementationStatus: ModuleStatus[] = [
       { name: "useProjects — CRUD, statuses, filters", status: "done" },
       { name: "useProjectDetail — members, milestones, comments, risks", status: "done" },
       { name: "useClientAccess — create/revoke/restore client portal access", status: "done" },
-      { name: "useIntegrationSync — ActiveCollab/Jira project sync", status: "done" },
+      { name: "useIntegrationSync — Jira project sync", status: "done" },
       { name: "useProjectModuleSettings — toggle project detail tabs", status: "done" },
       { name: "useProjectReports — real Supabase aggregates from projects/milestones/risks/billing", status: "done" },
       { name: "useProjectIntegrations — real org_integrations + providers query", status: "done" },
@@ -409,7 +409,6 @@ export const implementationStatus: ModuleStatus[] = [
       { name: "ProjectKnowledgePage — unified_documents query with search, file type, processing status, chunk count", status: "done" },
     ],
     edgeFunctions: [
-      { name: "sync-projects-activecollab — sync projects from ActiveCollab", status: "done" },
       { name: "sync-projects-jira — sync projects from Jira", status: "done" },
       { name: "create-client-access — generate client portal credentials", status: "done" },
       { name: "client-dashboard-api — client portal auth + data", status: "done" },
@@ -425,7 +424,6 @@ export const implementationStatus: ModuleStatus[] = [
       { description: "View risks tab", tested: false },
       { description: "Create client portal access and verify credential generation", tested: false },
       { description: "Access client portal dashboard with token and password", tested: false },
-      { description: "Sync projects from ActiveCollab", tested: false },
       { description: "View IntegrationsTab — see connection badges, logos, last sync times", tested: false },
       { description: "View TasksTab — see priority badges, status badges, assigned users", tested: false },
       { description: "View ProjectKnowledgePage — see document list, search, file type badges, processing status", tested: false },
@@ -474,7 +472,7 @@ export const implementationStatus: ModuleStatus[] = [
     ],
     components: [],
     edgeFunctions: [
-      { name: "HubSpot sync", status: "not-started" },
+      { name: "CRM integration layer", status: "not-started" },
       { name: "Deal coaching AI", status: "not-started" },
       { name: "Email automation", status: "not-started" },
       { name: "Lead scoring", status: "not-started" },
@@ -494,7 +492,7 @@ export const implementationStatus: ModuleStatus[] = [
       { description: "Change deal stage and verify deal_activities entry logged with from/to stages", tested: false },
     ],
     nextSteps: [
-      "HubSpot integration (edge function)",
+      "CRM integration layer (generic adapter)",
     ],
   },
 
@@ -568,7 +566,7 @@ export const implementationStatus: ModuleStatus[] = [
       { description: "View MeetingAnalytics efficiency section with score, rates, monthly trend", tested: false },
     ],
     nextSteps: [
-      "Data sync dashboard (HR, HubSpot, ActiveCollab)",
+      "Data sync dashboard",
       "Notification management admin page",
     ],
   },

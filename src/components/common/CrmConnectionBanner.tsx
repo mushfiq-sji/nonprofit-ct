@@ -12,18 +12,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
 const CRM_SLUGS = [
-  "hubspot",
   "salesforce",
-  "zoho-crm",
-  "pipedrive",
   "salesforce-npsp",
   "blackbaud-raiser-edge",
   "bloomerang",
   "neon-crm",
   "virtuous",
   "donorperfect",
-  "hubspot-nonprofit",
   "kindful",
+  "little-green-light",
 ] as const;
 type CrmSlug = (typeof CRM_SLUGS)[number];
 

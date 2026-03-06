@@ -48,7 +48,6 @@ import { useToast } from "@/hooks/use-toast";
 // ── Seed SQL imports (Vite ?raw) ──────────────────────────────────────────────
 import seed00 from "../../../supabase/seed/00-platform-core.sql?raw";
 import seed01 from "../../../supabase/seed/01-actions.sql?raw";
-import seed02 from "../../../supabase/seed/02-eos.sql?raw";
 import seed03 from "../../../supabase/seed/03-meetings.sql?raw";
 import seed04 from "../../../supabase/seed/04-knowledge.sql?raw";
 import seed05 from "../../../supabase/seed/05-projects.sql?raw";
@@ -86,15 +85,6 @@ const SEED_FILES: SeedFile[] = [
     description: "Task streams, categories, 20 tasks with assignments, comments, stream members",
     module: "actions",
     sql: seed01,
-    dependencies: ["00"],
-  },
-  {
-    id: "02",
-    name: "EOS",
-    fileName: "02-eos.sql",
-    description: "Pods, V/TO, OKRs with key results, issues, scorecards, accountability chart, GWC",
-    module: "eos",
-    sql: seed02,
     dependencies: ["00"],
   },
   {

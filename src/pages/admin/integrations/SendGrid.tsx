@@ -142,7 +142,7 @@ export default function SendGridIntegration() {
         body: {
           to: [testEmail.trim()],
           subject: "SendGrid Test Email",
-          body: "This is a test email from the SJ Control Tower SendGrid integration. If you received this, the integration is working correctly.",
+          body: "This is a test email from the NonProfit Control Tower SendGrid integration. If you received this, the integration is working correctly.",
           enableTracking: form.watch("enable_open_tracking") || form.watch("enable_click_tracking"),
         },
       });

@@ -16,12 +16,11 @@ export interface SyncProjectsResponse {
 }
 
 const PROJECT_MANAGEMENT_SYNC_FUNCTIONS: Record<string, string> = {
-  activecollab: "sync-projects-activecollab",
   jira: "sync-projects-jira",
 };
 
 /**
- * Sync projects from a Project Management provider (ActiveCollab, Jira).
+ * Sync projects from a Project Management provider (Jira).
  * Requires the provider to be configured (credentials in env for Edge Function).
  * On success invalidates the projects list.
  */

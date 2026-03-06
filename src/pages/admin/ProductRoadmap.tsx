@@ -60,17 +60,17 @@ function ProductVision() {
     <div className="space-y-6">
       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
         <CardHeader>
-          <CardTitle className="text-2xl">SJ Control Tower</CardTitle>
+          <CardTitle className="text-2xl">NonProfit Control Tower</CardTitle>
           <CardDescription className="text-base">
             The intelligent command center for modern businesses
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm leading-relaxed">
-            SJ Control Tower is an all-in-one business operations platform that unifies task management,
-            meeting intelligence, project delivery, team productivity, business development, and strategic
-            planning into a single, AI-powered workspace. Built for organizations that need visibility
-            across every function — from the CEO tracking OKRs to the developer managing sprint tasks.
+            NonProfit Control Tower is an all-in-one operations platform that unifies task management,
+            meeting intelligence, project delivery, relationship management, and knowledge sharing
+            into a single, AI-powered workspace. Built for nonprofits and professional services organizations
+            that need visibility across every function — from leadership tracking goals to teams managing projects.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -90,7 +90,7 @@ function ProductVision() {
                 <h4 className="font-semibold text-sm">Differentiators</h4>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                EOS framework natively integrated. AI agents that understand your business context.
+                AI agents that understand your organizational context.
                 Knowledge base with semantic search (RAG). Real-time meeting intelligence with
                 auto-extracted action items. Module-based architecture — use only what you need.
               </p>
@@ -101,9 +101,8 @@ function ProductVision() {
                 <h4 className="font-semibold text-sm">Target Market</h4>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Mid-market companies (50–500 employees) running on EOS or OKR frameworks who want
-                AI-first operations tooling. Agencies and professional services firms managing
-                multiple clients, projects, and team members across departments.
+                Nonprofits and professional services organizations wanting AI-first operations tooling.
+                Teams managing donors, grants, projects, clients, and meetings across departments.
               </p>
             </div>
           </div>
@@ -129,14 +128,12 @@ function ProductVision() {
 }
 
 const CAPABILITIES = [
-  { title: "EOS Framework", icon: <Target className="h-4 w-4" />, color: "#8b5cf6", description: "V/TO, OKRs, Issues, Scorecard, Accountability Chart — the complete Entrepreneurial Operating System." },
-  { title: "AI Agents", icon: <Bot className="h-4 w-4" />, color: "#f59e0b", description: "Configurable AI agents with memory, tools, and RAG for context-aware business assistance." },
+  { title: "AI Agents", icon: <Bot className="h-4 w-4" />, color: "#f59e0b", description: "Configurable AI agents with memory, tools, and RAG for context-aware organizational assistance." },
   { title: "Meeting Intelligence", icon: <Video className="h-4 w-4" />, color: "#3b82f6", description: "Zoom, Teams, and Google Meet with transcripts, AI summaries, and auto-extracted action items." },
-  { title: "Project Delivery", icon: <FolderKanban className="h-4 w-4" />, color: "#22c55e", description: "Projects with milestones, risk tracking, team members, billing, and ActiveCollab sync." },
+  { title: "Project Delivery", icon: <FolderKanban className="h-4 w-4" />, color: "#22c55e", description: "Projects with milestones, risk tracking, team members, billing, and integration-ready sync." },
   { title: "Task Streams", icon: <CheckCircle2 className="h-4 w-4" />, color: "#06b6d4", description: "Tasks with streams, comments, subtasks, filters, and cross-module assignment." },
-  { title: "Business Development", icon: <Handshake className="h-4 w-4" />, color: "#ec4899", description: "Deal pipeline, contact management, lead follow-ups, and HubSpot integration." },
+  { title: "Relationship Management", icon: <Handshake className="h-4 w-4" />, color: "#ec4899", description: "Deal pipeline, contact management, lead follow-ups, and CRM-agnostic integration layer." },
   { title: "Knowledge Base", icon: <FileText className="h-4 w-4" />, color: "#14b8a6", description: "Searchable articles, file uploads, vector embeddings, and semantic search (RAG)." },
-  { title: "Productivity", icon: <BarChart3 className="h-4 w-4" />, color: "#f97316", description: "Department metrics, employee profiles, process documentation, and HR data sync." },
 ];
 
 // ─── Live Module Status (from implementation tracker) ─────────────────────────
@@ -298,11 +295,9 @@ const features: Feature[] = [
   { id: "notifications", name: "Real-time Notifications", description: "In-app notifications with Supabase realtime subscriptions", status: "completed", category: "Core", icon: <Bell className="h-5 w-5" />, completedDate: "Dec 2025" },
   { id: "admin-panel", name: "Admin Panel", description: "User management, roles, activity logs, system settings, feature flags, team management", status: "completed", category: "Admin", icon: <Settings className="h-5 w-5" />, completedDate: "Jan 2026" },
   { id: "tasks", name: "Task Management & Streams", description: "Task CRUD with streams, comments, subtasks, assignments, priorities, and filtering", status: "completed", category: "Business", icon: <CheckCircle2 className="h-5 w-5" />, completedDate: "Jan 2026" },
-  { id: "eos", name: "EOS Framework", description: "V/TO, OKRs with key results and check-ins, IDS issues, scorecard metrics, accountability chart", status: "completed", category: "Business", icon: <Target className="h-5 w-5" />, completedDate: "Jan 2026" },
   { id: "meetings", name: "Meeting Management V2", description: "Agenda, takeaways, participants, recurring series, calendar view, multi-provider support", status: "completed", category: "Business", icon: <Video className="h-5 w-5" />, completedDate: "Jan 2026" },
   { id: "projects", name: "Project Management", description: "Projects with milestones, members, risks, billing, create/edit forms, status pipeline", status: "completed", category: "Business", icon: <FolderKanban className="h-5 w-5" />, completedDate: "Feb 2026" },
   { id: "deals", name: "Business Development", description: "Deal pipeline, contact management, lead follow-ups, create/edit/delete CRUD, client management", status: "completed", category: "Business", icon: <Handshake className="h-5 w-5" />, completedDate: "Feb 2026" },
-  { id: "productivity", name: "Productivity & Process Docs", description: "Department productivity dashboard, employee profiles, process documentation library", status: "completed", category: "Business", icon: <BarChart3 className="h-5 w-5" />, completedDate: "Feb 2026" },
   { id: "ai-models", name: "AI Model Management", description: "Multi-provider AI config (OpenAI, Anthropic, Google, Perplexity), usage analytics, cost tracking", status: "completed", category: "AI", icon: <Brain className="h-5 w-5" />, completedDate: "Jan 2026" },
   { id: "mcp", name: "MCP Server Integration", description: "Model Context Protocol server management for AI tool chains", status: "completed", category: "AI", icon: <Plug className="h-5 w-5" />, completedDate: "Jan 2026" },
   { id: "sso", name: "Enterprise SSO", description: "Microsoft Azure AD and Google Workspace single sign-on", status: "completed", category: "Security", icon: <Shield className="h-5 w-5" />, completedDate: "Jan 2026" },
@@ -318,8 +313,7 @@ const features: Feature[] = [
 
   // Planned
   { id: "google-calendar", name: "Google Calendar Sync", description: "Two-way calendar synchronization with Google Workspace", status: "planned", category: "Integrations", icon: <Calendar className="h-5 w-5" />, targetDate: "Q2 2026" },
-  { id: "hubspot", name: "HubSpot CRM Sync", description: "Bi-directional sync for deals, contacts, and companies with HubSpot", status: "planned", category: "Integrations", icon: <Globe className="h-5 w-5" />, targetDate: "Q2 2026" },
-  { id: "activecollab", name: "ActiveCollab Sync", description: "Project and task sync with ActiveCollab for unified project delivery", status: "planned", category: "Integrations", icon: <Layers className="h-5 w-5" />, targetDate: "Q2 2026" },
+  { id: "crm-integrations", name: "CRM Integration Layer", description: "Generic CRM sync supporting Salesforce, Bloomerang, Neon CRM, and other platforms via configurable mapping", status: "planned", category: "Integrations", icon: <Globe className="h-5 w-5" />, targetDate: "Q2 2026" },
   { id: "slack", name: "Slack Integration", description: "Channel messaging, notifications, and meeting summaries via Slack", status: "planned", category: "Integrations", icon: <MessageSquare className="h-5 w-5" />, targetDate: "Q2 2026" },
   { id: "advanced-analytics", name: "Advanced Reporting", description: "PDF/Excel exports, scheduled reports, custom dashboards, resource utilization", status: "planned", category: "Business", icon: <Database className="h-5 w-5" />, targetDate: "Q2 2026" },
   { id: "workflows", name: "Workflow Automation", description: "Event triggers, automated actions, task escalation, and notification rules", status: "planned", category: "Business", icon: <Zap className="h-5 w-5" />, targetDate: "Q3 2026" },
@@ -540,14 +534,12 @@ function Timeline() {
             </div>
             <div className="pb-8">
               <h4 className="font-semibold text-green-600">Q1 2026 — Business Modules</h4>
-              <p className="text-sm text-muted-foreground">Full module build-out: EOS, meetings, tasks, projects, deals, productivity, AI models</p>
+              <p className="text-sm text-muted-foreground">Full module build-out: meetings, tasks, projects, deals, AI models</p>
               <div className="mt-2 flex flex-wrap gap-1">
-                <Badge variant="outline" className="text-xs">EOS Framework</Badge>
                 <Badge variant="outline" className="text-xs">Meetings V2</Badge>
                 <Badge variant="outline" className="text-xs">Task Streams</Badge>
                 <Badge variant="outline" className="text-xs">Projects</Badge>
                 <Badge variant="outline" className="text-xs">Business Dev</Badge>
-                <Badge variant="outline" className="text-xs">Productivity</Badge>
                 <Badge variant="outline" className="text-xs">AI Models</Badge>
                 <Badge variant="outline" className="text-xs">SSO</Badge>
                 <Badge variant="outline" className="text-xs">Teams</Badge>
@@ -568,8 +560,7 @@ function Timeline() {
                 <Badge variant="outline" className="text-xs">AI Agents & Chat</Badge>
                 <Badge variant="outline" className="text-xs">Semantic Search</Badge>
                 <Badge variant="outline" className="text-xs">Edge Functions</Badge>
-                <Badge variant="outline" className="text-xs">HubSpot</Badge>
-                <Badge variant="outline" className="text-xs">ActiveCollab</Badge>
+                <Badge variant="outline" className="text-xs">CRM Integrations</Badge>
                 <Badge variant="outline" className="text-xs">Google Calendar</Badge>
               </div>
             </div>
@@ -610,7 +601,7 @@ export default function ProductRoadmap() {
             Vision & Roadmap
           </h1>
           <p className="text-muted-foreground">
-            Product vision, live delivery status, and feature roadmap for SJ Control Tower
+            Product vision, live delivery status, and feature roadmap for NonProfit Control Tower
           </p>
         </div>
         <Link to="/admin/roadmap/seed">

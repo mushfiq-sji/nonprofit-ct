@@ -17,7 +17,7 @@ export interface ProjectTask {
   priority: string;
   due_date: string | null;
   assigned_to: string | null;
-  source: "internal" | "activecollab" | "jira";
+  source: "internal" | "jira" | "external";
   external_id: string | null;
   created_at: string;
 }
@@ -57,7 +57,7 @@ export function useProjectTasks(projectId: string) {
         const meta = (t as any).metadata || {};
         const rawSource = (meta.source as string) || "internal";
         const source: ProjectTask["source"] =
-          rawSource === "activecollab" || rawSource === "jira" ? rawSource : "internal";
+          rawSource === "jira" ? rawSource : rawSource === "external" ? "external" : "internal";
         const externalId = (meta.external_id as string) || null;
 
         return {

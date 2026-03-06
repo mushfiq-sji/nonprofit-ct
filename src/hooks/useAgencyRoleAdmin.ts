@@ -11,7 +11,6 @@ export interface UserAgencyRow {
   email: string | null;
   avatar_url: string | null;
   agency_role: AgencyRole | null;
-  is_eos_user: boolean;
   /** true if a user_role_preferences row exists */
   has_prefs: boolean;
 }
@@ -38,7 +37,7 @@ export function useAgencyRoleAdmin() {
       // 2. All role preferences
       const { data: prefs, error: prefsErr } = await supabase
         .from("user_role_preferences")
-        .select("user_id, agency_role, is_eos_user");
+        .select("user_id, agency_role");
 
       if (prefsErr) throw prefsErr;
 
@@ -54,7 +53,6 @@ export function useAgencyRoleAdmin() {
           email: prof.email ?? null,
           avatar_url: prof.avatar_url ?? null,
           agency_role: (pref?.agency_role as AgencyRole | null) ?? null,
-          is_eos_user: pref?.is_eos_user ?? false,
           has_prefs: !!pref,
         };
       });
@@ -66,7 +64,6 @@ export function useAgencyRoleAdmin() {
 export interface UpsertAgencyRolePayload {
   user_id: string;
   agency_role: AgencyRole | null;
-  is_eos_user?: boolean;
 }
 
 /**
@@ -76,11 +73,11 @@ export function useUpsertAgencyRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ user_id, agency_role, is_eos_user = false }: UpsertAgencyRolePayload) => {
+    mutationFn: async ({ user_id, agency_role }: UpsertAgencyRolePayload) => {
       const { error } = await supabase
         .from("user_role_preferences")
         .upsert(
-          { user_id, role: "user", agency_role, is_eos_user },
+          { user_id, role: "user", agency_role },
           { onConflict: "user_id,role" }
         );
       if (error) throw error;

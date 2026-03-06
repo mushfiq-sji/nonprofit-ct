@@ -30,7 +30,7 @@ const AVAILABLE_WIDGETS = [
 ];
 
 /**
- * Owner Dashboard — for agency owners without EOS.
+ * Owner Dashboard — for organization owners.
  * Widget visibility respects both admin-level (dashboard_widgets registry)
  * and user-level (user_dashboard_preferences) settings.
  */

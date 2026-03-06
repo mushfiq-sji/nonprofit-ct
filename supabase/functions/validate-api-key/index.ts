@@ -80,7 +80,6 @@ serve(async (req) => {
 
     const crmSlugToValidator: Record<string, string> = {
       'salesforce-npsp': 'salesforce',
-      'hubspot-nonprofit': 'hubspot',
     }
     const effectiveService = crmSlugToValidator[service] ?? service
 
@@ -125,9 +124,6 @@ serve(async (req) => {
         break
       case 'salesforce':
         validationResult = await validateSalesforce(apiKey)
-        break
-      case 'hubspot':
-        validationResult = await validateHubSpot(apiKey)
         break
       case 'mailgun':
         validationResult = await validateMailgun(apiKey)
@@ -487,50 +483,6 @@ async function validateSalesforce(credentials: string) {
     return {
       valid: false,
       message: `Salesforce validation error: ${message}`,
-      details: {},
-    }
-  }
-}
-
-// Validate HubSpot API key
-async function validateHubSpot(apiKey: string) {
-  try {
-    // Test HubSpot API with account info endpoint
-    const response = await fetch(
-      `https://api.hubapi.com/account-info/v3/api-usage/daily?hapikey=${apiKey}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-
-    if (response.ok) {
-      return {
-        valid: true,
-        message: 'HubSpot API key is valid',
-        details: { status: response.status },
-      }
-    } else if (response.status === 401 || response.status === 403) {
-      return {
-        valid: false,
-        message: 'Invalid HubSpot API key',
-        details: { status: response.status },
-      }
-    } else {
-      const errorData = await response.json().catch(() => ({}))
-      return {
-        valid: false,
-        message: errorData.message || 'Invalid HubSpot API key',
-        details: { status: response.status },
-      }
-    }
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return {
-      valid: false,
-      message: `HubSpot validation error: ${message}`,
       details: {},
     }
   }

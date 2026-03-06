@@ -26,26 +26,22 @@ const CRM_SLUGS = [
   "neon-crm",
   "virtuous",
   "donorperfect",
-  "hubspot-nonprofit",
   "kindful",
-  "hubspot",
+  "little-green-light",
   "salesforce",
 ];
 
 function slugToDataSource(slug: string): string {
   const map: Record<string, string> = {
-    "hubspot-nonprofit": "hubspot",
-    hubspot: "hubspot",
     "salesforce-npsp": "salesforce",
     salesforce: "salesforce",
-    "zoho-crm": "zoho",
-    pipedrive: "pipedrive",
     "blackbaud-raiser-edge": "blackbaud",
     bloomerang: "bloomerang",
     "neon-crm": "neon",
     virtuous: "virtuous",
     donorperfect: "donorperfect",
     kindful: "kindful",
+    "little-green-light": "little_green_light",
   };
   return map[slug] ?? slug;
 }

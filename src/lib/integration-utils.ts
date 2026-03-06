@@ -103,18 +103,15 @@ export interface OrganizationIntegration {
 }
 
 export const CRM_PROVIDER_SLUGS = [
-  'hubspot',
   'salesforce',
-  'zoho-crm',
-  'pipedrive',
   'salesforce-npsp',
   'blackbaud-raiser-edge',
   'bloomerang',
   'neon-crm',
   'virtuous',
   'donorperfect',
-  'hubspot-nonprofit',
   'kindful',
+  'little-green-light',
 ] as const;
 
 export type CrmProviderSlug = (typeof CRM_PROVIDER_SLUGS)[number];
@@ -205,9 +202,9 @@ export function getProviderIcon(slug: string): LucideIcon {
 
     // CRM Systems
     salesforce: Users,
-    hubspot: Users,
-    pipedrive: Users,
-    'zoho-crm': Users,
+    bloomerang: Users,
+    'neon-crm': Users,
+    'salesforce-npsp': Users,
 
     // Project Management
     jira: Kanban,
@@ -466,15 +463,6 @@ export function getCrmCredentialFields(providerSlug: string, providerId: string)
           display_order: 0,
         }),
         base('access_token', 'Access Token', 'password', { display_order: 1 }),
-      ];
-
-    case 'hubspot':
-    case 'hubspot-nonprofit':
-      return [
-        base('api_key', 'Private App Access Token or API Key', 'password', {
-          help_text: 'From HubSpot: Settings → Integrations → Private Apps, or legacy API key.',
-          display_order: 0,
-        }),
       ];
 
     case 'blackbaud-raiser-edge':

@@ -1,4 +1,4 @@
-import { Sparkles, ArrowRight, MessageSquare, Video, Target, FolderSearch, Compass, Mail, BarChart3, MapPin } from "lucide-react";
+import { Sparkles, ArrowRight, MessageSquare, Video, Target, FolderSearch, Mail, BarChart3, MapPin } from "lucide-react";
 import { AIIndicator, AIGradientText } from "@/components/ui/ai-indicator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -38,13 +38,6 @@ const AI_AGENTS = [
     quote: "I find answers across your entire knowledge base in seconds — just ask.",
     section: "Knowledge",
     icon: FolderSearch,
-  },
-  {
-    name: "EOS Coach",
-    avatar: "🏗️",
-    quote: "I guide your team through L10s, quarterly rocks, and the IDS process.",
-    section: "Strategy",
-    icon: Compass,
   },
   {
     name: "Email Drafter",

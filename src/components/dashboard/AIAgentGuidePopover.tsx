@@ -66,11 +66,6 @@ const AGENT_CONTEXT_MAP: Record<string, AgentContext> = {
     whereToUseMe: "Knowledge base",
     link: "/knowledge",
   },
-  "eos-coach": {
-    whatIDo: "Guides EOS processes — L10s, rocks, and more",
-    whereToUseMe: "Strategy section",
-    link: "/admin/ai/agents",
-  },
   "project-analyst": {
     whatIDo: "Analyzes project health and flags risks",
     whereToUseMe: "Projects section",

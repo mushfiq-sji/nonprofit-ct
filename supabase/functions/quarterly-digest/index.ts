@@ -2,8 +2,8 @@
  * Quarterly Digest Edge Function
  *
  * Generates a comprehensive quarterly digest report using AI.
- * Aggregates data from EOS issues, OKRs, meetings, and scorecard metrics
- * to produce an executive summary with highlights, risks, and recommendations.
+ * Aggregates data from meetings and projects to produce an executive
+ * summary with highlights, risks, and recommendations.
  *
  * Input:  { quarter?: string, pod_id?: string }
  * Output: { digest: QuarterlyDigest }
@@ -52,27 +52,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    const { quarter, pod_id } = await req.json()
+    const { quarter } = await req.json()
     const range = getQuarterDateRange(quarter)
 
     // Gather quarterly data in parallel
-    const [issuesResult, okrsResult, meetingsResult, scorecardResult] = await Promise.all([
-      // Issues created/resolved this quarter
-      supabaseClient
-        .from('eos_issues')
-        .select('title, status, priority, category, created_at, resolved_at')
-        .gte('created_at', range.start)
-        .lte('created_at', range.end)
-        .order('created_at', { ascending: false })
-        .limit(50),
-
-      // OKRs for this quarter
-      supabaseClient
-        .from('okrs')
-        .select('title, status, progress, quarter')
-        .eq('quarter', range.label)
-        .limit(30),
-
+    const [meetingsResult, projectsResult] = await Promise.all([
       // Meetings this quarter
       supabaseClient
         .from('meetings')
@@ -81,52 +65,31 @@ serve(async (req) => {
         .lte('scheduled_at', range.end)
         .limit(50),
 
-      // Scorecard metrics
+      // Projects active this quarter
       supabaseClient
-        .from('eos_scorecard_metrics')
-        .select('metric_name, actual_value, target_value, week_of')
-        .gte('week_of', range.start)
-        .lte('week_of', range.end)
-        .limit(100),
+        .from('projects')
+        .select('name, status, start_date, end_date')
+        .gte('updated_at', range.start)
+        .limit(30),
     ])
 
-    const issues = issuesResult.data || []
-    const okrs = okrsResult.data || []
     const meetings = meetingsResult.data || []
-    const metrics = scorecardResult.data || []
+    const projects = projectsResult.data || []
 
-    // Build context for AI
-    const issueStats = {
-      total: issues.length,
-      resolved: issues.filter((i: Record<string, string>) => i.status === 'solved').length,
-      critical: issues.filter((i: Record<string, string>) => i.priority === 'critical').length,
-      byCategory: {} as Record<string, number>,
-    }
-    issues.forEach((i: Record<string, string>) => {
-      issueStats.byCategory[i.category] = (issueStats.byCategory[i.category] || 0) + 1
-    })
-
-    const okrStats = {
-      total: okrs.length,
-      completed: okrs.filter((o: Record<string, string>) => o.status === 'completed').length,
-      atRisk: okrs.filter((o: Record<string, string>) => o.status === 'at_risk').length,
-      avgProgress: okrs.length > 0
-        ? Math.round(okrs.reduce((s: number, o: Record<string, number>) => s + (o.progress || 0), 0) / okrs.length)
-        : 0,
+    const projectStats = {
+      total: projects.length,
+      active: projects.filter((p: Record<string, string>) => p.status === 'active').length,
+      completed: projects.filter((p: Record<string, string>) => p.status === 'completed').length,
     }
 
     const contextText = `
 Quarter: ${range.label}
 
-ISSUES (${issueStats.total} total, ${issueStats.resolved} resolved, ${issueStats.critical} critical):
-${issues.slice(0, 20).map((i: Record<string, string>) => `- [${i.priority}] ${i.title} (${i.status})`).join('\n')}
-
-OKRs (${okrStats.total} total, ${okrStats.completed} completed, avg ${okrStats.avgProgress}% progress):
-${okrs.map((o: Record<string, string | number>) => `- ${o.title}: ${o.progress}% (${o.status})`).join('\n')}
-
 MEETINGS: ${meetings.length} meetings held
+${meetings.slice(0, 20).map((m: Record<string, string>) => `- ${m.title} (${m.status})`).join('\n')}
 
-SCORECARD: ${metrics.length} metric entries tracked
+PROJECTS (${projectStats.total} total, ${projectStats.active} active, ${projectStats.completed} completed):
+${projects.slice(0, 20).map((p: Record<string, string>) => `- ${p.name} (${p.status})`).join('\n')}
 `
 
     // Generate digest via AI
@@ -142,11 +105,10 @@ Based on the provided data, generate a comprehensive digest with:
 - risks: Array of concerns or risks (2-4 items)
 - recommendations: Array of actionable recommendations for next quarter (3-5 items)
 - metrics_summary: Key performance metrics in plain text
-- okr_assessment: Overall OKR health assessment
 
 Be specific, reference actual data points, and provide actionable insights.
 
-Respond with JSON: { "executive_summary", "highlights", "risks", "recommendations", "metrics_summary", "okr_assessment" }`
+Respond with JSON: { "executive_summary", "highlights", "risks", "recommendations", "metrics_summary" }`
         },
         {
           role: 'user',
@@ -185,7 +147,7 @@ Respond with JSON: { "executive_summary", "highlights", "risks", "recommendation
       JSON.stringify({
         digest,
         quarter: range.label,
-        stats: { issues: issueStats, okrs: okrStats, meetings: meetings.length },
+        stats: { meetings: meetings.length, projects: projectStats },
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )

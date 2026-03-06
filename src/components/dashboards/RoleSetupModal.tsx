@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, FolderKanban, User, Loader2, Sparkles } from "lucide-react";
+import { Building2, FolderKanban, User, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,8 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,8 +26,8 @@ interface RoleOption {
 const ROLE_OPTIONS: RoleOption[] = [
   {
     role: "owner",
-    label: "Agency Owner",
-    subtitle: "Health metrics, watch list, EOS scorecard, AI digest",
+    label: "Organization Owner",
+    subtitle: "Health metrics, watch list, and AI digest",
     icon: Building2,
     color: "text-purple-700 dark:text-purple-400",
     bgColor: "bg-purple-500/10",
@@ -68,7 +66,6 @@ interface RoleSetupModalProps {
 export function RoleSetupModal({ open }: RoleSetupModalProps) {
   const { user, refreshAgencyPreferences } = useAuth();
   const [selected, setSelected] = useState<AgencyRole | null>(null);
-  const [isEos, setIsEos] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -82,7 +79,6 @@ export function RoleSetupModal({ open }: RoleSetupModalProps) {
             user_id: user.id,
             role: "user",
             agency_role: selected,
-            is_eos_user: selected === "owner" ? isEos : false,
           },
           { onConflict: "user_id,role" }
         );
@@ -149,28 +145,6 @@ export function RoleSetupModal({ open }: RoleSetupModalProps) {
             );
           })}
         </div>
-
-        {/* EOS toggle — only shown when Owner is selected */}
-        {selected === "owner" && (
-          <div className="flex items-center justify-between rounded-lg border border-purple-500/30 bg-purple-500/5 px-4 py-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              <div>
-                <Label htmlFor="eos-toggle" className="text-sm cursor-pointer">
-                  Enable EOS dashboard
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  Adds V/TO rocks, issues, and scorecard to your view
-                </p>
-              </div>
-            </div>
-            <Switch
-              id="eos-toggle"
-              checked={isEos}
-              onCheckedChange={setIsEos}
-            />
-          </div>
-        )}
 
         <Button
           className="w-full mt-1"

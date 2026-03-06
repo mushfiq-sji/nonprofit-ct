@@ -12,8 +12,6 @@ interface Profile {
   role?: string;
   // Agency role for dashboard routing (owner | pm | ic)
   agencyRole?: "owner" | "pm" | "ic";
-  // EOS flag: owner sees EOS-enhanced dashboard when true
-  isEosUser?: boolean;
 }
 
 interface AuthContextType {
@@ -28,7 +26,7 @@ interface AuthContextType {
   signInWithSSO: (provider: 'google' | 'azure', scopes?: string[]) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  /** Re-fetches agency_role + is_eos_user and patches local profile state. */
+  /** Re-fetches agency_role and patches local profile state. */
   refreshAgencyPreferences: () => Promise<void>;
 }
 
@@ -66,27 +64,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Fetch agency role preferences from user_role_preferences table
   const fetchAgencyPreferences = async (
     userId: string
-  ): Promise<{ agencyRole?: "owner" | "pm" | "ic"; isEosUser: boolean }> => {
+  ): Promise<{ agencyRole?: "owner" | "pm" | "ic" }> => {
     try {
       const { data, error } = await (supabase as any)
         .from("user_role_preferences")
-        .select("agency_role, is_eos_user")
+        .select("agency_role")
         .eq("user_id", userId)
         .limit(1)
         .maybeSingle();
 
       if (error) {
         console.error("Error fetching agency preferences:", error);
-        return { isEosUser: false };
+        return {};
       }
 
       return {
         agencyRole: (data?.agency_role as "owner" | "pm" | "ic" | null) ?? undefined,
-        isEosUser: data?.is_eos_user ?? false,
       };
     } catch (error) {
       console.error("Error fetching agency preferences:", error);
-      return { isEosUser: false };
+      return {};
     }
   };
 

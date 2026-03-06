@@ -618,8 +618,6 @@ export default function Feedback() {
                   <SelectItem value="Tasks">Tasks</SelectItem>
                   <SelectItem value="Projects">Projects</SelectItem>
                   <SelectItem value="Knowledge">Knowledge</SelectItem>
-                  <SelectItem value="EOS">EOS</SelectItem>
-                  <SelectItem value="Productivity">Productivity</SelectItem>
                   <SelectItem value="AI Features">AI Features</SelectItem>
                   <SelectItem value="Admin">Admin</SelectItem>
                   <SelectItem value="Other">Other</SelectItem>

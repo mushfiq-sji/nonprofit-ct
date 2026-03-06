@@ -38,7 +38,6 @@ export type WebhookProvider =
   | 'microsoft_teams'
   | 'google_meet'
   | 'salesforce'
-  | 'hubspot'
   | 'sendgrid'
   | 'mailgun';
 
@@ -126,35 +125,6 @@ export async function verifySendGridWebhookSignature(
     return true;
   } catch (error) {
     console.error('SendGrid webhook signature verification failed:', error);
-    return false;
-  }
-}
-
-/**
- * Verify HubSpot webhook signature
- */
-export async function verifyHubSpotWebhookSignature(
-  payload: string,
-  signature: string,
-  appSecret: string
-): Promise<boolean> {
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(appSecret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-    const hashArray = Array.from(new Uint8Array(signatureBuffer));
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
-    return hashHex === signature;
-  } catch (error) {
-    console.error('HubSpot webhook signature verification failed:', error);
     return false;
   }
 }
@@ -267,13 +237,6 @@ export function parseWebhookEvent(provider: WebhookProvider, rawEvent: string): 
       'contact.created': 'contact.created',
       'contact.updated': 'contact.updated',
       'contact.deleted': 'contact.deleted',
-    },
-    hubspot: {
-      'contact.created': 'contact.created',
-      'contact.updated': 'contact.updated',
-      'contact.deleted': 'contact.deleted',
-      'deal.created': 'deal.created',
-      'deal.updated': 'deal.updated',
     },
     sendgrid: {
       'email.sent': 'email.sent',

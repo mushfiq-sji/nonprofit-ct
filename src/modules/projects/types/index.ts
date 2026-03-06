@@ -81,7 +81,7 @@ export interface ProjectFile {
   file_type: string | null;
   file_size: number | null;
   storage_path: string | null;
-  source: "upload" | "google_drive" | "activecollab";
+  source: "upload" | "google_drive" | "external";
   uploaded_by: string | null;
   created_at: string;
 }

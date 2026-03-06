@@ -66,7 +66,7 @@ export default function ProviderDetail() {
   const [categorySlug, setCategorySlug] = useState<string>('');
   const isProjectManagementWithSync =
     categorySlug === 'project-management' &&
-    (slug === 'activecollab' || slug === 'jira');
+    slug === 'jira';
   const syncProjects = useSyncProjects(slug || '');
 
   useEffect(() => {
@@ -503,7 +503,7 @@ export default function ProviderDetail() {
         />
       )}
 
-      {/* Sync projects - Only for connected Project Management providers (ActiveCollab, Jira) */}
+      {/* Sync projects - Only for connected Project Management providers (Jira) */}
       {isProjectManagementWithSync && orgIntegration?.connection_status === 'connected' && (
         <Card>
           <CardHeader>

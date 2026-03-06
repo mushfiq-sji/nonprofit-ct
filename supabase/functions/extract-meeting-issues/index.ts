@@ -1,7 +1,7 @@
 /**
  * Extract Meeting Issues Edge Function
  *
- * Uses AI to extract EOS-style issues from meeting transcripts.
+ * Uses AI to extract organizational issues from meeting transcripts.
  * Returns structured issues with title, description, category,
  * priority, and confidence scores.
  *
@@ -73,7 +73,7 @@ serve(async (req) => {
       messages: [
         {
           role: 'system',
-          content: `You are an AI assistant that identifies business issues from meeting transcripts using the EOS (Entrepreneurial Operating System) IDS framework.
+          content: `You are an AI assistant that identifies business issues from meeting transcripts using a structured issue identification framework.
 
 For each issue found, provide:
 - title: A concise issue title (max 100 chars)

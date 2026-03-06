@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Building2, FolderKanban, User, Search, Sparkles, Loader2 } from "lucide-react";
+import { Users, Building2, FolderKanban, User, Search, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -59,7 +58,6 @@ function initials(name: string | null, email: string | null): string {
 function UserRow({ row }: { row: UserAgencyRow }) {
   const upsert = useUpsertAgencyRole();
   const [localRole, setLocalRole] = useState<AgencyRole | "none">(row.agency_role ?? "none");
-  const [localEos, setLocalEos] = useState(row.is_eos_user);
 
   const RoleIcon = localRole !== "none" ? (ROLE_ICONS[localRole] ?? User) : User;
 
@@ -69,16 +67,6 @@ function UserRow({ row }: { row: UserAgencyRow }) {
     upsert.mutate({
       user_id: row.user_id,
       agency_role: newRole,
-      is_eos_user: newRole === "owner" ? localEos : false,
-    });
-  };
-
-  const handleEosChange = (checked: boolean) => {
-    setLocalEos(checked);
-    upsert.mutate({
-      user_id: row.user_id,
-      agency_role: localRole === "none" ? null : (localRole as AgencyRole),
-      is_eos_user: checked,
     });
   };
 
@@ -112,22 +100,6 @@ function UserRow({ row }: { row: UserAgencyRow }) {
       ) : (
         <span className="text-xs text-muted-foreground shrink-0 italic">unassigned</span>
       )}
-
-      {/* EOS toggle — only active if owner */}
-      <div className="flex items-center gap-1.5 shrink-0">
-        <Sparkles
-          className={cn(
-            "h-3.5 w-3.5",
-            localRole === "owner" ? "text-purple-500" : "text-muted-foreground/30"
-          )}
-        />
-        <Switch
-          checked={localEos}
-          disabled={localRole !== "owner" || upsert.isPending}
-          onCheckedChange={handleEosChange}
-          aria-label="EOS dashboard"
-        />
-      </div>
 
       {/* Role selector */}
       <Select value={localRole} onValueChange={handleRoleChange} disabled={upsert.isPending}>
@@ -223,7 +195,6 @@ export default function AgencyRoles() {
             <div className="w-8 shrink-0" />
             <div className="flex-1">User</div>
             <div className="w-20 shrink-0 text-center">Role</div>
-            <div className="w-24 shrink-0 text-center">EOS</div>
             <div className="w-32 shrink-0 text-center">Assign</div>
           </div>
 
@@ -247,8 +218,8 @@ export default function AgencyRoles() {
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-1.5">
           <p>
-            <strong className="text-foreground">Owner</strong> — Agency-level metrics, watch list,
-            AI digest, and optionally EOS scorecard + rocks + issues.
+            <strong className="text-foreground">Owner</strong> — Organization-level metrics, watch list,
+            and AI digest.
           </p>
           <p>
             <strong className="text-foreground">PM</strong> — Project manager view: my projects
@@ -257,10 +228,6 @@ export default function AgencyRoles() {
           <p>
             <strong className="text-foreground">IC</strong> — Individual contributor: My Work
             kanban, my projects list, meetings, AI digest.
-          </p>
-          <p>
-            <strong className="text-foreground">EOS toggle</strong> — Only applies to Owners.
-            Enables the full EOS-enhanced dashboard with rocks, scorecard, and issues cards.
           </p>
         </CardContent>
       </Card>

@@ -15,7 +15,7 @@ export default function Help() {
     },
     {
       title: "Module Guides",
-      description: "Feature documentation for meetings, knowledge, EOS, and more",
+      description: "Feature documentation for meetings, knowledge, projects, and more",
       icon: BookOpen,
     },
     {

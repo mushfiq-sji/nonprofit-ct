@@ -57,18 +57,32 @@ import {
   HITLApprovalInfo,
 } from "@/components/admin/AgentConfigurationGuide";
 
-// Safely convert any value to a displayable string
+// Safely convert any value (including JSONB objects) to a displayable string.
+// Empty objects {} are treated as empty (falsy-equivalent) since they carry no content.
 function toDisplayString(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
-  if (typeof value === "object") return JSON.stringify(value, null, 2);
+  if (typeof value === "object") {
+    if (Object.keys(value as object).length === 0) return "";
+    return JSON.stringify(value, null, 2);
+  }
   return String(value);
 }
+
+// #region agent log
+const _dbgLog = (msg: string, data: Record<string, unknown>, hId: string) => {
+  fetch('http://127.0.0.1:7628/ingest/bb51622e-c2c6-40a4-809f-aa2d80d0c86b', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'a4c7ab' },
+    body: JSON.stringify({ sessionId: 'a4c7ab', hypothesisId: hId, location: 'AIAgents.tsx', message: msg, data, timestamp: Date.now() })
+  }).catch(() => {});
+};
+// #endregion
 
 export default function AIAgents() {
   const navigate = useNavigate();
   const { data: agents, isLoading } = useAIAgents();
-  const { data: recentRuns } = useAgentRuns();
+  const { data: recentRuns, error: runsError } = useAgentRuns();
   const createAgent = useCreateAgent();
   const updateAgent = useUpdateAgent();
   const toggleAgent = useToggleAgent();
@@ -175,6 +189,24 @@ export default function AIAgents() {
   };
 
   const openHistoryDialog = () => {
+    // #region agent log
+    _dbgLog('history dialog opened', {
+      runsError: runsError ? String(runsError) : null,
+      recentRunsCount: recentRuns?.length ?? 'undefined',
+      firstRun: recentRuns?.[0] ? {
+        id: recentRuns[0].id,
+        status: recentRuns[0].status,
+        inputType: typeof recentRuns[0].input,
+        inputVal: recentRuns[0].input,
+        outputType: typeof recentRuns[0].output,
+        outputVal: recentRuns[0].output,
+        outputTextType: typeof (recentRuns[0] as any).output_text,
+        outputTextVal: (recentRuns[0] as any).output_text,
+        errorType: typeof (recentRuns[0] as any).error,
+        errorVal: (recentRuns[0] as any).error,
+      } : null,
+    }, 'H-A,H-B,H-C,H-E');
+    // #endregion
     setHistoryDialogOpen(true);
   };
 
@@ -569,14 +601,14 @@ export default function AIAgents() {
 
       {/* Execution History Dialog */}
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh]">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Execution History</DialogTitle>
             <DialogDescription>
               Recent agent executions and their results
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="h-[500px] pr-4">
+          <ScrollArea className="h-[60vh] pr-4">
             {!recentRuns || recentRuns.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
                 <History className="h-12 w-12 text-muted-foreground" />
@@ -584,8 +616,22 @@ export default function AIAgents() {
               </div>
             ) : (
               <div className="space-y-4">
-                {recentRuns.map((run) => (
-                  <Card key={run.id}>
+                {recentRuns.map((run) => {
+                  // #region agent log
+                  _dbgLog('post-fix rendering run', {
+                    id: run.id,
+                    status: run.status,
+                    statusType: typeof run.status,
+                    inputType: typeof run.input,
+                    outputType: typeof run.output,
+                    output_textType: typeof (run as any).output_text,
+                    output_textVal: (run as any).output_text,
+                    errorType: typeof (run as any).error,
+                    contextType: typeof (run as any).context,
+                    allKeys: Object.keys(run as any),
+                  }, 'H-A,H-C,H-D,H-E');
+                  // #endregion
+                  return (<Card key={run.id}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium">
@@ -602,29 +648,27 @@ export default function AIAgents() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {(run.context || run.input) && (
+                      {(toDisplayString(run.context) || toDisplayString(run.input)) && (
                         <div>
                           <Label className="text-xs text-muted-foreground">Input:</Label>
                           <p className="text-sm mt-1 whitespace-pre-wrap">
-                            {run.context || toDisplayString(run.input)}
+                            {toDisplayString(run.context) || toDisplayString(run.input)}
                           </p>
                         </div>
                       )}
-                      {(run.output_text || run.output) && (
+                      {(toDisplayString(run.output_text) || toDisplayString(run.output)) && (
                         <div>
                           <Label className="text-xs text-muted-foreground">Output:</Label>
                           <div className="mt-1 text-sm prose prose-slate dark:prose-invert max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-table:text-xs prose-headings:mb-1 prose-headings:mt-2">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {run.output_text || toDisplayString(run.output)}
-                            </ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} children={toDisplayString(run.output_text) || toDisplayString(run.output)} />
                           </div>
                         </div>
                       )}
-                      {(run.error_message || run.error) && (
+                      {(toDisplayString(run.error_message) || toDisplayString(run.error)) && (
                         <div>
                           <Label className="text-xs text-destructive">Error:</Label>
                           <p className="text-sm mt-1 text-destructive">
-                            {run.error_message || run.error}
+                            {toDisplayString(run.error_message) || toDisplayString(run.error)}
                           </p>
                         </div>
                       )}
@@ -635,7 +679,8 @@ export default function AIAgents() {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             )}
           </ScrollArea>

@@ -100,6 +100,7 @@ const iconMap: Record<string, LucideIcon> = {
   ShieldCheck,
   ArrowLeftRight,
   CalendarDays,
+  Plug,
 };
 
 function resolveIcon(iconName: string): LucideIcon {

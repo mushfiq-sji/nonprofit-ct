@@ -75,6 +75,7 @@ export const navigationGroups: NavGroup[] = [
       { title: "Grants", href: "/grants", icon: "BookOpen" },
       { title: "Board Reports", href: "/board-reports", icon: "FileText" },
       { title: "AI Agent Center", href: "/ai-agents", icon: "Bot" },
+      { title: "Integration Center", href: "/integration-center", icon: "Plug" },
     ],
   },
   {

@@ -57,6 +57,7 @@ import {
   ShieldCheck,
   ArrowLeftRight,
   CalendarDays,
+  Plug,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ const iconMap: Record<string, LucideIcon> = {
   ShieldCheck,
   ArrowLeftRight,
   CalendarDays,
+  Plug,
 };
 
 function resolveIcon(iconName: string): LucideIcon {

@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
+
 import {
-  FileText,
   Download,
   RefreshCw,
   Users,
@@ -7,11 +8,13 @@ import {
   Clock,
   Briefcase,
   TrendingUp,
+  TrendingDown,
   Eye,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DEMO_BOARD_REPORT } from "@/shared/data/nonprofitDemoData";
 
 interface KpiCardProps {
@@ -41,7 +44,35 @@ function KpiCard({ icon, label, value, detail, detailColor = "text-green-600" }:
   );
 }
 
+function PageSkeleton() {
+  return (
+    <div className="space-y-8 p-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <Skeleton className="h-20 w-full rounded-xl" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-24 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-48 w-full rounded-xl" />
+    </div>
+  );
+}
+
 export default function BoardReportsPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    document.title = "Board Reports | Nonprofit AI";
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) return <PageSkeleton />;
+
   return (
     <div className="space-y-8 p-6">
       {/* Header */}
@@ -60,7 +91,7 @@ export default function BoardReportsPage() {
               {DEMO_BOARD_REPORT.status}
             </Badge>
             <span className="text-sm text-muted-foreground">
-              Last generated today
+              {DEMO_BOARD_REPORT.quarter} &middot; Generated {DEMO_BOARD_REPORT.generatedDate}
             </span>
           </div>
           <div className="flex gap-2">
@@ -88,7 +119,7 @@ export default function BoardReportsPage() {
           icon={<DollarSign className="h-5 w-5 text-primary" />}
           label="Total Revenue"
           value={`$${DEMO_BOARD_REPORT.totalRevenue.toLocaleString()}`}
-          detail={`${DEMO_BOARD_REPORT.revenueVsGoal}% of goal`}
+          detail={`${DEMO_BOARD_REPORT.revenueVsGoal}% of $${DEMO_BOARD_REPORT.revenueGoal.toLocaleString()} goal`}
         />
         <KpiCard
           icon={<Clock className="h-5 w-5 text-primary" />}
@@ -102,43 +133,78 @@ export default function BoardReportsPage() {
         />
       </div>
 
+      {/* Revenue Progress */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Revenue vs Goal</CardTitle>
+          <CardDescription>
+            ${DEMO_BOARD_REPORT.totalRevenue.toLocaleString()} of ${DEMO_BOARD_REPORT.revenueGoal.toLocaleString()} annual goal
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-3">
+            <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${DEMO_BOARD_REPORT.revenueVsGoal}%` }}
+              />
+            </div>
+            <span className="text-sm font-medium text-primary">{DEMO_BOARD_REPORT.revenueVsGoal}%</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Additional KPIs */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <KpiCard
+          icon={<TrendingUp className="h-5 w-5 text-primary" />}
+          label="Donor Retention Rate"
+          value={`${DEMO_BOARD_REPORT.retentionRate}%`}
+        />
+        <KpiCard
+          icon={<Users className="h-5 w-5 text-primary" />}
+          label="New Donors This Quarter"
+          value={DEMO_BOARD_REPORT.newDonors.toString()}
+        />
+        <KpiCard
+          icon={<DollarSign className="h-5 w-5 text-primary" />}
+          label="Avg Gift Size"
+          value={`$${Math.round(DEMO_BOARD_REPORT.totalRevenue / DEMO_BOARD_REPORT.totalDonors)}`}
+        />
+      </div>
+
       {/* Financial Snapshot */}
       <Card>
         <CardHeader>
           <CardTitle>Financial Snapshot</CardTitle>
           <CardDescription>
-            Revenue, expenses, and fund balance summary for the current quarter
+            Revenue, expenses, and fund balance summary for {DEMO_BOARD_REPORT.quarter}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/20">
-            <p className="text-sm text-muted-foreground">
-              Financial chart will render when connected to live data
-            </p>
-          </div>
-          <div className="mt-4">
-            <Button variant="outline" className="gap-1.5">
-              <Eye className="h-4 w-4" />
-              View Full Report
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Engagement Metrics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Engagement Metrics</CardTitle>
-          <CardDescription>
-            Donor retention, event participation, and volunteer engagement trends
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/20">
-            <p className="text-sm text-muted-foreground">
-              Engagement trends will render when connected to live data
-            </p>
-          </div>
+        <CardContent className="space-y-3">
+          {DEMO_BOARD_REPORT.financialSnapshot.map((item) => (
+            <div
+              key={item.label}
+              className="flex items-center justify-between rounded-lg border p-4"
+            >
+              <div>
+                <p className="text-sm font-medium text-foreground">{item.label}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                  {item.change >= 0 ? (
+                    <TrendingUp className="h-3 w-3 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 text-red-600" />
+                  )}
+                  <span className={item.change >= 0 ? "text-green-600" : "text-red-600"}>
+                    {item.change >= 0 ? "+" : ""}{item.change}% vs last quarter
+                  </span>
+                </p>
+              </div>
+              <p className="text-lg font-semibold">
+                ${item.amount.toLocaleString()}
+              </p>
+            </div>
+          ))}
           <div className="mt-4">
             <Button variant="outline" className="gap-1.5">
               <Eye className="h-4 w-4" />

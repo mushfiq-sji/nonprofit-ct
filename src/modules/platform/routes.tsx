@@ -41,6 +41,7 @@ import BoardReportsPage from "@/pages/BoardReportsPage";
 import AIAgentsPage from "@/pages/AIAgentsPage";
 import AIAgentDetailPage from "@/pages/AIAgentDetailPage";
 import AIAgentSettingsPage from "@/pages/AIAgentSettingsPage";
+import IntegrationCenterPage from "@/pages/IntegrationCenterPage";
 
 /**
  * Public routes - no auth required
@@ -94,6 +95,7 @@ export const coreProtectedRoutes = (
     <Route path="/ai-agents" element={<AIAgentsPage />} />
     <Route path="/ai-agents/:id" element={<AIAgentDetailPage />} />
     <Route path="/ai-agents/:id/settings" element={<AIAgentSettingsPage />} />
+    <Route path="/integration-center" element={<IntegrationCenterPage />} />
   </>
 );
 

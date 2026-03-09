@@ -108,7 +108,7 @@ export default function PMDashboard() {
   const { profile, user } = useAuth();
   const firstName = profile?.full_name?.split(" ")[0] ?? "there";
 
-  const showCapacity = useIsWidgetEnabled("team_capacity", "pm");
+  const showCapacity = useIsWidgetEnabled("team_capacity", "development_director");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: myProjects, isLoading: projectsLoading } = (useProjects as any)({

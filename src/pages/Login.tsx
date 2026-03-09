@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Brain, Shield, Crown, Briefcase, Code, LogOut, User } from "lucide-react";
+import { Loader2, Brain, Shield, Building2, FolderKanban, DollarSign, Settings, ShieldCheck, LogOut, User } from "lucide-react";
 
 const TEST_ACCOUNTS = [
-  { label: "CEO / Owner", email: "ceo@collabai.software", role: "owner", icon: Crown, color: "border-amber-500/30 hover:bg-amber-500/10" },
-  { label: "Project Manager", email: "demo@collabai.software", role: "pm", icon: Briefcase, color: "border-blue-500/30 hover:bg-blue-500/10" },
-  { label: "IC", email: "ic@collabai.software", role: "ic", icon: Code, color: "border-emerald-500/30 hover:bg-emerald-500/10" },
+  { label: "Executive Director", email: "demo@nonprofitct.com", role: "executive_director", icon: Building2, color: "border-blue-500/30 hover:bg-blue-500/10" },
+  { label: "Development Director", email: "development@nonprofitct.com", role: "development_director", icon: FolderKanban, color: "border-green-500/30 hover:bg-green-500/10" },
+  { label: "Finance Manager", email: "finance@nonprofitct.com", role: "finance_manager", icon: DollarSign, color: "border-amber-500/30 hover:bg-amber-500/10" },
+  { label: "Operations Manager", email: "operations@nonprofitct.com", role: "operations_manager", icon: Settings, color: "border-teal-500/30 hover:bg-teal-500/10" },
 ] as const;
 
 const TEST_PASSWORD = "Demo@123"; // Must match docs/public_website/features.md; ensure demo users exist in Supabase Auth.
@@ -76,7 +77,7 @@ export default function Login() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-sm">
             <Brain className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-semibold text-foreground">Control Tower</h1>
+          <h1 className="text-xl font-semibold text-foreground">Nonprofit Control Tower</h1>
         </div>
 
         {/* Current session banner */}

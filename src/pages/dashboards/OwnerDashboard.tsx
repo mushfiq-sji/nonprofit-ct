@@ -40,8 +40,8 @@ export default function OwnerDashboard() {
   const firstName = profile?.full_name?.split(" ")[0] ?? "there";
   const { preferences } = useUserDashboardPreferences("owner");
 
-  const showHealth = useIsWidgetEnabled("health_metrics", "owner");
-  const showWatchList = useIsWidgetEnabled("watch_list", "owner");
+  const showHealth = useIsWidgetEnabled("health_metrics", "executive_director");
+  const showWatchList = useIsWidgetEnabled("watch_list", "executive_director");
 
   const isWidgetVisible = (slug: string) => {
     const pref = preferences[slug];

@@ -309,7 +309,7 @@ export default function ICDashboard() {
   const { preferences } = useDashboardPreferences();
   const firstName = profile?.full_name?.split(" ")[0] ?? "there";
 
-  const showAiDigest = useIsWidgetEnabled("ai_digest", "ic");
+  const showAiDigest = useIsWidgetEnabled("ai_digest", "operations_manager");
 
   return (
     <div className="space-y-6">

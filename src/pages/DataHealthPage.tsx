@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 import {
   ShieldCheck,
   Users,
@@ -7,10 +9,12 @@ import {
   CheckCircle,
   Eye,
   X,
+  FileWarning,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DEMO_DATA_HEALTH } from "@/shared/data/nonprofitDemoData";
 
 function HealthScoreCard({ score }: { score: number }) {
@@ -76,13 +80,37 @@ function InsightCard({ icon, title, variant }: InsightCardProps) {
   );
 }
 
-const MERGE_SUGGESTIONS = [
-  { pair: ["John Smith (ID: 1042)", "John D. Smith (ID: 2318)"], confidence: 94 },
-  { pair: ["ABC Foundation (ID: 503)", "A.B.C. Foundation (ID: 891)"], confidence: 87 },
-  { pair: ["Mary Johnson (ID: 1205)", "Mary A. Johnson (ID: 3102)"], confidence: 82 },
-];
+function PageSkeleton() {
+  return (
+    <div className="space-y-8 p-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <Skeleton className="h-32 w-full rounded-xl" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-48 w-full rounded-xl" />
+    </div>
+  );
+}
 
 export default function DataHealthPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    document.title = "Data Health | Nonprofit AI";
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) return <PageSkeleton />;
+
+  const { mergeSuggestions } = DEMO_DATA_HEALTH;
+
   return (
     <div className="space-y-8 p-6">
       {/* Header */}
@@ -132,30 +160,37 @@ export default function DataHealthPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {MERGE_SUGGESTIONS.map((suggestion) => (
-            <div
-              key={suggestion.pair[0]}
-              className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {suggestion.pair[0]} &harr; {suggestion.pair[1]}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Match confidence: {suggestion.confidence}%
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" className="gap-1.5">
-                  <CheckCircle className="h-3.5 w-3.5" />
-                  Approve Merge
-                </Button>
-                <Button size="sm" variant="outline">
-                  Mark as Reviewed
-                </Button>
-              </div>
+          {mergeSuggestions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
+              <FileWarning className="h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">No merge suggestions at this time</p>
             </div>
-          ))}
+          ) : (
+            mergeSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.pair[0]}
+                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {suggestion.pair[0]} &harr; {suggestion.pair[1]}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Match confidence: {suggestion.confidence}%
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="gap-1.5">
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    Approve Merge
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    Mark as Reviewed
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

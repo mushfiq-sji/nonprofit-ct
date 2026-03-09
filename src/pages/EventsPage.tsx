@@ -1,36 +1,54 @@
+import { useState, useEffect } from "react";
+
 import {
   CalendarDays,
-  Users,
   Heart,
   Sparkles,
   Tag,
   ListPlus,
   X,
+  Users,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DEMO_EVENTS } from "@/shared/data/nonprofitDemoData";
 
-const FOLLOW_UP_SUGGESTIONS = [
-  {
-    attendee: "Sarah Chen",
-    suggestion: "Send thank-you email — first-time major donor prospect",
-    priority: "high",
-  },
-  {
-    attendee: "Michael Torres",
-    suggestion: "Schedule volunteer onboarding — expressed interest in mentorship program",
-    priority: "medium",
-  },
-  {
-    attendee: "Lisa Patel",
-    suggestion: "Add to board prospect list — corporate partnership opportunity",
-    priority: "high",
-  },
-];
+function PageSkeleton() {
+  return (
+    <div className="space-y-8 p-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+      <Skeleton className="h-24 w-full rounded-xl" />
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-48 w-full rounded-xl" />
+    </div>
+  );
+}
 
 export default function EventsPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    document.title = "Events | Nonprofit AI";
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) return <PageSkeleton />;
+
+  const visibleSuggestions = DEMO_EVENTS.followUpSuggestions.filter(
+    (s) => !dismissedSuggestions.includes(s.attendee)
+  );
+
   return (
     <div className="space-y-8 p-6">
       {/* Header */}
@@ -54,7 +72,7 @@ export default function EventsPage() {
             <div>
               <h3 className="text-lg font-semibold">{DEMO_EVENTS.recentEventName}</h3>
               <p className="text-sm text-muted-foreground">
-                {DEMO_EVENTS.attendance} attendees &middot; March 1, 2026
+                {DEMO_EVENTS.attendance} attendees &middot; {DEMO_EVENTS.eventDate}
               </p>
             </div>
           </div>
@@ -66,7 +84,6 @@ export default function EventsPage() {
 
       {/* Insight Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        {/* Untagged Attendees */}
         <Card className="ring-1 ring-amber-200 border-0 bg-amber-50">
           <CardContent className="p-5">
             <div className="flex items-start gap-3">
@@ -87,7 +104,6 @@ export default function EventsPage() {
           </CardContent>
         </Card>
 
-        {/* Volunteer Interest */}
         <Card className="ring-1 ring-blue-200 border-0 bg-blue-50">
           <CardContent className="p-5">
             <div className="flex items-start gap-3">
@@ -104,7 +120,6 @@ export default function EventsPage() {
           </CardContent>
         </Card>
 
-        {/* AI Suggestions */}
         <Card className="ring-1 ring-green-200 border-0 bg-green-50">
           <CardContent className="p-5">
             <div className="flex items-start gap-3">
@@ -131,35 +146,47 @@ export default function EventsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {FOLLOW_UP_SUGGESTIONS.map((item) => (
-            <div
-              key={item.attendee}
-              className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium">{item.attendee}</p>
-                  <Badge
-                    variant={item.priority === "high" ? "destructive" : "secondary"}
-                    className="text-xs"
-                  >
-                    {item.priority}
-                  </Badge>
-                </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">{item.suggestion}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" className="gap-1.5">
-                  <ListPlus className="h-3.5 w-3.5" />
-                  Create Task
-                </Button>
-                <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground">
-                  <X className="h-3.5 w-3.5" />
-                  Dismiss
-                </Button>
-              </div>
+          {visibleSuggestions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
+              <Users className="h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">All suggestions have been addressed</p>
             </div>
-          ))}
+          ) : (
+            visibleSuggestions.map((item) => (
+              <div
+                key={item.attendee}
+                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">{item.attendee}</p>
+                    <Badge
+                      variant={item.priority === "high" ? "destructive" : "secondary"}
+                      className="text-xs"
+                    >
+                      {item.priority}
+                    </Badge>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{item.suggestion}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="gap-1.5">
+                    <ListPlus className="h-3.5 w-3.5" />
+                    Create Task
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-1.5 text-muted-foreground"
+                    onClick={() => setDismissedSuggestions((prev) => [...prev, item.attendee])}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

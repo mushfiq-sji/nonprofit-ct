@@ -41,6 +41,7 @@ import BoardReportsPage from "@/pages/BoardReportsPage";
 import AIAgentsPage from "@/pages/AIAgentsPage";
 import AIAgentDetailPage from "@/pages/AIAgentDetailPage";
 import AIAgentSettingsPage from "@/pages/AIAgentSettingsPage";
+import IntegrationCenterPage from "@/pages/IntegrationCenterPage";
 
 /**
  * Public routes - no auth required

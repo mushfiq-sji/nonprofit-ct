@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShieldCheck, CalendarClock, FileText, TrendingUp, Sparkles, X } from "lucide-react";
+import AITeamsDashboardCard from "@/components/dashboards/AITeamsDashboardCard";
 import {
   DEMO_DATA_HEALTH,
   DEMO_GRANTS,

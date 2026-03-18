@@ -171,6 +171,8 @@ export default function ExecutiveDirectorDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* AI Teams */}
+      <AITeamsDashboardCard />
     </div>
   );
 }

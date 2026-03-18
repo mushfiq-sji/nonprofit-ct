@@ -164,6 +164,8 @@ export default function OperationsManagerDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* AI Teams */}
+      <AITeamsDashboardCard />
     </div>
   );
 }

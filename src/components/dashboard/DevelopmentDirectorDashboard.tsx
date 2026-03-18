@@ -154,6 +154,8 @@ export default function DevelopmentDirectorDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* AI Teams */}
+      <AITeamsDashboardCard />
     </div>
   );
 }

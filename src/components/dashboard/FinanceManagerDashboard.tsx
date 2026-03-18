@@ -155,6 +155,8 @@ export default function FinanceManagerDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* AI Teams */}
+      <AITeamsDashboardCard />
     </div>
   );
 }

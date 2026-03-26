@@ -1,4 +1,4 @@
-# Getting Started with CollabAi
+# Getting Started with Nonprofit Control Tower
 
 Choose your deployment path based on your needs and technical background.
 

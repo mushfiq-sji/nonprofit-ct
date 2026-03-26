@@ -1,6 +1,6 @@
 # Development Guide
 
-For contributors and developers working on CollabAi.
+For contributors and developers working on Nonprofit Control Tower.
 
 ---
 
@@ -19,8 +19,8 @@ For contributors and developers working on CollabAi.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/collabai.git
-cd collabai
+git clone https://github.com/your-org/nonprofit-control-tower.git
+cd nonprofit-control-tower
 
 # Install dependencies
 npm install
@@ -52,16 +52,20 @@ npm run dev
 ## Project Structure
 
 ```
-collabai/
+nonprofit-control-tower/
 ├── src/
 │   ├── components/      # React components
 │   │   ├── ui/          # shadcn/ui components
 │   │   ├── layout/      # Layout components
+│   │   ├── ai/          # AI agent config, banners, presence indicators
+│   │   ├── dashboard/   # Role-specific dashboard components
 │   │   └── [feature]/   # Feature-specific components
 │   ├── hooks/           # Custom React hooks
 │   ├── pages/           # Route pages
 │   ├── contexts/        # React contexts
 │   ├── lib/             # Utility functions
+│   ├── modules/         # Feature modules (platform, admin, meetings, etc.)
+│   ├── shared/          # Shared config, data, navigation
 │   └── integrations/    # Supabase client & types
 ├── supabase/
 │   ├── functions/       # Edge functions
@@ -83,7 +87,6 @@ collabai/
 ### Hooks
 - Prefix with `use` (e.g., `useClients`)
 - Put in `src/hooks/`
-- Export from `src/hooks/index.ts`
 
 ### Styling
 - Use Tailwind CSS classes
@@ -143,7 +146,7 @@ export default function NewFeature() {
 ```
 
 ### 5. Route
-Add to `App.tsx`:
+Add to the appropriate module's `routes.tsx`:
 ```typescript
 <Route path="/new-feature" element={<NewFeature />} />
 ```
@@ -170,30 +173,8 @@ supabase functions deploy my-function
 
 ---
 
-## Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npm test -- src/hooks/useClients.test.ts
-```
-
----
-
-## Submitting Changes
-
-1. Create a feature branch
-2. Make your changes
-3. Write/update tests
-4. Submit a pull request
-5. Wait for review
-
----
-
 ## Getting Help
 
-- Check existing documentation
+- Check existing documentation in `/docs/`
+- Review the [roadmap](../nonprofit-control-tower-roadmap.md)
 - Search GitHub issues
-- Ask in Discord

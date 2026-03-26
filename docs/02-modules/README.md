@@ -1,6 +1,6 @@
 # Application Modules
 
-CollabAi includes several configurable modules. Enable or disable them via [Feature Flags](../07-admin/feature-flags.md).
+Nonprofit Control Tower includes several configurable modules. Enable or disable them via [Feature Flags](../07-admin/feature-flags.md).
 
 ---
 
@@ -8,14 +8,16 @@ CollabAi includes several configurable modules. Enable or disable them via [Feat
 
 | Module | Description | Default | Feature Flag |
 |--------|-------------|---------|--------------|
-| Dashboard | Analytics and overview | Always on | - |
+| Dashboard | Role-specific analytics and overview | Always on | - |
+| [Nonprofit Operations](./10-nonprofit-operations.md) | Grants, Events, Board Reports, Data Health, Reconciliation | On | - |
+| [AI Agent Browse](./11-ai-agent-browse.md) | Discover 16 AI agents across 4 teams | On | `enableAIAgents` |
 | [Clients](./clients.md) | Client/company management | On | - |
-| [Meetings](./meetings.md) | Meeting management + Zoom sync | On | `enableZoomSync` |
+| [Meetings](./meetings.md) | Meeting management + Zoom sync | Off | `enableMeetings` |
 | [Tasks](./tasks.md) | Task tracking | On | - |
 | [Knowledge Base](./knowledge-base.md) | Shared knowledge library | On | `enableKnowledgeBase` |
 | [Personal Knowledge](./personal-knowledge.md) | User's private documents | On | `enablePersonalKnowledge` |
 | [AI Chat](./ai-chat.md) | AI assistant interface | On | `enableAIChat` |
-| [AI Agents](./ai-agents.md) | Custom AI agents | On | `enableAIAgents` |
+| [AI Agents](./ai-agents.md) | Custom AI agents (operational) | On | `enableAIAgents` |
 | [Notifications](./notifications.md) | In-app + email alerts | On | `enableEmailNotifications` |
 
 ---
@@ -29,7 +31,8 @@ CollabAi includes several configurable modules. Enable or disable them via [Feat
        ▲
        │
 ┌──────┴──────┬─────────────┬─────────────┐
-│   Clients   │  Meetings   │    Tasks    │
+│  Nonprofit  │  Meetings   │    Tasks    │
+│  Operations │             │             │
 └─────────────┴──────┬──────┴─────────────┘
                      │
                      ▼
@@ -42,6 +45,7 @@ CollabAi includes several configurable modules. Enable or disable them via [Feat
               ┌──────┴──────┐
               │   AI Chat   │
               │  AI Agents  │
+              │ Agent Browse│
               └─────────────┘
 ```
 
@@ -52,13 +56,15 @@ CollabAi includes several configurable modules. Enable or disable them via [Feat
 | File | Description |
 |------|-------------|
 | [dashboard.md](./dashboard.md) | Dashboard widgets and analytics |
+| [10-nonprofit-operations.md](./10-nonprofit-operations.md) | Grants, Events, Board Reports, Data Health, Reconciliation |
+| [11-ai-agent-browse.md](./11-ai-agent-browse.md) | AI Agent Browse system |
 | [clients.md](./clients.md) | Client management features |
 | [meetings.md](./meetings.md) | Meetings and Zoom integration |
 | [tasks.md](./tasks.md) | Task management |
 | [knowledge-base.md](./knowledge-base.md) | Knowledge base articles |
 | [personal-knowledge.md](./personal-knowledge.md) | User documents |
 | [ai-chat.md](./ai-chat.md) | AI chat interface |
-| [ai-agents.md](./ai-agents.md) | Custom AI agents |
+| [ai-agents.md](./ai-agents.md) | Custom AI agents (operational) |
 | [notifications.md](./notifications.md) | Notification system |
 
 ---

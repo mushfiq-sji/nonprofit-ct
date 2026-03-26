@@ -1,9 +1,9 @@
-# CollabAi
+# Nonprofit Control Tower
 
 ![Built with Lovable](https://img.shields.io/badge/Built%20with-Lovable-ff69b4?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMjFDMTIgMjEgMyAxNS41IDMgOC41QzMgNS40NiA1LjQ2IDMgOC41IDNDMTAuMDQgMyAxMS41NCAzLjgyIDEyLjUgNS4wOUMxMy40NiAzLjgyIDE0Ljk2IDMgMTYuNSAzQzE5LjU0IDMgMjIgNS40NiAyMiA4LjVDMjIgMTUuNSAxMiAyMSAxMiAyMVoiIGZpbGw9IiNmZjY5YjQiLz48L3N2Zz4=)
 ![Backend: Supabase](https://img.shields.io/badge/Backend-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
-> An open-source business management platform built with React, TypeScript, and Supabase.
+> An operational intelligence layer for modern nonprofits — built with React, TypeScript, and Supabase.
 
 ---
 
@@ -23,11 +23,11 @@
 |---------|-------------|
 | [00 - Getting Started](./00-getting-started/) | Setup guides for Lovable and self-hosting |
 | [01 - Architecture](./01-architecture/) | System design, data flow, security |
-| [02 - Modules](./02-modules/) | Feature documentation |
+| [02 - Modules](./02-modules/) | Feature documentation (nonprofit ops, AI agents, CRM) |
 | [03 - Development](./03-development/) | For contributors and developers |
 | [04 - Deployment](./04-deployment/) | Publishing and hosting guides |
 | [05 - Integrations](./05-integrations/) | External service connections |
-| [06 - AI Features](./06-ai-features/) | AI chat, agents, embeddings |
+| [06 - AI Features](./06-ai-features/) | AI chat, agent teams, embeddings |
 | [07 - Admin](./07-admin/) | User management, settings |
 | [08 - Edge Functions](./08-edge-functions/) | Serverless function reference |
 
@@ -62,6 +62,9 @@
 
 ## 📖 Quick Links
 
+- [Nonprofit Operations Modules](./02-modules/10-nonprofit-operations.md)
+- [AI Agent Browse System](./02-modules/11-ai-agent-browse.md)
+- [Transformation Roadmap](./nonprofit-control-tower-roadmap.md)
 - [Environment Variables](./00-getting-started/environment-variables.md)
 - [Feature Flags](./07-admin/feature-flags.md)
 - [Edge Functions Catalog](./08-edge-functions/catalog.md)
@@ -69,5 +72,5 @@
 
 ---
 
-**Version:** 1.1.0  
+**Version:** 2.0.0  
 **Built with ❤️ using [Lovable.dev](https://lovable.dev) + [Supabase](https://supabase.com)**

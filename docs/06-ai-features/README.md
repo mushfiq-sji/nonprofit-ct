@@ -1,6 +1,6 @@
 # AI Features
 
-CollabAi includes powerful AI capabilities for chat, summarization, semantic search, and custom agents.
+Nonprofit Control Tower includes powerful AI capabilities for chat, summarization, semantic search, custom agents, and a team-based agent discovery system.
 
 ---
 
@@ -17,6 +17,15 @@ CollabAi includes powerful AI capabilities for chat, summarization, semantic sea
 
 ## Features Overview
 
+### AI Agent Teams (New)
+Discover and explore 16 specialized AI agents organized into 4 teams.
+
+- **Donor Intelligence Team** — Deal Coach, Daily Briefing, Quick Email, Deal AI Chat
+- **Meeting AI Team** — Meeting Summarizer, Action Extractor, Efficiency Analyzer, Client Call Analyzer
+- **Strategy AI Team** — EOS Coach, Pattern Detective, Pod Health, Quarterly Digest
+- **Project AI Team** — Project Analyst, Bug & Feature Planner, Technical Planner, Code Reviewer
+- [Learn more →](../02-modules/11-ai-agent-browse.md)
+
 ### AI Chat Assistant
 Interactive chat interface for asking questions about your data.
 
@@ -25,7 +34,7 @@ Interactive chat interface for asking questions about your data.
 - Get insights from client data
 - [Learn more →](./ai-chat.md)
 
-### AI Agents
+### AI Agents (Operational)
 Configurable AI agents for specific tasks.
 
 - Meeting summarizer
@@ -78,7 +87,7 @@ For self-hosted or custom models:
 | [lovable-ai.md](./lovable-ai.md) | Using Lovable's built-in AI |
 | [provider-routing.md](./provider-routing.md) | Configuring AI providers |
 | [ai-chat.md](./ai-chat.md) | AI Chat feature guide |
-| [ai-agents.md](./ai-agents.md) | Custom AI agents |
+| [ai-agents.md](./ai-agents.md) | Custom AI agents (operational) |
 | [semantic-search.md](./semantic-search.md) | Natural language search |
 | [embeddings.md](./embeddings.md) | How embeddings work |
 
@@ -91,6 +100,6 @@ AI features can be toggled in Admin → System Settings:
 | Flag | Default | Description |
 |------|---------|-------------|
 | `enableAIChat` | On | AI Chat interface |
-| `enableAIAgents` | On | Custom AI agents |
+| `enableAIAgents` | On | Custom AI agents + Agent Browse |
 | `enableSemanticSearch` | On | Vector search |
 | `enableMeetingSummary` | On | Auto-summarize meetings |

@@ -1,6 +1,6 @@
-# CollabAi Framework
+# Nonprofit Control Tower
 
-A configurable business management platform built with React, TypeScript, and Supabase.
+An operational intelligence layer for modern nonprofits, built with React, TypeScript, and Supabase.
 
 ## Quick Start
 
@@ -14,13 +14,16 @@ Choose your deployment path:
 
 ## Features
 
-- 📊 **Dashboard** - Analytics and key metrics at a glance
-- 👥 **Client Management** - Full CRM with contact tracking
-- 📅 **Meeting Management** - Zoom integration with AI summaries
-- 📚 **Knowledge Base** - Semantic search across documents
-- 🤖 **AI Chat Assistant** - Context-aware AI help
-- 🔐 **Role-Based Access** - Admin, moderator, and user roles
-- 🔑 **SSO Authentication** - Google and Microsoft sign-in
+- 📊 **Dashboard** — Role-specific analytics (Executive Director, Development Director, Finance Manager, Operations Manager)
+- 💰 **Grants Management** — Track grant lifecycle, deadlines, and fund utilization
+- 🎪 **Events** — Post-event engagement intelligence and follow-up automation
+- 📋 **Board Reports** — Generate board-ready KPI summaries and financial snapshots
+- 🔍 **Data Health** — Surface CRM data quality issues (duplicates, incomplete profiles)
+- 💱 **Reconciliation** — Match transactions across payment processors and CRM/finance systems
+- 🤖 **AI Agent Teams** — 16 specialized agents across 4 teams (Donor, Meeting, Strategy, Project)
+- 📚 **Knowledge Base** — Semantic search across documents
+- 🔐 **Role-Based Access** — Admin, moderator, and user roles
+- 🔑 **SSO Authentication** — Google and Microsoft sign-in
 
 ## Technology Stack
 
@@ -36,10 +39,14 @@ Choose your deployment path:
 See [docs/README.md](./docs/README.md) for complete documentation including:
 
 - Architecture overview
-- Module documentation
+- Module documentation (nonprofit operations + AI agents)
 - Deployment guides
 - Integration setup
 - Admin configuration
+
+## Roadmap
+
+See [docs/nonprofit-control-tower-roadmap.md](./docs/nonprofit-control-tower-roadmap.md) for the living roadmap.
 
 ## License
 

@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { icons, Sparkles, ArrowRight, Bot } from "lucide-react";
+import { icons, Sparkles, ArrowRight, Bot, Clock } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   allTeams,
   CATEGORY_COLORS,
@@ -13,6 +18,37 @@ import {
   type AgentTeamAgent,
 } from "@/components/ai/agentTeamConfig";
 import { cn } from "@/lib/utils";
+
+/* ── demo metadata per agent slug ── */
+
+const AGENT_META: Record<string, { findings: number; lastRun: string; findingColor: string }> = {
+  "deal-coach": { findings: 8, lastRun: "3 hours ago", findingColor: "green" },
+  "deal-daily-briefing": { findings: 5, lastRun: "Just now", findingColor: "green" },
+  "quick-deal-email": { findings: 3, lastRun: "Yesterday", findingColor: "green" },
+  "deal-ai-chat": { findings: 0, lastRun: "1 hour ago", findingColor: "green" },
+  "mid-donor-upgrade": { findings: 12, lastRun: "2 hours ago", findingColor: "amber" },
+  "donor-lapse-detection": { findings: 23, lastRun: "6 hours ago", findingColor: "amber" },
+  "meeting-summarizer": { findings: 4, lastRun: "Yesterday", findingColor: "green" },
+  "action-item-extractor": { findings: 7, lastRun: "4 hours ago", findingColor: "amber" },
+  "meeting-efficiency-analyzer": { findings: 2, lastRun: "Yesterday", findingColor: "green" },
+  "client-call-analyzer": { findings: 6, lastRun: "8 hours ago", findingColor: "amber" },
+  "eos-coach": { findings: 3, lastRun: "1 day ago", findingColor: "green" },
+  "eos-pattern-detective": { findings: 9, lastRun: "5 hours ago", findingColor: "amber" },
+  "eos-pod-health": { findings: 1, lastRun: "Yesterday", findingColor: "green" },
+  "eos-quarterly-digest": { findings: 0, lastRun: "3 days ago", findingColor: "green" },
+  "project-analyst": { findings: 5, lastRun: "7 hours ago", findingColor: "green" },
+  "bug-feature-planner": { findings: 4, lastRun: "Yesterday", findingColor: "green" },
+  "technical-plan-generator": { findings: 2, lastRun: "2 days ago", findingColor: "green" },
+  "code-review-generator": { findings: 6, lastRun: "12 hours ago", findingColor: "amber" },
+};
+
+/* ── activity banner messages ── */
+
+const BANNER_MESSAGES = [
+  "Mid-Donor Upgrade Agent identified 3 new high-readiness donors in the last hour",
+  "Donor Lapse Detection Agent flagged 2 major donors approaching 90-day lapse window",
+  "CRM Data Integrity Agent resolved 4 duplicate records — data health score updated to 84%",
+];
 
 /* ── helpers ── */
 
@@ -26,6 +62,53 @@ function getCategoryForAgent(teamId: string) {
 
 /* ── sub-components ── */
 
+function ActivityBanner() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % BANNER_MESSAGES.length);
+        setVisible(true);
+      }, 300);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-3 overflow-hidden">
+      <span className="relative flex h-2 w-2 shrink-0">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+      </span>
+      <p
+        className={cn(
+          "text-sm text-muted-foreground transition-all duration-300",
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+        )}
+      >
+        {BANNER_MESSAGES[index]}
+      </p>
+    </div>
+  );
+}
+
+function ActivePulse() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="relative flex h-2.5 w-2.5 cursor-default">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="text-xs">Agent is running</TooltipContent>
+    </Tooltip>
+  );
+}
+
 function BrowseSkeleton() {
   return (
     <div className="space-y-8">
@@ -33,6 +116,7 @@ function BrowseSkeleton() {
         <Skeleton className="h-9 w-40" />
         <Skeleton className="h-4 w-64" />
       </div>
+      <Skeleton className="h-12 w-full rounded-xl" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {[1, 2, 3, 4].map((i) => (
           <Skeleton key={i} className="h-44 rounded-2xl" />
@@ -128,6 +212,7 @@ function AgentBrowseCard({
   const navigate = useNavigate();
   const Icon = getIcon(agent.icon);
   const cat = getCategoryForAgent(teamId);
+  const meta = AGENT_META[agent.slug];
 
   return (
     <Card className="overflow-hidden rounded-2xl border border-border transition-all duration-300 hover:shadow-xl">
@@ -148,7 +233,7 @@ function AgentBrowseCard({
       {/* icon overlapping header/body */}
       <div className="px-5 pt-0 pb-5">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center -mt-7 ring-4 ring-background bg-foreground/90 dark:bg-card text-primary-foreground dark:text-foreground shadow-lg"
+          className="w-14 h-14 rounded-2xl flex items-center justify-center -mt-7 ring-4 ring-background shadow-lg"
           style={{
             background: `linear-gradient(135deg, hsl(${gradientFrom}), hsl(${gradientTo}))`,
           }}
@@ -157,13 +242,39 @@ function AgentBrowseCard({
         </div>
 
         <div className="mt-3 space-y-1">
-          <h4 className="text-lg font-semibold text-foreground">{agent.name}</h4>
+          <div className="flex items-center gap-2">
+            <h4 className="text-lg font-semibold text-foreground">{agent.name}</h4>
+            <ActivePulse />
+          </div>
           <p className="text-xs text-muted-foreground">By Nonprofit AI</p>
         </div>
 
         <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-2">
           {agent.description}
         </p>
+
+        {/* Meta row: findings + last run */}
+        {meta && (
+          <div className="flex items-center gap-3 mt-3 text-xs">
+            {meta.findings > 0 && (
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "text-[10px] px-1.5 py-0.5 font-medium",
+                  meta.findingColor === "amber"
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                    : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                )}
+              >
+                {meta.findings} findings
+              </Badge>
+            )}
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {meta.lastRun}
+            </span>
+          </div>
+        )}
 
         <Button
           variant="outline"
@@ -243,6 +354,9 @@ export default function AgentsBrowse() {
           </p>
         </div>
       </div>
+
+      {/* Live activity banner */}
+      <ActivityBanner />
 
       {/* Team cards grid */}
       <div>

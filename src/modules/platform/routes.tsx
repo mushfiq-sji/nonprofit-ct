@@ -34,6 +34,7 @@ import PersonalKnowledge from "@/modules/knowledge/pages/PersonalKnowledge";
 
 // Nonprofit pages
 import DataHealthPage from "@/pages/DataHealthPage";
+import DonorPipelinePage from "@/pages/DonorPipelinePage";
 import ReconciliationPage from "@/pages/ReconciliationPage";
 import EventsPage from "@/pages/EventsPage";
 import GrantsPage from "@/pages/GrantsPage";
@@ -90,6 +91,7 @@ export const coreProtectedRoutes = (
 
     {/* Nonprofit pages */}
     <Route path="/data-health" element={<DataHealthPage />} />
+    <Route path="/donor-pipeline" element={<DonorPipelinePage />} />
     <Route path="/reconciliation" element={<ReconciliationPage />} />
     <Route path="/events" element={<EventsPage />} />
     <Route path="/grants" element={<GrantsPage />} />

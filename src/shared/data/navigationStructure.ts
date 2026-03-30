@@ -195,6 +195,7 @@ export const navigationGroups: NavGroup[] = [
     icon: "BookOpen",
     module: "knowledge",
     adminOnly: true,
+    items: [
       {
         title: "Knowledge Base",
         href: "/knowledge",

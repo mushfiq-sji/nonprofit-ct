@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { icons, Sparkles, ArrowLeft, ArrowRight, Zap, BookOpen, MapPin, Bot } from "lucide-react";
+import { icons, Sparkles, ArrowLeft, ArrowRight, Zap, BookOpen, MapPin, Bot, Clock } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -216,6 +216,29 @@ export default function AgentDetail() {
                 </AccordionItem>
               )}
             </Accordion>
+
+            {/* Recent Activity Log */}
+            <Card className="rounded-xl border-border shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Clock className="h-4 w-4" /> Recent Activity Log
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {[
+                  { time: "10:42 AM", text: "Scanned 3,847 donor records" },
+                  { time: "10:43 AM", text: "Identified 47 upgrade candidates" },
+                  { time: "10:43 AM", text: "Scored readiness for 47 donors" },
+                  { time: "10:44 AM", text: "Generated outreach priority list" },
+                  { time: "10:44 AM", text: "Run complete — 12 high-readiness donors flagged" },
+                ].map((a, i) => (
+                  <div key={i} className="flex items-start gap-3 text-sm">
+                    <span className="text-muted-foreground font-mono text-xs mt-0.5 shrink-0 w-16">{a.time}</span>
+                    <span className="text-foreground">{a.text}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sidebar */}

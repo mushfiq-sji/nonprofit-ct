@@ -11,7 +11,7 @@ import { ModuleRoute } from "@/components/routing/ModuleRoute";
 // V2 module-owned pages
 import MeetingsSchedulePage from "./pages/MeetingsSchedulePage";
 import MeetingDetailV2Page from "./pages/MeetingDetailV2Page";
-import MeetingSeriesPage from "./pages/MeetingSeriesPage";
+
 import MeetingTranscriptsPage from "./pages/MeetingTranscriptsPage";
 import TranscriptDetailPage from "./pages/TranscriptDetailPage";
 import MeetingAiMatchResultsPage from "./pages/MeetingAiMatchResultsPage";
@@ -36,7 +36,7 @@ export const meetingsRoutes = (
     <Route path="/meetings/transcripts/:slug" element={<TranscriptDetailPage />} />
 
     {/* Additional features */}
-    <Route path="/meetings/series" element={<MeetingSeriesPage />} />
+    
     <Route path="/meetings/transcripts/ai-match" element={<MeetingAiMatchResultsPage />} />
     <Route path="/meetings/pending-assignments" element={<MeetingPendingAssignmentsPage />} />
 

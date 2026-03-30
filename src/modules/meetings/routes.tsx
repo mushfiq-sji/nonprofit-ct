@@ -36,7 +36,7 @@ export const meetingsRoutes = (
     <Route path="/meetings/transcripts/:slug" element={<TranscriptDetailPage />} />
 
     {/* Additional features */}
-    <Route path="/meetings/series" element={<MeetingSeriesPage />} />
+    
     <Route path="/meetings/transcripts/ai-match" element={<MeetingAiMatchResultsPage />} />
     <Route path="/meetings/pending-assignments" element={<MeetingPendingAssignmentsPage />} />
 

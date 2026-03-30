@@ -167,13 +167,6 @@ export const navigationGroups: NavGroup[] = [
         featureFlag: "enableMeetings",
       },
       {
-        title: "Series",
-        href: "/meetings/series",
-        icon: "Repeat",
-        module: "meetings",
-        featureFlag: "enableMeetings",
-      },
-      {
         title: "Pending Assignments",
         href: "/meetings/pending-assignments",
         icon: "ClipboardCheck",

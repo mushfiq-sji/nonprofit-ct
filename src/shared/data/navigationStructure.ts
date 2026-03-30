@@ -151,6 +151,7 @@ export const navigationGroups: NavGroup[] = [
     icon: "Calendar",
     module: "meetings",
     adminOnly: true,
+    items: [
       {
         title: "All Meetings",
         href: "/meetings/schedule",

@@ -34,6 +34,7 @@ import PersonalKnowledge from "@/modules/knowledge/pages/PersonalKnowledge";
 
 // Nonprofit pages
 import DataHealthPage from "@/pages/DataHealthPage";
+import DonorPipelinePage from "@/pages/DonorPipelinePage";
 import ReconciliationPage from "@/pages/ReconciliationPage";
 import EventsPage from "@/pages/EventsPage";
 import GrantsPage from "@/pages/GrantsPage";

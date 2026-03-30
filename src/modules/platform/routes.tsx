@@ -90,6 +90,7 @@ export const coreProtectedRoutes = (
 
     {/* Nonprofit pages */}
     <Route path="/data-health" element={<DataHealthPage />} />
+    <Route path="/donor-pipeline" element={<DonorPipelinePage />} />
     <Route path="/reconciliation" element={<ReconciliationPage />} />
     <Route path="/events" element={<EventsPage />} />
     <Route path="/grants" element={<GrantsPage />} />

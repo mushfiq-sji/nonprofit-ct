@@ -19,6 +19,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AIIndicator, AICard } from "@/components/ui/ai-indicator";
 import { AIAgentGuidePopover } from "@/components/dashboard/AIAgentGuidePopover";
+import OrgHealthScore from "@/components/dashboard/OrgHealthScore";
+import SinceYouWereAway from "@/components/dashboard/SinceYouWereAway";
+import QuickStatsRow from "@/components/dashboard/QuickStatsRow";
 import {
   Users,
   Calendar,

@@ -34,6 +34,7 @@ interface TopNavProps {
 export function TopNav({ sidebarOpen = true, onToggleSidebar }: TopNavProps) {
   const { user, profile, signOut } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [demoRole, setDemoRole] = useDemoRole();
 
   // Use React Query hooks for notifications
   const { data: unreadCount } = useUnreadCount();

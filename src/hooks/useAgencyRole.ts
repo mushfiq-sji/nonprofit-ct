@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useSyncExternalStore } from "react";
 
 export type AgencyRole =
   | "executive_director"
@@ -23,15 +24,31 @@ const LEGACY_ROLE_MAP: Record<string, AgencyRole> = {
 };
 
 const DEMO_ROLE_KEY = "demo-role-override";
+const VALID_ROLES = ["executive_director", "development_director", "finance_manager", "operations_manager"];
 
-function getDemoRoleOverride(): AgencyRole | null {
+// Simple external store for demo role so all consumers re-render on change
+let listeners: Array<() => void> = [];
+
+function subscribe(cb: () => void) {
+  listeners.push(cb);
+  return () => { listeners = listeners.filter((l) => l !== cb); };
+}
+
+function getSnapshot(): AgencyRole | null {
   try {
     const stored = localStorage.getItem(DEMO_ROLE_KEY);
-    if (stored && ["executive_director", "development_director", "finance_manager", "operations_manager"].includes(stored)) {
-      return stored as AgencyRole;
-    }
+    if (stored && VALID_ROLES.includes(stored)) return stored as AgencyRole;
   } catch {}
   return null;
+}
+
+export function setDemoRoleOverride(role: AgencyRole) {
+  try { localStorage.setItem(DEMO_ROLE_KEY, role); } catch {}
+  listeners.forEach((l) => l());
+}
+
+function useDemoRoleOverride(): AgencyRole | null {
+  return useSyncExternalStore(subscribe, getSnapshot, () => null);
 }
 
 /**
@@ -42,10 +59,9 @@ function getDemoRoleOverride(): AgencyRole | null {
  */
 export function useAgencyRole() {
   const { profile } = useAuth();
+  const demoOverride = useDemoRoleOverride();
 
-  const demoOverride = getDemoRoleOverride();
   const raw = profile?.agencyRole ?? null;
-  // Demo override takes priority, then resolve legacy values
   const agencyRole: AgencyRole | null = demoOverride
     ?? (raw ? (LEGACY_ROLE_MAP[raw] ?? (raw as AgencyRole)) : null);
 
@@ -59,7 +75,6 @@ export function useAgencyRole() {
     isFinanceManager: agencyRole === "finance_manager",
     isOperationsManager: agencyRole === "operations_manager",
     isAdminRole: agencyRole === "admin",
-    // Legacy compat helpers (kept so sidebar filtering continues to work)
     isOwner: agencyRole === "executive_director",
     isPM: agencyRole === "development_director",
     isIC: agencyRole === "operations_manager" || agencyRole === null,

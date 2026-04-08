@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ChevronDown, User } from "lucide-react";
 import {
@@ -8,38 +7,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useAgencyRole, setDemoRoleOverride, type AgencyRole } from "@/hooks/useAgencyRole";
 
-export type DemoRole = "executive_director" | "development_director" | "finance_manager" | "operations_manager";
-
-const ROLES: { value: DemoRole; label: string }[] = [
+const ROLES: { value: AgencyRole; label: string }[] = [
   { value: "executive_director", label: "Executive Director" },
   { value: "development_director", label: "Development Director" },
   { value: "finance_manager", label: "Finance Manager" },
   { value: "operations_manager", label: "Operations Manager" },
 ];
 
-const STORAGE_KEY = "demo-role-override";
+export function DemoRoleSwitcher() {
+  const { agencyRole } = useAgencyRole();
+  const currentLabel = ROLES.find((r) => r.value === agencyRole)?.label ?? "Executive Director";
 
-export function useDemoRole(): [DemoRole, (role: DemoRole) => void] {
-  const [role, setRoleState] = useState<DemoRole>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored && ROLES.some((r) => r.value === stored)) return stored as DemoRole;
-    } catch {}
-    return "executive_director";
-  });
-
-  const setRole = (newRole: DemoRole) => {
-    setRoleState(newRole);
-    try { localStorage.setItem(STORAGE_KEY, newRole); } catch {}
-    toast.success(`Viewing as ${ROLES.find((r) => r.value === newRole)?.label}`);
+  const handleChange = (role: AgencyRole) => {
+    setDemoRoleOverride(role);
+    toast.success(`Viewing as ${ROLES.find((r) => r.value === role)?.label}`);
   };
-
-  return [role, setRole];
-}
-
-export function DemoRoleSwitcher({ role, onRoleChange }: { role: DemoRole; onRoleChange: (role: DemoRole) => void }) {
-  const currentLabel = ROLES.find((r) => r.value === role)?.label ?? "Executive Director";
 
   return (
     <DropdownMenu>
@@ -58,11 +42,11 @@ export function DemoRoleSwitcher({ role, onRoleChange }: { role: DemoRole; onRol
         {ROLES.map((r) => (
           <DropdownMenuItem
             key={r.value}
-            onClick={() => onRoleChange(r.value)}
-            className={role === r.value ? "bg-accent font-medium" : ""}
+            onClick={() => handleChange(r.value)}
+            className={agencyRole === r.value ? "bg-accent font-medium" : ""}
           >
             {r.label}
-            {role === r.value && <span className="ml-auto text-primary text-xs">✓</span>}
+            {agencyRole === r.value && <span className="ml-auto text-primary text-xs">✓</span>}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

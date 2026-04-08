@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { icons, Sparkles, ArrowRight, Bot, Clock } from "lucide-react";
+import { icons, Sparkles, Bot, Clock, Play, Loader2, Eye } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,36 +19,46 @@ import {
   type AgentTeamAgent,
 } from "@/components/ai/agentTeamConfig";
 import { cn } from "@/lib/utils";
+import { hoursAgo } from "@/shared/data/nonprofitDemoData";
 
-/* ── demo metadata per agent slug ── */
+/* ── demo metadata per agent slug (non-operational agents) ── */
 
-const AGENT_META: Record<string, { findings: number; lastRun: string; findingColor: string }> = {
-  "deal-coach": { findings: 8, lastRun: "3 hours ago", findingColor: "green" },
-  "deal-daily-briefing": { findings: 5, lastRun: "Just now", findingColor: "green" },
-  "quick-deal-email": { findings: 3, lastRun: "Yesterday", findingColor: "green" },
-  "deal-ai-chat": { findings: 0, lastRun: "1 hour ago", findingColor: "green" },
-  "mid-donor-upgrade": { findings: 12, lastRun: "2 hours ago", findingColor: "amber" },
-  "donor-lapse-detection": { findings: 23, lastRun: "6 hours ago", findingColor: "amber" },
-  "meeting-summarizer": { findings: 4, lastRun: "Yesterday", findingColor: "green" },
-  "action-item-extractor": { findings: 7, lastRun: "4 hours ago", findingColor: "amber" },
-  "meeting-efficiency-analyzer": { findings: 2, lastRun: "Yesterday", findingColor: "green" },
-  "client-call-analyzer": { findings: 6, lastRun: "8 hours ago", findingColor: "amber" },
-  "eos-coach": { findings: 3, lastRun: "1 day ago", findingColor: "green" },
-  "eos-pattern-detective": { findings: 9, lastRun: "5 hours ago", findingColor: "amber" },
-  "eos-pod-health": { findings: 1, lastRun: "Yesterday", findingColor: "green" },
-  "eos-quarterly-digest": { findings: 0, lastRun: "3 days ago", findingColor: "green" },
-  "project-analyst": { findings: 5, lastRun: "7 hours ago", findingColor: "green" },
-  "bug-feature-planner": { findings: 4, lastRun: "Yesterday", findingColor: "green" },
-  "technical-plan-generator": { findings: 2, lastRun: "2 days ago", findingColor: "green" },
-  "code-review-generator": { findings: 6, lastRun: "12 hours ago", findingColor: "amber" },
+const AGENT_META: Record<string, { findings: number; lastRun: string }> = {
+  "deal-coach": { findings: 8, lastRun: hoursAgo(2, 4) },
+  "deal-daily-briefing": { findings: 5, lastRun: "just now" },
+  "quick-deal-email": { findings: 3, lastRun: hoursAgo(8, 24) },
+  "deal-ai-chat": { findings: 0, lastRun: hoursAgo(1, 2) },
+  "mid-donor-upgrade": { findings: 12, lastRun: hoursAgo(2, 3) },
+  "donor-lapse-detection": { findings: 23, lastRun: hoursAgo(5, 7) },
+  "meeting-summarizer": { findings: 4, lastRun: hoursAgo(12, 24) },
+  "action-item-extractor": { findings: 7, lastRun: hoursAgo(3, 5) },
+  "meeting-efficiency-analyzer": { findings: 2, lastRun: hoursAgo(12, 24) },
+  "client-call-analyzer": { findings: 6, lastRun: hoursAgo(7, 9) },
+  "eos-coach": { findings: 3, lastRun: hoursAgo(20, 30) },
+  "eos-pattern-detective": { findings: 9, lastRun: hoursAgo(4, 6) },
+  "eos-pod-health": { findings: 1, lastRun: hoursAgo(12, 24) },
+  "eos-quarterly-digest": { findings: 0, lastRun: hoursAgo(48, 72) },
+  "project-analyst": { findings: 5, lastRun: hoursAgo(6, 8) },
+  "bug-feature-planner": { findings: 4, lastRun: hoursAgo(12, 24) },
+  "technical-plan-generator": { findings: 2, lastRun: hoursAgo(36, 48) },
+  "code-review-generator": { findings: 6, lastRun: hoursAgo(10, 14) },
+};
+
+/* ── Core agent last-run times (dynamic) ── */
+const CORE_LAST_RUN: Record<string, string> = {
+  "crm-data-integrity": hoursAgo(1, 3),
+  "reconciliation-fund-accounting": hoursAgo(3, 5),
+  "grant-compliance": hoursAgo(2, 4),
+  "event-intelligence": hoursAgo(5, 7),
+  "board-reporting": hoursAgo(1, 2),
 };
 
 /* ── activity banner messages ── */
 
 const BANNER_MESSAGES = [
-  "Mid-Donor Upgrade Agent identified 3 new high-readiness donors in the last hour",
-  "Donor Lapse Detection Agent flagged 2 major donors approaching 90-day lapse window",
-  "CRM Data Integrity Agent resolved 4 duplicate records — data health score updated to 84%",
+  "CRM Data Integrity Agent found 3 potential duplicate records — Sarah Chen and Michael Torres flagged",
+  "Grant Compliance Agent: Kresge Foundation report due in 8 days — utilization at 61%",
+  "Board Reporting Agent: Q1 Board Report draft ready — 3 KPIs need ED approval before export",
 ];
 
 /* ── helpers ── */
@@ -212,13 +223,34 @@ function AgentBrowseCard({
   const navigate = useNavigate();
   const Icon = getIcon(agent.icon);
   const cat = getCategoryForAgent(teamId);
+  const hasOperational = !!agent.operational;
   const meta = AGENT_META[agent.slug];
+  const coreLastRun = CORE_LAST_RUN[agent.slug];
+
+  const [running, setRunning] = useState(false);
+  const [lastRunOverride, setLastRunOverride] = useState<string | null>(null);
+
+  const displayLastRun = lastRunOverride ?? coreLastRun ?? meta?.lastRun ?? hoursAgo(2, 6);
+  const displayFindings = hasOperational ? agent.operational!.itemsToReview : (meta?.findings ?? 0);
+
+  const handleRunNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (running) return;
+    setRunning(true);
+    setTimeout(() => {
+      setRunning(false);
+      setLastRunOverride("just now");
+      toast.success(`Run complete — ${displayFindings} findings`, {
+        description: agent.name,
+      });
+    }, 1500);
+  };
 
   return (
     <Card className="overflow-hidden rounded-2xl border border-border transition-all duration-300 hover:shadow-xl">
       {/* gradient header */}
       <div
-        className="h-24 relative"
+        className="h-20 relative"
         style={{
           background: `linear-gradient(135deg, hsl(${gradientFrom}), hsl(${gradientTo}))`,
         }}
@@ -226,7 +258,7 @@ function AgentBrowseCard({
         <Badge
           className={cn("absolute top-3 right-3 text-[10px] px-2 py-0.5 font-medium border-0", cat.badge)}
         >
-          {teamId}
+          {teamId === "nonprofit-ops" ? "Core Ops" : teamId}
         </Badge>
       </div>
 
@@ -241,48 +273,77 @@ function AgentBrowseCard({
           <Icon className="h-6 w-6 text-white" />
         </div>
 
+        {/* Name + Active badge */}
         <div className="mt-3 space-y-1">
           <div className="flex items-center gap-2">
-            <h4 className="text-lg font-semibold text-foreground">{agent.name}</h4>
+            <h4 className="text-base font-semibold text-foreground leading-tight">{agent.name}</h4>
             <ActivePulse />
           </div>
-          <p className="text-xs text-muted-foreground">By Nonprofit AI</p>
-        </div>
-
-        <p className="text-sm text-muted-foreground leading-relaxed mt-2 line-clamp-2">
-          {agent.description}
-        </p>
-
-        {/* Meta row: findings + last run */}
-        {meta && (
-          <div className="flex items-center gap-3 mt-3 text-xs">
-            {meta.findings > 0 && (
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-[10px] px-1.5 py-0.5 font-medium",
-                  meta.findingColor === "amber"
-                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                    : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                )}
-              >
-                {meta.findings} findings
-              </Badge>
-            )}
-            <span className="flex items-center gap-1 text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-green-600 border-green-200 bg-green-50 dark:bg-green-950/20">
+              Active
+            </Badge>
+            <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
               <Clock className="h-3 w-3" />
-              {meta.lastRun}
+              Last run: {displayLastRun}
             </span>
           </div>
+        </div>
+
+        {/* Last finding (operational agents) or description */}
+        {hasOperational ? (
+          <p className="text-sm text-muted-foreground leading-relaxed mt-3 line-clamp-2 italic">
+            &ldquo;{agent.operational!.lastFinding}&rdquo;
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground leading-relaxed mt-3 line-clamp-2">
+            {agent.description}
+          </p>
         )}
 
-        <Button
-          variant="outline"
-          className="w-full mt-4 hover:bg-primary hover:text-primary-foreground transition-colors"
-          onClick={() => navigate(`/agents/${agent.slug}`)}
-        >
-          Learn More
-        </Button>
+        {/* Stats row */}
+        <div className="flex items-center gap-2 mt-3 text-[11px] text-muted-foreground">
+          {displayFindings > 0 && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] px-1.5 py-0 font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+            >
+              {displayFindings} {displayFindings === 1 ? "item" : "items"} to review
+            </Badge>
+          )}
+          {hasOperational && (
+            <span>· Est. {agent.operational!.timeSavedHrs} hrs saved this week</span>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex gap-2 mt-4">
+          <Button
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/agents/${agent.slug}`);
+            }}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            View Findings
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5"
+            onClick={handleRunNow}
+            disabled={running}
+          >
+            {running ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Play className="h-3.5 w-3.5" />
+            )}
+            {running ? "Running…" : "Run Now"}
+          </Button>
+        </div>
       </div>
     </Card>
   );
@@ -308,7 +369,7 @@ function TeamDetailSection({ team }: { team: AgentTeamDef }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {team.agents.map((agent) => (
           <AgentBrowseCard
             key={agent.slug}
@@ -329,7 +390,7 @@ export default function AgentsBrowse() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "AI Agents | Nonprofit AI";
+    document.title = "AI Agents | Brightside Foundation";
     const t = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(t);
   }, []);

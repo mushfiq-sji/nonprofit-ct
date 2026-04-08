@@ -173,7 +173,7 @@ export function TopNav({ sidebarOpen = true, onToggleSidebar }: TopNavProps) {
         {/* Right side */}
         <div className="flex items-center gap-2">
           {/* Demo Role Switcher */}
-          <DemoRoleSwitcher role={demoRole} onRoleChange={setDemoRole} />
+          <DemoRoleSwitcher />
 
           {/* Notifications */}
           <DropdownMenu>

@@ -77,7 +77,7 @@ export const navigationGroups: NavGroup[] = [
       { title: "Grants", href: "/grants", icon: "BookOpen", agencyRoles: ["executive_director", "development_director", "finance_manager"] },
       { title: "Board Reports", href: "/board-reports", icon: "FileText", agencyRoles: ["executive_director"] },
       { title: "Donor Pipeline", href: "/donor-pipeline", icon: "GitBranch", agencyRoles: ["executive_director", "development_director"] },
-      { title: "Browse Agents", href: "/agents", icon: "Sparkles", isAI: true },
+      { title: "Browse Agents", href: "/agents", icon: "Sparkles", isAI: true, agencyRoles: ["executive_director", "development_director", "operations_manager"] },
     ],
   },
   {
@@ -210,20 +210,6 @@ export const navigationGroups: NavGroup[] = [
         icon: "BookMarked",
         module: "knowledge",
         featureFlag: "enablePersonalKnowledge",
-      },
-    ],
-  },
-  {
-    id: "ai",
-    title: "AI",
-    icon: "Bot",
-    adminOnly: true,
-    items: [
-      {
-        title: "AI Agents",
-        href: "/ai-agents",
-        icon: "Bot",
-        featureFlag: "enableAIAgents",
       },
     ],
   },

@@ -133,7 +133,17 @@ export default function AgentDetail() {
       </Card>
 
       {/* Custom detail pages for specific agents */}
-      {slug === "mid-donor-upgrade" ? (
+      {slug === "crm-data-integrity" ? (
+        <CRMDataIntegrityDetail />
+      ) : slug === "reconciliation-fund-accounting" ? (
+        <ReconciliationDetail />
+      ) : slug === "grant-compliance" ? (
+        <GrantComplianceDetail />
+      ) : slug === "event-intelligence" ? (
+        <EventIntelligenceDetail />
+      ) : slug === "board-reporting" ? (
+        <BoardReportingDetail />
+      ) : slug === "mid-donor-upgrade" ? (
         <MidDonorUpgradeDetail />
       ) : slug === "donor-lapse-detection" ? (
         <DonorLapseDetectionDetail />

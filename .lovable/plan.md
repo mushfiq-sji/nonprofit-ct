@@ -1,35 +1,56 @@
 
 
-# Diagnosis: Browse Agents & Donor Pipeline Visibility
+# Sidebar & Demo Cleanup — Reduce Confusion, Make Demo-Ready
 
-## Finding
+## The Problems
 
-The code is **correctly wired** — both pages and sidebar items exist:
-- `/agents` route → `AgentsBrowse` component (line 105 in routes)
-- `/donor-pipeline` route → `DonorPipelinePage` (line 93 in routes)
-- Both items in `navigationStructure.ts` under `nonprofit-ops` group (lines 79-80)
+1. **Two "AI Agents" entries** — "Browse Agents" (`/agents`) in the main sidebar AND "AI Agents" (`/ai-agents`) in the admin-only "AI" group. Even admins see both, which is confusing.
 
-The session replay confirms the agents page IS rendering with the activity banner cycling.
+2. **"Browse Agents" visible to ALL roles** — no `agencyRoles` filter, so Finance Managers and Operations Managers see AI agent discovery they don't need.
 
-## Likely Cause
+3. **Too many sidebar items for some roles** — e.g., Development Director sees 5+ items. Some pages (like `/ai-agents` operational page) show loading spinners or empty states because they depend on database data that isn't seeded.
 
-**Stale localStorage** — the sidebar stores expanded/collapsed state in `localStorage` under a key. If the `nonprofit-ops` group was collapsed in a previous session, it stays collapsed and the items are hidden from view. The user needs to click the "Nonprofit Operations" group header to expand it.
+4. **Non-functional pages in the sidebar** — `/ai-agents`, `/ai-agents/:id` pages pull from the `ai_agents` database table which may have no data, leading to blank screens during demos.
 
-Alternatively, the preview may need a hard refresh (Ctrl+Shift+R).
+## Proposed Changes
 
-## Fix (small)
+### 1. Remove "AI Agents" admin-only group from sidebar
+The `ai` group (id: `ai`, line 217-229 in navigationStructure.ts) contains only `/ai-agents` which overlaps with Browse Agents. Remove this group entirely — admin AI agent management already exists at `/admin/ai/agents`.
 
-To make this more robust, I'll:
+### 2. Restrict "Browse Agents" to relevant roles
+Add `agencyRoles: ["executive_director", "development_director", "operations_manager"]` to the Browse Agents nav item. Finance Managers don't need agent discovery.
 
-1. **Force the `nonprofit-ops` group to re-expand** when new items are added — clear the stale localStorage key on load if it doesn't contain the expected items
-2. **Or simpler**: Make `nonprofit-ops` items render as **flat top-level links** (no collapsible group wrapper) since it's the only visible group for regular users — this removes the "hidden because collapsed" problem entirely
+### 3. Clean up per-role sidebar items
 
-### Recommended: Flatten nonprofit-ops for regular users
+Final sidebar per role:
 
-- In `AppSidebar.tsx`, if only one group is visible (which is the case for all non-admin roles), render its items as flat sidebar links without a collapsible group header
-- This ensures Donor Pipeline, Browse Agents, and all other items are always visible
-- Admin users who see multiple groups still get the collapsible behavior
+| Item | Exec. Dir | Dev. Dir | Finance | Ops Mgr |
+|------|-----------|----------|---------|---------|
+| Dashboard | ✓ | ✓ | ✓ | ✓ |
+| Data Health | ✓ | — | ✓ | ✓ |
+| Reconciliation | — | — | ✓ | ✓ |
+| Events | ✓ | ✓ | — | — |
+| Grants | ✓ | ✓ | ✓ | — |
+| Board Reports | ✓ | — | — | — |
+| Donor Pipeline | ✓ | ✓ | — | — |
+| Browse Agents | ✓ | ✓ | — | ✓ |
 
-### Files Changed
-1. `src/components/layout/AppSidebar.tsx` — Add logic to render single-group items flat (no collapsible wrapper)
+This gives: ED=6, DD=4, FM=3, OM=3 — clean and focused.
+
+### 4. Remove the standalone `/ai-agents` route from non-admin nav
+Keep the route alive (admin can still access it directly), but remove it from the sidebar navigation group so it doesn't confuse demo users.
+
+## Files Changed
+
+1. **`src/shared/data/navigationStructure.ts`**
+   - Remove the `ai` group (lines 216-229)
+   - Add `agencyRoles` filter to "Browse Agents" item
+   - Remove Finance Manager from Browse Agents visibility
+
+## What stays the same
+- All pages remain routable (no route deletions)
+- Admin panel navigation unchanged
+- Agent browse and detail pages unchanged
+- Donor Pipeline page unchanged
+- All demo data intact
 

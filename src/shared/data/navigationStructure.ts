@@ -3,19 +3,10 @@
  *
  * Single source of truth for all navigation items across the application.
  * Both AppSidebar and AdminSidebar read from this file.
- *
- * Items are filtered at runtime based on:
- * - Module access (useModuleAccess)
- * - Feature flags (useFeatureFlags)
- * - User role
  */
 
 import type { ModuleId } from "@/shared/config/modules";
 
-/**
- * Organization roles that can see a nav item or group.
- * When omitted the item is visible to all roles.
- */
 export type AgencyRole =
   | "executive_director"
   | "development_director"
@@ -26,16 +17,14 @@ export type AgencyRole =
 export interface NavItem {
   title: string;
   href: string;
-  icon: string; // lucide icon name — resolved in the sidebar component
-  module?: ModuleId; // Module that must be enabled for this item to appear
-  featureFlag?: string; // Legacy feature flag check
+  icon: string;
+  module?: ModuleId;
+  featureFlag?: string;
   adminOnly?: boolean;
   badge?: string;
-  isAI?: boolean; // Shows AI indicator animation
-  children?: NavItem[]; // Nested sub-items (e.g., Streams under Tasks)
-  /** When true, parent is rendered as a section header only (collapsible), not a link; children are the links */
+  isAI?: boolean;
+  children?: NavItem[];
   headerOnly?: boolean;
-  /** When set, only these organization roles see the item. Admins always see everything. */
   agencyRoles?: AgencyRole[];
 }
 
@@ -43,18 +32,17 @@ export interface NavGroup {
   id: string;
   title: string;
   icon: string;
-  isAI?: boolean; // Shows AI indicator animation
+  isAI?: boolean;
   module?: ModuleId;
   featureFlag?: string;
   items: NavItem[];
-  /** When set, only these organization roles see the group. Admins always see everything. */
   agencyRoles?: AgencyRole[];
-  /** When true, group is only visible to admin users */
   adminOnly?: boolean;
+  position?: "bottom";
 }
 
 /**
- * Dashboard - Always visible at top level
+ * Dashboard - Always visible at top level (no group label)
  */
 export const dashboardItem: NavItem = {
   title: "Dashboard",
@@ -63,7 +51,7 @@ export const dashboardItem: NavItem = {
 };
 
 /**
- * Main application navigation - Grouped structure
+ * Main application navigation
  */
 export const navigationGroups: NavGroup[] = [
   {
@@ -71,185 +59,40 @@ export const navigationGroups: NavGroup[] = [
     title: "Nonprofit Operations",
     icon: "ShieldCheck",
     items: [
-      { title: "Data Health", href: "/data-health", icon: "ShieldCheck", agencyRoles: ["executive_director", "finance_manager", "operations_manager"] },
-      { title: "Reconciliation", href: "/reconciliation", icon: "ArrowLeftRight", agencyRoles: ["finance_manager", "operations_manager"] },
-      { title: "Events", href: "/events", icon: "CalendarDays", agencyRoles: ["executive_director", "development_director"] },
-      { title: "Grants", href: "/grants", icon: "BookOpen", agencyRoles: ["executive_director", "development_director", "finance_manager"] },
-      { title: "Board Reports", href: "/board-reports", icon: "FileText", agencyRoles: ["executive_director"] },
-      { title: "Donor Pipeline", href: "/donor-pipeline", icon: "GitBranch", agencyRoles: ["executive_director", "development_director"] },
-      { title: "Browse Agents", href: "/agents", icon: "Sparkles", isAI: true, agencyRoles: ["executive_director", "development_director", "operations_manager"] },
+      { title: "Data Health", href: "/data-health", icon: "ShieldCheck" },
+      { title: "Grants", href: "/grants", icon: "FileText" },
+      { title: "Events", href: "/events", icon: "Calendar" },
+      { title: "Board Reports", href: "/board-reports", icon: "BarChart2" },
+      { title: "Reconciliation", href: "/reconciliation", icon: "ArrowLeftRight" },
+      { title: "Donor Pipeline", href: "/donor-pipeline", icon: "Users" },
     ],
   },
   {
-    id: "business-dev",
-    title: "Donor & Grants Pipeline",
-    icon: "Heart",
-    adminOnly: true,
-    module: "business-dev",
+    id: "ai",
+    title: "AI",
+    icon: "Bot",
+    isAI: true,
     items: [
-      {
-        title: "Organizations",
-        href: "/clients",
-        icon: "Building2",
-        module: "business-dev",
-        featureFlag: "enableClients",
-      },
-      {
-        title: "Contacts",
-        href: "/contacts",
-        icon: "Contact",
-        module: "business-dev",
-        featureFlag: "enableClients",
-      },
-      {
-        title: "Cultivation Pipeline",
-        href: "/deals",
-        icon: "Handshake",
-        module: "business-dev",
-        featureFlag: "enableClients",
-        headerOnly: true,
-        children: [
-          { title: "Pipeline Dashboard", href: "/deals?tab=overview", icon: "LayoutDashboard", module: "business-dev", featureFlag: "enableClients" },
-          { title: "All Prospects", href: "/deals", icon: "LayoutDashboard", module: "business-dev", featureFlag: "enableClients" },
-          { title: "Identify", href: "/deals?tab=all&stage=lead", icon: "Users", module: "business-dev", featureFlag: "enableClients" },
-          { title: "Qualify", href: "/deals?tab=all&stage=discovery", icon: "Search", module: "business-dev", featureFlag: "enableClients" },
-          { title: "Cultivate", href: "/deals?tab=all&stage=estimation", icon: "Calculator", module: "business-dev", featureFlag: "enableClients" },
-          { title: "Propose", href: "/deals?tab=all&stage=proposal", icon: "FileText", module: "business-dev", featureFlag: "enableClients" },
-        ],
-      },
-      {
-        title: "Donor Follow-Up",
-        href: "/lead-followup",
-        icon: "Target",
-        module: "lead-followup",
-      },
+      { title: "AI Agents", href: "/agents", icon: "Bot", isAI: true },
+      { title: "AI Chat", href: "/ai-chat", icon: "MessageSquare", isAI: true },
     ],
   },
   {
-    id: "work-management",
-    title: "Work Management",
-    icon: "ListTodo",
-    adminOnly: true,
-    items: [
-      {
-        title: "Tasks",
-        href: "/tasks",
-        icon: "CheckSquare",
-        module: "actions",
-        featureFlag: "enableTasks",
-      },
-      {
-        title: "Projects",
-        href: "/projects",
-        icon: "FolderKanban",
-        module: "projects",
-      },
-    ],
-  },
-  {
-    id: "meetings",
-    title: "Meetings",
-    icon: "Calendar",
-    module: "meetings",
-    adminOnly: true,
-    items: [
-      {
-        title: "All Meetings",
-        href: "/meetings/schedule",
-        icon: "Calendar",
-        module: "meetings",
-        featureFlag: "enableMeetings",
-      },
-      {
-        title: "Transcripts",
-        href: "/meetings/transcripts",
-        icon: "ScrollText",
-        module: "meetings",
-        featureFlag: "enableMeetings",
-      },
-      {
-        title: "Pending Assignments",
-        href: "/meetings/pending-assignments",
-        icon: "ClipboardCheck",
-        module: "meetings",
-        featureFlag: "enableMeetings",
-      },
-      {
-        title: "AI Match",
-        href: "/meetings/transcripts/ai-match",
-        icon: "Sparkles",
-        module: "meetings",
-        featureFlag: "enableMeetings",
-      },
-    ],
-  },
-  {
-    id: "knowledge",
-    title: "Knowledge",
+    id: "intelligence",
+    title: "Intelligence",
     icon: "BookOpen",
-    module: "knowledge",
-    adminOnly: true,
     items: [
-      {
-        title: "Knowledge Base",
-        href: "/knowledge",
-        icon: "BookOpen",
-        module: "knowledge",
-        featureFlag: "enableKnowledgeBase",
-      },
-      {
-        title: "Semantic Search",
-        href: "/knowledge/search",
-        icon: "Sparkles",
-        module: "knowledge",
-        featureFlag: "enableKnowledgeBase",
-      },
-      {
-        title: "Personal Library",
-        href: "/personal-knowledge",
-        icon: "BookMarked",
-        module: "knowledge",
-        featureFlag: "enablePersonalKnowledge",
-      },
+      { title: "Knowledge Base", href: "/knowledge", icon: "BookOpen" },
     ],
   },
   {
-    id: "operations",
-    title: "Operations",
-    icon: "Settings2",
-    adminOnly: true,
-    agencyRoles: ["executive_director", "development_director"], // Only leadership roles see operations
+    id: "settings-group",
+    title: "Settings",
+    icon: "Settings",
+    position: "bottom",
     items: [
-      {
-        title: "Feedback",
-        href: "/feedback",
-        icon: "MessageCircle",
-        featureFlag: "enableFeedback",
-      },
-    ],
-  },
-  {
-    id: "system-tools",
-    title: "System & Tools",
-    icon: "Wrench",
-    adminOnly: true,
-    items: [
-      {
-        title: "Sessions",
-        href: "/sessions",
-        icon: "Monitor",
-      },
-      {
-        title: "Feedback",
-        href: "/feedback",
-        icon: "MessageCircle",
-        featureFlag: "enableFeedback",
-      },
-      {
-        title: "Help & Guides",
-        href: "/help",
-        icon: "HelpCircle",
-      },
+      { title: "Integrations", href: "/integrations", icon: "Plug" },
+      { title: "Settings", href: "/settings", icon: "Settings" },
     ],
   },
 ];
@@ -274,27 +117,15 @@ export const adminNavigation: NavGroup[] = [
     title: "PEOPLE & PERFORMANCE",
     icon: "LayoutDashboard",
     items: [
-      {
-        title: "Admin Dashboard",
-        href: "/admin",
-        icon: "LayoutDashboard",
-      },
-      {
-        title: "Employee Management",
-        href: "/admin/team/employees",
-        icon: "Users",
-      },
+      { title: "Admin Dashboard", href: "/admin", icon: "LayoutDashboard" },
+      { title: "Employee Management", href: "/admin/team/employees", icon: "Users" },
       {
         title: "Task Configuration",
         href: "/admin/tasks/streams",
         icon: "Settings",
         headerOnly: true,
         children: [
-          {
-            title: "Task Streams",
-            href: "/admin/tasks/streams",
-            icon: "GitBranch",
-          },
+          { title: "Task Streams", href: "/admin/tasks/streams", icon: "GitBranch" },
         ],
       },
       {
@@ -303,21 +134,9 @@ export const adminNavigation: NavGroup[] = [
         icon: "Layers",
         headerOnly: true,
         children: [
-          {
-            title: "POD Management",
-            href: "/admin/team/pods",
-            icon: "Users",
-          },
-          {
-            title: "Skill Management",
-            href: "/admin/skillmanagement",
-            icon: "Zap",
-          },
-          {
-            title: "RP Settings",
-            href: "/admin/team/employee_projection",
-            icon: "Settings",
-          },
+          { title: "POD Management", href: "/admin/team/pods", icon: "Users" },
+          { title: "Skill Management", href: "/admin/skillmanagement", icon: "Zap" },
+          { title: "RP Settings", href: "/admin/team/employee_projection", icon: "Settings" },
         ],
       },
     ],
@@ -387,21 +206,9 @@ export const adminNavigation: NavGroup[] = [
     title: "USERS & ACCESS",
     icon: "Users",
     items: [
-      {
-        title: "User Management",
-        href: "/admin/users",
-        icon: "Users",
-      },
-      {
-        title: "Role Management",
-        href: "/admin/roles",
-        icon: "Shield",
-      },
-      {
-        title: "Activity Logs",
-        href: "/admin/logs",
-        icon: "Activity",
-      },
+      { title: "User Management", href: "/admin/users", icon: "Users" },
+      { title: "Role Management", href: "/admin/roles", icon: "Shield" },
+      { title: "Activity Logs", href: "/admin/logs", icon: "Activity" },
     ],
   },
   {
@@ -409,11 +216,7 @@ export const adminNavigation: NavGroup[] = [
     title: "TEAM & RESOURCES",
     icon: "Building2",
     items: [
-      {
-        title: "Departments",
-        href: "/admin/team/departments",
-        icon: "Building2",
-      },
+      { title: "Departments", href: "/admin/team/departments", icon: "Building2" },
     ],
   },
   {
@@ -421,11 +224,7 @@ export const adminNavigation: NavGroup[] = [
     title: "CONTENT & FEEDBACK",
     icon: "MessageSquare",
     items: [
-      {
-        title: "Feedback Management",
-        href: "/admin/feedback",
-        icon: "MessageSquare",
-      },
+      { title: "Feedback Management", href: "/admin/feedback", icon: "MessageSquare" },
     ],
   },
   {
@@ -433,21 +232,9 @@ export const adminNavigation: NavGroup[] = [
     title: "AI & AUTOMATION",
     icon: "Brain",
     items: [
-      {
-        title: "AI Models",
-        href: "/admin/ai-models",
-        icon: "Brain",
-      },
-      {
-        title: "AI Usage Analytics",
-        href: "/admin/ai-usage",
-        icon: "BarChart",
-      },
-      {
-        title: "MCP Servers",
-        href: "/admin/mcp-servers",
-        icon: "Plug",
-      },
+      { title: "AI Models", href: "/admin/ai-models", icon: "Brain" },
+      { title: "AI Usage Analytics", href: "/admin/ai-usage", icon: "BarChart" },
+      { title: "MCP Servers", href: "/admin/mcp-servers", icon: "Plug" },
     ],
   },
   {
@@ -455,41 +242,13 @@ export const adminNavigation: NavGroup[] = [
     title: "SYSTEM",
     icon: "Settings",
     items: [
-      {
-        title: "System Settings",
-        href: "/admin/settings",
-        icon: "Settings",
-      },
-      {
-        title: "Organization Settings",
-        href: "/admin/organization-settings",
-        icon: "Building2",
-      },
-      {
-        title: "Integrations",
-        href: "/admin/integrations",
-        icon: "Zap",
-      },
-      {
-        title: "Vision & Roadmap",
-        href: "/admin/roadmap",
-        icon: "Rocket",
-      },
-      {
-        title: "Seed Data Runner",
-        href: "/admin/roadmap/seed",
-        icon: "Database",
-      },
-      {
-        title: "Deployment Status",
-        href: "/admin/deployment",
-        icon: "Database",
-      },
-      {
-        title: "Environment Check",
-        href: "/admin/environment",
-        icon: "CheckCircle2",
-      },
+      { title: "System Settings", href: "/admin/settings", icon: "Settings" },
+      { title: "Organization Settings", href: "/admin/organization-settings", icon: "Building2" },
+      { title: "Integrations", href: "/admin/integrations", icon: "Zap" },
+      { title: "Vision & Roadmap", href: "/admin/roadmap", icon: "Rocket" },
+      { title: "Seed Data Runner", href: "/admin/roadmap/seed", icon: "Database" },
+      { title: "Deployment Status", href: "/admin/deployment", icon: "Database" },
+      { title: "Environment Check", href: "/admin/environment", icon: "CheckCircle2" },
     ],
   },
 ];

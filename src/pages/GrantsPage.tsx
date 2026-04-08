@@ -1,161 +1,260 @@
-import { useState, useEffect } from "react";
-
-import {
-  Clock,
-  AlertTriangle,
-  FileText,
-  BookOpen,
-} from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DEMO_GRANTS } from "@/shared/data/nonprofitDemoData";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { FileText, AlertTriangle, CheckCircle, ChevronDown, Loader2, Users } from "lucide-react";
+import { toast } from "sonner";
 
-function utilizationColor(pct: number) {
-  if (pct > 90) return { bar: "bg-red-500", text: "text-red-600", badge: "bg-red-100 text-red-700" };
-  if (pct >= 75) return { bar: "bg-amber-500", text: "text-amber-600", badge: "bg-amber-100 text-amber-700" };
-  return { bar: "bg-green-500", text: "text-green-600", badge: "bg-green-100 text-green-700" };
+interface GrantDeliverable {
+  text: string;
+  done: boolean;
 }
 
-function PageSkeleton() {
-  return (
-    <div className="space-y-8 p-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-4 w-64" />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Skeleton className="h-20 rounded-xl" />
-        <Skeleton className="h-20 rounded-xl" />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-56 rounded-xl" />
-        ))}
-      </div>
-    </div>
-  );
+interface Grant {
+  id: string;
+  name: string;
+  funder: string;
+  amount: number;
+  period: string;
+  status: "AT RISK" | "ON TRACK";
+  utilization: number;
+  reportDueDays: number;
+  programOfficer: string;
+  deliverables: GrantDeliverable[];
+  budgetBreakdown: { label: string; pct: number }[];
+}
+
+const INITIAL_GRANTS: Grant[] = [
+  {
+    id: "g1", name: "Community Health Initiative", funder: "Kresge Foundation",
+    amount: 185000, period: "Jan 1 – Dec 31, 2026", status: "AT RISK",
+    utilization: 61, reportDueDays: 8, programOfficer: "Dr. Alicia Ramos",
+    deliverables: [
+      { text: "Q1 Progress Report submitted", done: true },
+      { text: "Mid-year financial report submitted", done: true },
+      { text: "Site visit scheduled (due May 15)", done: false },
+      { text: "Final narrative report (due Dec 15)", done: false },
+    ],
+    budgetBreakdown: [{ label: "Personnel", pct: 45 }, { label: "Programs", pct: 35 }, { label: "Overhead", pct: 20 }],
+  },
+  {
+    id: "g2", name: "Youth Programs Initiative", funder: "Robert Wood Johnson Foundation",
+    amount: 95000, period: "Oct 1, 2025 – Sep 30, 2026", status: "ON TRACK",
+    utilization: 88, reportDueDays: 31, programOfficer: "Marcus Webb",
+    deliverables: [
+      { text: "Program launch report", done: true },
+      { text: "Quarterly financial update", done: true },
+      { text: "Participant survey results", done: false },
+      { text: "Year-end impact assessment", done: false },
+    ],
+    budgetBreakdown: [{ label: "Personnel", pct: 50 }, { label: "Programs", pct: 40 }, { label: "Overhead", pct: 10 }],
+  },
+  {
+    id: "g3", name: "Technology Access Fund", funder: "Gates Foundation",
+    amount: 125000, period: "Jul 1, 2025 – Jun 30, 2026", status: "ON TRACK",
+    utilization: 44, reportDueDays: 83, programOfficer: "Sandra Liu",
+    deliverables: [
+      { text: "Equipment procurement report", done: true },
+      { text: "Digital literacy curriculum plan", done: false },
+      { text: "Mid-year progress report", done: false },
+      { text: "Final impact report", done: false },
+    ],
+    budgetBreakdown: [{ label: "Equipment", pct: 55 }, { label: "Training", pct: 30 }, { label: "Admin", pct: 15 }],
+  },
+  {
+    id: "g4", name: "Housing Support Initiative", funder: "Local Community Foundation",
+    amount: 92000, period: "Jan 1 – Jun 30, 2026", status: "ON TRACK",
+    utilization: 71, reportDueDays: 52, programOfficer: "James Okafor",
+    deliverables: [
+      { text: "Needs assessment completed", done: true },
+      { text: "Partner agreements signed", done: true },
+      { text: "Mid-program evaluation", done: false },
+      { text: "Final report", done: false },
+    ],
+    budgetBreakdown: [{ label: "Direct Services", pct: 60 }, { label: "Staffing", pct: 30 }, { label: "Admin", pct: 10 }],
+  },
+];
+
+function utilizationColor(pct: number) {
+  if (pct >= 75) return "bg-green-500";
+  if (pct >= 50) return "bg-amber-500";
+  return "bg-amber-500";
 }
 
 export default function GrantsPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const [grants, setGrants] = useState(INITIAL_GRANTS);
+  const [drawerGrant, setDrawerGrant] = useState<Grant | null>(null);
+  const [generating, setGenerating] = useState<string | null>(null);
 
-  useEffect(() => {
-    document.title = "Grants | Nonprofit AI";
-    const timer = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, []);
+  const totalValue = grants.reduce((s, g) => s + g.amount, 0);
+  const reportsDue = grants.filter((g) => g.reportDueDays <= 30).length;
+  const avgUtil = Math.round(grants.reduce((s, g) => s + g.utilization, 0) / grants.length);
 
-  if (isLoading) return <PageSkeleton />;
+  const handleGenerateReport = (grantId: string) => {
+    setGenerating(grantId);
+    setTimeout(() => {
+      setGenerating(null);
+      toast.success("✓ Report draft generated — opening in Board Reports");
+      setTimeout(() => navigate("/board-reports"), 1000);
+    }, 2000);
+  };
 
-  const overUtilizedCount = DEMO_GRANTS.grants.filter((g) => g.utilized > 90).length;
+  const handleToggleDeliverable = (grantId: string, idx: number) => {
+    setGrants((prev) =>
+      prev.map((g) =>
+        g.id === grantId
+          ? { ...g, deliverables: g.deliverables.map((d, i) => i === idx ? { ...d, done: !d.done } : d) }
+          : g
+      )
+    );
+    if (drawerGrant?.id === grantId) {
+      setDrawerGrant((prev) =>
+        prev ? { ...prev, deliverables: prev.deliverables.map((d, i) => i === idx ? { ...d, done: !d.done } : d) } : prev
+      );
+    }
+    toast.success("Deliverable marked complete");
+  };
+
+  const handleAssign = (grantName: string, staffName: string) => {
+    toast.success(`✓ Assigned to ${staffName} — they've been notified`);
+  };
 
   return (
     <div className="space-y-8 p-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Grants</h1>
-        <p className="text-sm text-muted-foreground">
-          Track grant lifecycle, deadlines, and fund utilization
-        </p>
-        <Badge variant="secondary" className="mt-2">
-          Data sourced from your CRM &middot; Last synced 3 hours ago
-        </Badge>
+        <p className="text-sm text-muted-foreground">Brightside Foundation · Track grants, deadlines, and fund utilization</p>
       </div>
 
-      {/* Alert Cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="ring-1 ring-amber-200 border-0 bg-amber-50">
-          <CardContent className="flex items-center gap-4 p-5">
-            <Clock className="h-6 w-6 text-amber-600" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">
-                {DEMO_GRANTS.upcomingDeadlines} grant deadlines within{" "}
-                {DEMO_GRANTS.deadlineDaysThreshold} days
-              </p>
-            </div>
-            <Button size="sm" variant="outline">
-              View Details
-            </Button>
-          </CardContent>
-        </Card>
-        {overUtilizedCount > 0 && (
-          <Card className="ring-1 ring-red-200 border-0 bg-red-50">
-            <CardContent className="flex items-center gap-4 p-5">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">
-                  {overUtilizedCount} grant{overUtilizedCount > 1 ? "s" : ""} over 90% utilized
-                </p>
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Active Grants", value: String(grants.length) },
+          { label: "Total Grant Value", value: `$${(totalValue / 1000).toFixed(0)}K` },
+          { label: "Reports Due (30 days)", value: String(reportsDue) },
+          { label: "Avg Utilization", value: `${avgUtil}%` },
+        ].map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold">{s.value}</p>
+              <p className="text-xs text-muted-foreground">{s.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Grant Cards */}
+      <div className="space-y-4">
+        {grants.map((grant) => (
+          <Card key={grant.id}>
+            <CardContent className="p-5 space-y-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg">{grant.name}</h3>
+                  <p className="text-sm text-muted-foreground">{grant.funder} · ${grant.amount.toLocaleString()} · {grant.period}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Program Officer: {grant.programOfficer}</p>
+                </div>
+                <Badge className={grant.status === "AT RISK" ? "bg-red-100 text-red-700 border-red-200" : "bg-green-100 text-green-700 border-green-200"}>
+                  {grant.status}
+                </Badge>
               </div>
-              <Button size="sm" variant="outline">
-                View Details
-              </Button>
+              {/* Utilization bar */}
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-muted-foreground">Fund Utilization</span>
+                  <span className={`font-medium ${grant.utilization < 50 ? "text-amber-600" : grant.utilization > 85 ? "text-green-600" : "text-foreground"}`}>{grant.utilization}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className={`h-full rounded-full ${utilizationColor(grant.utilization)} transition-all`} style={{ width: `${grant.utilization}%` }} />
+                </div>
+              </div>
+              <p className={`text-sm font-medium ${grant.reportDueDays <= 14 ? "text-red-600" : "text-muted-foreground"}`}>
+                Report due in {grant.reportDueDays} days
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" onClick={() => setDrawerGrant(grant)}>
+                  <FileText className="h-3.5 w-3.5 mr-1.5" /> View Grant Details
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => handleGenerateReport(grant.id)} disabled={generating === grant.id}>
+                  {generating === grant.id ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : null}
+                  Generate Report Draft
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" className="gap-1.5">
+                      <Users className="h-3.5 w-3.5" /> Assign to Staff <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {["Maria Santos", "Kevin Park", "Lisa Chen"].map((name) => (
+                      <DropdownMenuItem key={name} onClick={() => handleAssign(grant.name, name)}>
+                        {name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </CardContent>
           </Card>
-        )}
+        ))}
       </div>
 
-      {/* Active Grants */}
-      <div>
-        <h2 className="mb-4 text-lg font-semibold">
-          Active Grants ({DEMO_GRANTS.grants.length})
-        </h2>
-        {DEMO_GRANTS.grants.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-              <BookOpen className="h-8 w-8 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">No active grants at this time</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
-            {DEMO_GRANTS.grants.map((grant) => {
-              const colors = utilizationColor(grant.utilized);
-              return (
-                <Card key={grant.name}>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">{grant.name}</CardTitle>
-                    <CardDescription>{grant.funder}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <div className="mb-1.5 flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Fund Utilization</span>
-                        <span className={`font-medium ${colors.text}`}>{grant.utilized}%</span>
+      {/* Grant Detail Drawer */}
+      <Sheet open={!!drawerGrant} onOpenChange={() => setDrawerGrant(null)}>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
+          {drawerGrant && (
+            <>
+              <SheetHeader>
+                <SheetTitle>{drawerGrant.name}</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 space-y-6">
+                <div className="space-y-2 text-sm">
+                  <p><span className="text-muted-foreground">Funder:</span> {drawerGrant.funder}</p>
+                  <p><span className="text-muted-foreground">Amount:</span> ${drawerGrant.amount.toLocaleString()}</p>
+                  <p><span className="text-muted-foreground">Period:</span> {drawerGrant.period}</p>
+                  <p><span className="text-muted-foreground">Program Officer:</span> {drawerGrant.programOfficer}</p>
+                  <p><span className="text-muted-foreground">Utilization:</span> {drawerGrant.utilization}%</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-3">Deliverables</h4>
+                  <div className="space-y-2">
+                    {drawerGrant.deliverables.map((d, i) => (
+                      <button
+                        key={i}
+                        className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 rounded p-2 -ml-2"
+                        onClick={() => !d.done && handleToggleDeliverable(drawerGrant.id, i)}
+                      >
+                        {d.done ? (
+                          <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 shrink-0" />
+                        )}
+                        <span className={d.done ? "line-through text-muted-foreground" : ""}>{d.text}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-3">Budget Breakdown</h4>
+                  <div className="space-y-2">
+                    {drawerGrant.budgetBreakdown.map((b) => (
+                      <div key={b.label} className="flex justify-between text-sm">
+                        <span>{b.label}</span>
+                        <span className="font-medium">{b.pct}%</span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className={`h-full rounded-full ${colors.bar}`}
-                          style={{ width: `${grant.utilized}%` }}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">
-                        ${grant.amount.toLocaleString()} total
-                      </span>
-                      <Badge className={`${colors.badge} hover:${colors.badge}`}>
-                        {grant.daysUntilDeadline} days left
-                      </Badge>
-                    </div>
-                    {grant.nextMilestone && (
-                      <p className="text-xs text-muted-foreground">
-                        Next: {grant.nextMilestone}
-                      </p>
-                    )}
-                    <Button variant="outline" size="sm" className="w-full gap-1.5">
-                      <FileText className="h-3.5 w-3.5" />
-                      Generate Compliance Summary
-                    </Button>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                    ))}
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full" onClick={() => setDrawerGrant(null)}>Close</Button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

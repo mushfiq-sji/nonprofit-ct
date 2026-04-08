@@ -1,191 +1,373 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { toastSuccess } from "@/lib/toast-helpers";
-import { DollarSign, TrendingUp, Clock, Database } from "lucide-react";
-import { DEMO_ORG } from "@/shared/data/nonprofitDemoData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarDays, ChevronDown, Loader2, DollarSign, TrendingUp, Clock, Users } from "lucide-react";
+import { toast } from "sonner";
 
-interface DonorCard {
+interface Donor {
+  id: string;
   name: string;
-  giving: string;
-  score: number;
-  scoreBadge: string;
-  daysInStage: number;
+  currentGiving: string;
+  targetGiving: string;
+  assignedTo: string;
+  note?: string;
+  outreachDate?: string;
+  lastContact?: string;
+  pledgeAmount?: string;
+  pledgeDate?: string;
+  upgradeAmount?: string;
+  completedDate?: string;
 }
 
-interface PipelineColumn {
+interface Column {
+  id: string;
   title: string;
-  count: number;
   color: string;
   borderColor: string;
-  action: string;
-  donors: DonorCard[];
 }
 
-const columns: PipelineColumn[] = [
-  {
-    title: "Identified",
-    count: 47,
-    color: "bg-blue-50 dark:bg-blue-950/30",
-    borderColor: "border-t-blue-500",
-    action: "Schedule Call",
-    donors: [
-      { name: "Margaret Chen", giving: "$420/yr", score: 94, scoreBadge: "High Readiness", daysInStage: 3 },
-      { name: "Robert Okafor", giving: "$310/yr", score: 78, scoreBadge: "Ready", daysInStage: 7 },
-      { name: "David Kim", giving: "$480/yr", score: 55, scoreBadge: "Needs Engagement", daysInStage: 14 },
-    ],
-  },
-  {
-    title: "Outreach Scheduled",
-    count: 12,
-    color: "bg-cyan-50 dark:bg-cyan-950/30",
-    borderColor: "border-t-cyan-500",
-    action: "Log Update",
-    donors: [
-      { name: "Susan Park", giving: "$275/yr", score: 71, scoreBadge: "Ready", daysInStage: 5 },
-      { name: "Linda Torres", giving: "$390/yr", score: 89, scoreBadge: "High Readiness", daysInStage: 2 },
-    ],
-  },
-  {
-    title: "In Conversation",
-    count: 8,
-    color: "bg-emerald-50 dark:bg-emerald-950/30",
-    borderColor: "border-t-emerald-500",
-    action: "Log Update",
-    donors: [
-      { name: "James Wright", giving: "$500/yr", score: 88, scoreBadge: "High Readiness", daysInStage: 11 },
-      { name: "Patricia Moore", giving: "$250/yr", score: 65, scoreBadge: "Ready", daysInStage: 8 },
-    ],
-  },
-  {
-    title: "Pledge Made",
-    count: 3,
-    color: "bg-amber-50 dark:bg-amber-950/30",
-    borderColor: "border-t-amber-500",
-    action: "Record Pledge",
-    donors: [
-      { name: "Angela Davis", giving: "$350 → $1,000", score: 92, scoreBadge: "Committed", daysInStage: 4 },
-      { name: "Thomas Lee", giving: "$1,200 → $2,500", score: 96, scoreBadge: "Committed", daysInStage: 2 },
-    ],
-  },
-  {
-    title: "Upgraded ✓",
-    count: 2,
-    color: "bg-green-50 dark:bg-green-950/30",
-    borderColor: "border-t-green-600",
-    action: "Mark Upgraded",
-    donors: [
-      { name: "Richard Nguyen", giving: "$500 → $1,200", score: 100, scoreBadge: "Upgraded", daysInStage: 0 },
-      { name: "Carol Martinez", giving: "$420 → $1,000", score: 100, scoreBadge: "Upgraded", daysInStage: 0 },
-    ],
-  },
+const COLUMNS: Column[] = [
+  { id: "identified", title: "Identified", color: "bg-blue-50 dark:bg-blue-950/30", borderColor: "border-t-blue-500" },
+  { id: "outreach", title: "Outreach Scheduled", color: "bg-cyan-50 dark:bg-cyan-950/30", borderColor: "border-t-cyan-500" },
+  { id: "conversation", title: "In Conversation", color: "bg-emerald-50 dark:bg-emerald-950/30", borderColor: "border-t-emerald-500" },
+  { id: "pledge", title: "Pledge Made", color: "bg-amber-50 dark:bg-amber-950/30", borderColor: "border-t-amber-500" },
+  { id: "upgraded", title: "Upgraded ✓", color: "bg-green-50 dark:bg-green-950/30", borderColor: "border-t-green-600" },
 ];
 
-function scoreBadgeColor(badge: string) {
-  switch (badge) {
-    case "High Readiness": return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300";
-    case "Ready": return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300";
-    case "Needs Engagement": return "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300";
-    case "Committed": return "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300";
-    case "Upgraded": return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
-    default: return "bg-muted text-muted-foreground";
-  }
-}
+const INITIAL_DONORS: Record<string, Donor[]> = {
+  identified: [
+    { id: "d1", name: "Margaret Liu", currentGiving: "$2,500/yr", targetGiving: "$5,000/yr", assignedTo: "Maria Santos" },
+    { id: "d2", name: "Robert Kim", currentGiving: "$1,800/yr", targetGiving: "$3,000/yr", assignedTo: "" },
+    { id: "d3", name: "Patricia Osei", currentGiving: "$3,200/yr", targetGiving: "$7,500/yr", assignedTo: "Maria Santos" },
+  ],
+  outreach: [
+    { id: "d4", name: "David Chen", currentGiving: "$2,100/yr", targetGiving: "$5,000/yr", assignedTo: "Maria Santos", outreachDate: "Apr 10, 2026" },
+    { id: "d5", name: "Susan Park", currentGiving: "$4,500/yr", targetGiving: "$10,000/yr", assignedTo: "Kevin Park", outreachDate: "Apr 12, 2026" },
+  ],
+  conversation: [
+    { id: "d6", name: "Jennifer Walsh", currentGiving: "$1,950/yr", targetGiving: "$5,000/yr", assignedTo: "Maria Santos", lastContact: "Apr 5", note: "Very interested in naming opportunity for youth programs room" },
+    { id: "d7", name: "Mark Abrams", currentGiving: "$3,800/yr", targetGiving: "$7,500/yr", assignedTo: "Kevin Park", lastContact: "Apr 3", note: "Meeting scheduled Apr 15 with ED" },
+  ],
+  pledge: [
+    { id: "d8", name: "Thomas Rivera", currentGiving: "$2,500/yr", targetGiving: "$5,000/yr", assignedTo: "Maria Santos", pledgeAmount: "$5,000", pledgeDate: "Apr 1, 2026" },
+  ],
+  upgraded: [
+    { id: "d9", name: "Carol Nguyen", currentGiving: "$1,200/yr", targetGiving: "$2,500/yr", assignedTo: "Maria Santos", upgradeAmount: "+$1,300/yr", completedDate: "Mar 28, 2026" },
+  ],
+};
 
-const DonorPipelinePage = () => {
+const STAFF = ["Maria Santos", "Kevin Park", "Lisa Chen"];
+
+export default function DonorPipelinePage() {
+  const [donors, setDonors] = useState(INITIAL_DONORS);
+  const [outreachModal, setOutreachModal] = useState<Donor | null>(null);
+  const [contactModal, setContactModal] = useState<Donor | null>(null);
+  const [pledgeModal, setPledgeModal] = useState<Donor | null>(null);
+  const [giftModal, setGiftModal] = useState<Donor | null>(null);
+  const [profileDrawer, setProfileDrawer] = useState<Donor | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const totalInPipeline = Object.values(donors).flat().length;
+
+  const moveDonor = (donorId: string, fromCol: string, toCol: string) => {
+    setDonors((prev) => {
+      const donor = prev[fromCol]?.find((d) => d.id === donorId);
+      if (!donor) return prev;
+      return {
+        ...prev,
+        [fromCol]: prev[fromCol].filter((d) => d.id !== donorId),
+        [toCol]: [...(prev[toCol] || []), donor],
+      };
+    });
+  };
+
+  const handleScheduleOutreach = (donor: Donor) => {
+    moveDonor(donor.id, "identified", "outreach");
+    setOutreachModal(null);
+    toast.success(`✓ Outreach scheduled for ${donor.name}`);
+  };
+
+  const handleMoveToConversation = (donor: Donor) => {
+    moveDonor(donor.id, "outreach", "conversation");
+    toast.success(`✓ Moved ${donor.name} to In Conversation`);
+  };
+
+  const handleRecordGift = (donor: Donor) => {
+    setSaving(true);
+    setTimeout(() => {
+      setSaving(false);
+      moveDonor(donor.id, "pledge", "upgraded");
+      setGiftModal(null);
+      toast.success(`✓ Gift of ${donor.pledgeAmount || "$5,000"} recorded for ${donor.name} — Salesforce updated`);
+    }, 1500);
+  };
+
+  const handleAssign = (donorId: string, col: string, staffName: string) => {
+    setDonors((prev) => ({
+      ...prev,
+      [col]: prev[col].map((d) => d.id === donorId ? { ...d, assignedTo: staffName } : d),
+    }));
+    toast.success(`✓ Assigned to ${staffName}`);
+  };
+
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Donor Upgrade Pipeline</h1>
-        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-          <Database className="h-3.5 w-3.5" />
-          {DEMO_ORG.lastSyncLabel}
-        </div>
+        <h1 className="text-2xl font-bold tracking-tight">Donor Pipeline</h1>
+        <p className="text-sm text-muted-foreground">Brightside Foundation · Mid-level donor upgrade tracking</p>
       </div>
 
-      {/* Summary Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-l-4 border-l-blue-500">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-full bg-blue-100 dark:bg-blue-900/40 p-2">
-              <DollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">$47,000/yr potential</p>
-              <p className="text-sm text-muted-foreground">Total pipeline value if all upgrade</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-full bg-green-100 dark:bg-green-900/40 p-2">
-              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">$2,000 secured</p>
-              <p className="text-sm text-muted-foreground">Upgraded this quarter</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-full bg-amber-100 dark:bg-amber-900/40 p-2">
-              <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">34 days</p>
-              <p className="text-sm text-muted-foreground">Avg days to upgrade</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Total in Pipeline", value: String(totalInPipeline), icon: Users },
+          { label: "Est. Upgrade Value", value: "$38,500", icon: DollarSign },
+          { label: "Upgrades This Quarter", value: "1", icon: TrendingUp },
+          { label: "Avg Days to Upgrade", value: "47", icon: Clock },
+        ].map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <s.icon className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-xl font-bold">{s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Kanban Pipeline */}
+      {/* Kanban */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {columns.map((col) => (
-          <div key={col.title} className="space-y-3">
-            {/* Column Header */}
+        {COLUMNS.map((col) => (
+          <div key={col.id} className="space-y-3">
             <div className={`rounded-lg border-t-4 ${col.borderColor} bg-card p-3`}>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm text-foreground">{col.title}</h3>
-                <Badge variant="secondary" className="text-xs">{col.count}</Badge>
+                <h3 className="font-semibold text-sm">{col.title}</h3>
+                <Badge variant="secondary" className="text-xs">{donors[col.id]?.length || 0}</Badge>
               </div>
             </div>
-
-            {/* Donor Cards */}
-            {col.donors.map((donor) => (
-              <Card key={donor.name} className={`${col.color} border shadow-sm`}>
+            {(donors[col.id] || []).map((donor) => (
+              <Card key={donor.id} className={`${col.color} border shadow-sm`}>
                 <CardContent className="p-3 space-y-2">
-                  <p className="font-medium text-sm text-foreground">{donor.name}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{donor.giving}</span>
-                    <Badge className={`text-[10px] px-1.5 py-0 border-0 ${scoreBadgeColor(donor.scoreBadge)}`}>
-                      {donor.scoreBadge}
-                    </Badge>
+                  <p className="font-medium text-sm">{donor.name}</p>
+                  <p className="text-xs text-muted-foreground">{donor.currentGiving} → {donor.targetGiving}</p>
+                  {donor.assignedTo && <p className="text-[11px] text-muted-foreground">Assigned: {donor.assignedTo}</p>}
+                  {donor.outreachDate && <p className="text-[11px] text-muted-foreground">Outreach: {donor.outreachDate}</p>}
+                  {donor.lastContact && <p className="text-[11px] text-muted-foreground">Last contact: {donor.lastContact}</p>}
+                  {donor.note && <p className="text-[11px] italic text-muted-foreground">"{donor.note}"</p>}
+                  {donor.pledgeAmount && <p className="text-[11px] text-muted-foreground">Pledged: {donor.pledgeAmount} on {donor.pledgeDate}</p>}
+                  {donor.upgradeAmount && (
+                    <Badge className="bg-green-100 text-green-800 border-0 text-[10px]">UPGRADED ✓ {donor.upgradeAmount}</Badge>
+                  )}
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {col.id === "identified" && (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setOutreachModal(donor)}>Schedule Outreach</Button>
+                        {!donor.assignedTo && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-7 text-xs">Assign <ChevronDown className="h-3 w-3 ml-1" /></Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              {STAFF.map((s) => <DropdownMenuItem key={s} onClick={() => handleAssign(donor.id, col.id, s)}>{s}</DropdownMenuItem>)}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </>
+                    )}
+                    {col.id === "outreach" && (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setContactModal(donor)}>Log Contact</Button>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleMoveToConversation(donor)}>Move to Conversation</Button>
+                      </>
+                    )}
+                    {col.id === "conversation" && (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setContactModal(donor)}>Log Contact</Button>
+                        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setPledgeModal(donor)}>Request Pledge</Button>
+                      </>
+                    )}
+                    {col.id === "pledge" && (
+                      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setGiftModal(donor)}>Record Gift</Button>
+                    )}
+                    <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setProfileDrawer(donor)}>View Profile</Button>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-muted-foreground">
-                      {donor.daysInStage === 0 ? "Just now" : `${donor.daysInStage}d in stage`}
-                    </span>
-                    <span className="text-[11px] font-medium text-foreground">Score: {donor.score}</span>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full h-7 text-xs"
-                    onClick={() => toastSuccess(`${col.action} completed for ${donor.name}`)}
-                  >
-                    {col.action}
-                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         ))}
       </div>
+
+      {/* Outreach Modal */}
+      <Dialog open={!!outreachModal} onOpenChange={() => setOutreachModal(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Schedule Outreach — {outreachModal?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <RadioGroup defaultValue="phone">
+              <div className="flex items-center gap-2"><RadioGroupItem value="phone" id="phone" /><Label htmlFor="phone">Phone Call</Label></div>
+              <div className="flex items-center gap-2"><RadioGroupItem value="coffee" id="coffee" /><Label htmlFor="coffee">Coffee Meeting</Label></div>
+              <div className="flex items-center gap-2"><RadioGroupItem value="email" id="email" /><Label htmlFor="email">Email</Label></div>
+              <div className="flex items-center gap-2"><RadioGroupItem value="event" id="event" /><Label htmlFor="event">Event Invite</Label></div>
+            </RadioGroup>
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Input type="date" />
+            </div>
+            <div className="space-y-2">
+              <Label>Assigned to</Label>
+              <Select defaultValue="maria">
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {STAFF.map((s) => <SelectItem key={s} value={s.toLowerCase().replace(" ", "-")}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Notes</Label>
+              <Textarea placeholder="Any notes for the outreach…" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOutreachModal(null)}>Cancel</Button>
+            <Button onClick={() => outreachModal && handleScheduleOutreach(outreachModal)}>Schedule</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact Log Modal */}
+      <Dialog open={!!contactModal} onOpenChange={() => setContactModal(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Log Contact — {contactModal?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Contact type</Label>
+              <Select defaultValue="phone"><SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="phone">Phone Call</SelectItem>
+                  <SelectItem value="meeting">Meeting</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Duration (minutes)</Label><Input type="number" defaultValue="15" /></div>
+            <div className="space-y-2"><Label>Summary</Label><Textarea placeholder="What was discussed?" /></div>
+            <RadioGroup defaultValue="positive">
+              <div className="flex items-center gap-2"><RadioGroupItem value="positive" id="pos" /><Label htmlFor="pos">Positive</Label></div>
+              <div className="flex items-center gap-2"><RadioGroupItem value="neutral" id="neu" /><Label htmlFor="neu">Neutral</Label></div>
+              <div className="flex items-center gap-2"><RadioGroupItem value="followup" id="fu" /><Label htmlFor="fu">Needs Follow-up</Label></div>
+            </RadioGroup>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setContactModal(null)}>Cancel</Button>
+            <Button onClick={() => { setContactModal(null); toast.success("✓ Contact logged — synced to Salesforce"); }}>Save Contact Log</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pledge Modal */}
+      <Dialog open={!!pledgeModal} onOpenChange={() => setPledgeModal(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Request Pledge — {pledgeModal?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2"><Label>Suggested ask amount</Label><Input defaultValue={pledgeModal?.targetGiving?.replace("/yr", "") || ""} /></div>
+            <div className="space-y-2"><Label>Assigned to</Label>
+              <Select defaultValue="maria"><SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{STAFF.map((s) => <SelectItem key={s} value={s.toLowerCase().replace(" ", "-")}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Talking points</Label>
+              <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                <li>Highlight impact of increased giving on youth programs</li>
+                <li>Discuss naming opportunity or recognition benefits</li>
+                <li>Share recent success stories from program beneficiaries</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPledgeModal(null)}>Cancel</Button>
+            <Button onClick={() => { setPledgeModal(null); toast.success("✓ Ask brief sent to Maria Santos"); }}>Send Ask Brief</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Gift Recording Modal */}
+      <Dialog open={!!giftModal} onOpenChange={() => setGiftModal(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Record Gift — {giftModal?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2"><Label>Gift amount</Label><Input defaultValue={giftModal?.pledgeAmount || "$5,000"} /></div>
+            <div className="space-y-2"><Label>Payment method</Label>
+              <Select defaultValue="check"><SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="check">Check</SelectItem>
+                  <SelectItem value="cc">Credit Card</SelectItem>
+                  <SelectItem value="ach">ACH</SelectItem>
+                  <SelectItem value="stock">Stock</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Fund</Label>
+              <Select defaultValue="general"><SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General Operating</SelectItem>
+                  <SelectItem value="youth">Youth Programs</SelectItem>
+                  <SelectItem value="tech">Technology</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setGiftModal(null)}>Cancel</Button>
+            <Button onClick={() => giftModal && handleRecordGift(giftModal)} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Record in Salesforce
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Profile Drawer */}
+      <Sheet open={!!profileDrawer} onOpenChange={() => setProfileDrawer(null)}>
+        <SheetContent className="sm:max-w-md overflow-y-auto">
+          {profileDrawer && (
+            <>
+              <SheetHeader><SheetTitle>{profileDrawer.name}</SheetTitle></SheetHeader>
+              <div className="mt-6 space-y-4 text-sm">
+                <div className="space-y-2">
+                  <p><span className="text-muted-foreground">Current Giving:</span> {profileDrawer.currentGiving}</p>
+                  <p><span className="text-muted-foreground">Target:</span> {profileDrawer.targetGiving}</p>
+                  <p><span className="text-muted-foreground">Assigned to:</span> {profileDrawer.assignedTo || "Unassigned"}</p>
+                  {profileDrawer.note && <p><span className="text-muted-foreground">Notes:</span> {profileDrawer.note}</p>}
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">Recent Giving History</h4>
+                  <table className="w-full text-xs">
+                    <thead><tr className="border-b"><th className="text-left py-1">Date</th><th className="text-right py-1">Amount</th></tr></thead>
+                    <tbody>
+                      <tr className="border-b"><td className="py-1">Mar 2026</td><td className="text-right py-1">$500</td></tr>
+                      <tr className="border-b"><td className="py-1">Dec 2025</td><td className="text-right py-1">$1,000</td></tr>
+                      <tr><td className="py-1">Jun 2025</td><td className="text-right py-1">$500</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <Button variant="outline" className="w-full" onClick={() => setProfileDrawer(null)}>Close</Button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
-};
-
-export default DonorPipelinePage;
+}

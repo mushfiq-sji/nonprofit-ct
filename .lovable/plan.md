@@ -1,56 +1,44 @@
 
 
-# Sidebar & Demo Cleanup — Reduce Confusion, Make Demo-Ready
+# Clean Up Agents Page — Show Only Nonprofit-Relevant Agents
 
-## The Problems
+## Problem
 
-1. **Two "AI Agents" entries** — "Browse Agents" (`/agents`) in the main sidebar AND "AI Agents" (`/ai-agents`) in the admin-only "AI" group. Even admins see both, which is confusing.
+The `/agents` page currently shows **6 agent teams with ~22 agents**. Only 1 team ("Core Operations Team" with 5 agents) is relevant to the nonprofit demo. The other 5 teams (Donor Intelligence, Meeting AI, Strategy AI, Project AI) are legacy holdovers from the old product and clutter the page, making it confusing for demos.
 
-2. **"Browse Agents" visible to ALL roles** — no `agencyRoles` filter, so Finance Managers and Operations Managers see AI agent discovery they don't need.
+Your S3 changes (core agent cards with real findings) ARE live — they're just buried under all the legacy teams.
 
-3. **Too many sidebar items for some roles** — e.g., Development Director sees 5+ items. Some pages (like `/ai-agents` operational page) show loading spinners or empty states because they depend on database data that isn't seeded.
+## What Changes
 
-4. **Non-functional pages in the sidebar** — `/ai-agents`, `/ai-agents/:id` pages pull from the `ai_agents` database table which may have no data, leading to blank screens during demos.
+### 1. Remove legacy teams from `agentTeamConfig.ts`
 
-## Proposed Changes
+Delete these 4 teams and all their agents:
+- `sales` (Donor Intelligence Team — 4 legacy agents like "Deal Coach")
+- `meetings` (Meeting AI Team — 4 agents)
+- `eos` (Strategy AI Team — 4 agents)
+- `projects` (Project AI Team — 4 agents)
 
-### 1. Remove "AI Agents" admin-only group from sidebar
-The `ai` group (id: `ai`, line 217-229 in navigationStructure.ts) contains only `/ai-agents` which overlaps with Browse Agents. Remove this group entirely — admin AI agent management already exists at `/admin/ai/agents`.
+**Keep only**: `nonprofit-ops` (Core Operations Team — 5 agents with real findings data)
 
-### 2. Restrict "Browse Agents" to relevant roles
-Add `agencyRoles: ["executive_director", "development_director", "operations_manager"]` to the Browse Agents nav item. Finance Managers don't need agent discovery.
+Also clean up the corresponding entries in `AGENT_ICON_MAP` and `CATEGORY_COLORS`.
 
-### 3. Clean up per-role sidebar items
+### 2. Simplify the browse page layout
 
-Final sidebar per role:
+With only 1 team, the "Team Cards grid" section (which lets you scroll between teams) becomes unnecessary. Remove it and show the 5 core agent cards directly in a clean grid — no intermediate "team card" navigation step.
 
-| Item | Exec. Dir | Dev. Dir | Finance | Ops Mgr |
-|------|-----------|----------|---------|---------|
-| Dashboard | ✓ | ✓ | ✓ | ✓ |
-| Data Health | ✓ | — | ✓ | ✓ |
-| Reconciliation | — | — | ✓ | ✓ |
-| Events | ✓ | ✓ | — | — |
-| Grants | ✓ | ✓ | ✓ | — |
-| Board Reports | ✓ | — | — | — |
-| Donor Pipeline | ✓ | ✓ | — | — |
-| Browse Agents | ✓ | ✓ | — | ✓ |
+### 3. Clean up `AGENT_META` in `AgentsBrowse.tsx`
 
-This gives: ED=6, DD=4, FM=3, OM=3 — clean and focused.
+Remove the demo metadata entries for the 16 deleted agents (deal-coach, meeting-summarizer, eos-coach, etc.) — only keep entries for core agents if needed.
 
-### 4. Remove the standalone `/ai-agents` route from non-admin nav
-Keep the route alive (admin can still access it directly), but remove it from the sidebar navigation group so it doesn't confuse demo users.
+## Result
+
+The `/agents` page will show:
+- Page header + activity banner
+- 5 agent cards in a clean grid, each with real findings, "Run Now", and "View Findings"
+- No confusing team navigation, no legacy agents
 
 ## Files Changed
 
-1. **`src/shared/data/navigationStructure.ts`**
-   - Remove the `ai` group (lines 216-229)
-   - Add `agencyRoles` filter to "Browse Agents" item
-   - Remove Finance Manager from Browse Agents visibility
-
-## What stays the same
-- All pages remain routable (no route deletions)
-- Admin panel navigation unchanged
-- Agent browse and detail pages unchanged
-- Donor Pipeline page unchanged
-- All demo data intact
+1. **`src/components/ai/agentTeamConfig.ts`** — Remove 4 legacy teams, clean up icon map and color map
+2. **`src/pages/AgentsBrowse.tsx`** — Remove legacy AGENT_META entries, simplify layout (remove TeamCard grid, show agents directly)
 

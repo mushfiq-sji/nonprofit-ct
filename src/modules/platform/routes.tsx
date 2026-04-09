@@ -45,6 +45,7 @@ import AIAgentSettingsPage from "@/pages/AIAgentSettingsPage";
 import IntegrationCenterPage from "@/pages/IntegrationCenterPage";
 import AgentsBrowse from "@/pages/AgentsBrowse";
 import AgentDetail from "@/pages/AgentDetail";
+import VoiceNotesPage from "@/pages/VoiceNotesPage";
 
 /**
  * Public routes - no auth required
@@ -103,6 +104,9 @@ export const coreProtectedRoutes = (
     {/* Agent discovery pages */}
     <Route path="/agents" element={<AgentsBrowse />} />
     <Route path="/agents/:slug" element={<AgentDetail />} />
+
+    {/* Voice Notes */}
+    <Route path="/voice-notes" element={<VoiceNotesPage />} />
   </>
 );
 

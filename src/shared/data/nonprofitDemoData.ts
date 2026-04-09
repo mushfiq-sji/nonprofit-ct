@@ -639,3 +639,138 @@ export const DEMO_ORG = {
   staff: 23,
   lastSyncLabel: `Data sourced from Salesforce — Last synced: ${todayAt(9, 15)}`,
 };
+
+// ─── Voice Notes ─────────────────────────────────────────────────
+
+export interface DonorSignals {
+  givingCapacity: string | null;
+  askTiming: string | null;
+  interests: string | null;
+  avoid: string | null;
+  decisionMakers: string | null;
+  upgradePotential: {
+    isCandidate: boolean;
+    suggestedAmount: string | null;
+  };
+  summary: string;
+}
+
+export interface VoiceNote {
+  id: string;
+  donorName: string;
+  recordedAt: Date;
+  durationSeconds: number;
+  transcript: string;
+  signals: DonorSignals;
+}
+
+const _vnNow = new Date();
+const _hoursAgo = (h: number) => new Date(_vnNow.getTime() - h * 60 * 60 * 1000);
+const _daysAgo = (d: number) => new Date(_vnNow.getTime() - d * 24 * 60 * 60 * 1000);
+
+export const demoVoiceNotes: VoiceNote[] = [
+  {
+    id: 'vn1',
+    donorName: 'Margaret Liu',
+    recordedAt: _hoursAgo(2),
+    durationSeconds: 94,
+    transcript:
+      "Margaret is really interested in the naming opportunity for the youth room. Her husband David needs to be part of the conversation — he controls their finances. She mentioned her company is doing really well this year and her bonus is likely coming in Q3. Do not bring up the gala sponsorship — she felt a bit burned by last year's experience. I think she's a strong candidate for Generous1000 at the five thousand dollar level, maybe higher if David is on board.",
+    signals: {
+      givingCapacity: 'Company performing well, Q3 bonus expected',
+      askTiming: 'Q3 or later, after bonus',
+      interests: 'Youth room naming opportunity',
+      avoid: 'Gala sponsorship — negative experience last year',
+      decisionMakers: 'Husband David must be included in ask conversation',
+      upgradePotential: { isCandidate: true, suggestedAmount: '$5,000' },
+      summary:
+        "Strong Generous1000 candidate at $5K — involve husband David, wait for Q3 bonus",
+    },
+  },
+  {
+    id: 'vn2',
+    donorName: 'Susan Park',
+    recordedAt: _daysAgo(1),
+    durationSeconds: 67,
+    transcript:
+      "Susan had a great call today. She mentioned her company had a really strong Q4 and she's feeling generous this year. She asked specifically about the technology access program and seemed very excited about the digital literacy work. I think she's ready to be asked at the ten thousand dollar level, possibly higher. She said she wants to see the impact report before the ask.",
+    signals: {
+      givingCapacity: 'Company had strong Q4, feeling generous',
+      askTiming: 'After receiving impact report',
+      interests: 'Technology access program, digital literacy',
+      avoid: null,
+      decisionMakers: null,
+      upgradePotential: { isCandidate: true, suggestedAmount: '$10,000' },
+      summary:
+        'Ready for $10K ask — send impact report first, emphasize digital literacy',
+    },
+  },
+  {
+    id: 'vn3',
+    donorName: 'Mark Abrams',
+    recordedAt: _daysAgo(2),
+    durationSeconds: 81,
+    transcript:
+      "Mark wants to meet with the ED before making any commitment. He's scheduled for April 15th. He's interested in the youth programs but wants to understand the long-term impact metrics. He mentioned he typically makes his charitable decisions in November so the timing might need to shift. His wife is also a donor independently and we should be careful not to double ask.",
+    signals: {
+      givingCapacity: null,
+      askTiming: 'November — makes charitable decisions then',
+      interests: 'Youth programs, long-term impact metrics',
+      avoid: 'Do not double-ask — wife is also an independent donor',
+      decisionMakers: 'Wants ED meeting first (scheduled Apr 15)',
+      upgradePotential: { isCandidate: true, suggestedAmount: '$7,500' },
+      summary: "ED meeting Apr 15 — ask in November, coordinate with wife's giving",
+    },
+  },
+  {
+    id: 'vn4',
+    donorName: 'Thomas Rivera',
+    recordedAt: _daysAgo(3),
+    durationSeconds: 45,
+    transcript:
+      'Thomas confirmed his pledge of five thousand dollars. He prefers to pay by check and asked us to send the pledge reminder in June. He wants the gift credited to the general operating fund. Very warm and committed — this is a done deal.',
+    signals: {
+      givingCapacity: null,
+      askTiming: 'Send pledge reminder in June',
+      interests: 'General operating fund',
+      avoid: null,
+      decisionMakers: null,
+      upgradePotential: { isCandidate: false, suggestedAmount: null },
+      summary:
+        'Pledge confirmed at $5,000 — check payment, send reminder June, general operating fund',
+    },
+  },
+  {
+    id: 'vn5',
+    donorName: 'Jennifer Walsh',
+    recordedAt: _daysAgo(4),
+    durationSeconds: 112,
+    transcript:
+      "Jennifer was incredibly warm on the call. She mentioned that her late mother was passionate about youth education and that supporting Brightside feels personal to her. She's very interested in the naming opportunity for the youth programs room — this could be a legacy gift situation. She said she wants to bring her daughter to a site visit before making a final decision. I think we could ask her at the twenty-five thousand dollar level for a naming gift.",
+    signals: {
+      givingCapacity: 'Emotionally motivated — memorial/legacy giving potential',
+      askTiming: 'After daughter site visit',
+      interests: 'Youth programs room naming — legacy/memorial gift for late mother',
+      avoid: null,
+      decisionMakers: 'Daughter should be included in site visit',
+      upgradePotential: { isCandidate: true, suggestedAmount: '$25,000' },
+      summary:
+        "Major gift potential at $25K naming gift — schedule site visit with daughter first",
+    },
+  },
+];
+
+export const demoDonorNames = [
+  'Margaret Liu',
+  'Robert Kim',
+  'Patricia Osei',
+  'David Chen',
+  'Susan Park',
+  'Jennifer Walsh',
+  'Mark Abrams',
+  'Thomas Rivera',
+  'Carol Nguyen',
+  'Sarah Chen',
+  'Michael Torres',
+  'Sarah Mitchell',
+];

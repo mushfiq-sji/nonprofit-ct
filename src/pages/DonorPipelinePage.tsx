@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, ChevronDown, Loader2, DollarSign, TrendingUp, Clock, Users } from "lucide-react";
+import { ChevronDown, Loader2, DollarSign, TrendingUp, Clock, Users, Mic } from "lucide-react";
 import { toast } from "sonner";
 
 interface Donor {
@@ -68,6 +69,7 @@ const INITIAL_DONORS: Record<string, Donor[]> = {
 const STAFF = ["Maria Santos", "Kevin Park", "Lisa Chen"];
 
 export default function DonorPipelinePage() {
+  const navigate = useNavigate();
   const [donors, setDonors] = useState(INITIAL_DONORS);
   const [outreachModal, setOutreachModal] = useState<Donor | null>(null);
   const [contactModal, setContactModal] = useState<Donor | null>(null);
@@ -201,6 +203,15 @@ export default function DonorPipelinePage() {
                       <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setGiftModal(donor)}>Record Gift</Button>
                     )}
                     <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setProfileDrawer(donor)}>View Profile</Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0"
+                      title="Record voice note"
+                      onClick={() => navigate(`/voice-notes?donor=${encodeURIComponent(donor.name)}`)}
+                    >
+                      <Mic className="h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

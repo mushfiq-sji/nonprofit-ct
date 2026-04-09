@@ -75,6 +75,7 @@ export const navigationGroups: NavGroup[] = [
     items: [
       { title: "AI Agents", href: "/agents", icon: "Bot", isAI: true },
       { title: "AI Chat", href: "/ai-chat", icon: "MessageSquare", isAI: true },
+      { title: "Voice Notes", href: "/voice-notes", icon: "Mic", isAI: true },
     ],
   },
   {

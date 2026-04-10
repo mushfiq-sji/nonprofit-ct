@@ -1,710 +1,411 @@
-# SJ Control Tower — Product Features & Capabilities
+# Nonprofit Control Tower — Product Features & Capabilities
 
-**Version:** 1.0.0
-**Last Updated:** February 4, 2026
-**Target Audience:** Mid-market companies (50-500 employees), Professional services firms, EOS-run organizations
+**Version:** 2.0.0  
+**Last Updated:** April 10, 2026  
+**Brand:** NonprofitAI.software  
+**Target Audience:** Modern nonprofits, foundations, and mission-driven organizations
 
 ---
 
 ## 🎯 Product Overview
 
-**SJ Control Tower** is the intelligent command center for modern businesses — unifying task management, meeting intelligence, project delivery, business development, team productivity, and strategic planning into a single, AI-powered workspace.
+**Nonprofit Control Tower** is the operational intelligence layer for modern nonprofits — an agentic platform that sits on top of your existing CRM and finance systems, surfacing insights, automating routine work, and giving every role on your team a purpose-built dashboard.
 
 ### The Problem We Solve
 
-Most organizations struggle with:
-- **Tool sprawl** — scattered data across 10+ disconnected systems
-- **Context switching** — constant app-hopping kills productivity
-- **Information silos** — sales doesn't know what engineering is doing
-- **Manual busywork** — copying meeting notes, chasing action items, updating spreadsheets
-- **Poor visibility** — leadership can't see real-time business health
+Nonprofits struggle with:
+- **Tool sprawl** — donor data in Salesforce, finances in QuickBooks, events in Eventbrite, grants in spreadsheets
+- **Data quality decay** — duplicates, incomplete profiles, and stale records silently erode fundraising effectiveness
+- **Manual busywork** — writing thank-you letters, reconciling transactions, preparing board reports
+- **No single source of truth** — the ED asks "how are we doing?" and gets five different answers
+- **Missed follow-ups** — event attendees never get thanked, mid-level donors never get upgraded
 
 ### Our Solution
 
-One unified platform where every team — from the CEO tracking OKRs to developers managing sprints — can plan, execute, and measure work with AI assistance at every step.
+One intelligent layer that connects to the systems you already use — Salesforce, Bloomerang, QuickBooks, Stripe, Eventbrite — and gives your team:
+- **Role-specific dashboards** that show each person exactly what they need
+- **AI agents** that draft letters, flag data issues, and surface opportunities
+- **Operational modules** that turn raw data into actionable insights
+- **Zero data entry** — everything flows from your connected systems
 
 ---
 
 ## 🚀 Core Value Propositions
 
-### 1. **EOS-Native Architecture**
-The only business operations platform built specifically for companies running on the **Entrepreneurial Operating System (EOS)**.
+### 1. **Not a CRM Replacement — A CRM Amplifier**
+We don't ask you to abandon Salesforce or Bloomerang. We sit on top, reading your data and surfacing what matters.
 
 **What this means:**
-- Vision/Traction Organizer (V/TO) built-in
-- OKR management with quarterly check-ins
-- IDS (Identify, Discuss, Solve) issue tracking
-- Scorecard metrics with automated weekly updates
-- Accountability Chart with role clarity
+- Connect your existing CRM in minutes
+- See "Last synced: 2 minutes ago" on every data point
+- All insights trace back to your source system
+- No duplicate data entry, ever
 
-**Who benefits:** Companies running EOS frameworks, leadership teams doing Level 10 meetings, integrators and visionaries
+**Who benefits:** Organizations that have invested in a CRM but aren't getting the insights they need from it.
 
-### 2. **AI That Understands Your Business**
-Not just generic AI — configurable agents with memory, tools, and access to your knowledge base.
-
-**What this means:**
-- AI agents trained on your company docs, meeting notes, and processes
-- Semantic search (RAG) across all your knowledge
-- Auto-extraction of action items from meeting transcripts
-- Context-aware assistance for every team member
-- Multi-provider support (OpenAI, Anthropic, Google, Perplexity)
-
-**Who benefits:** Knowledge workers drowning in documentation, teams wanting faster onboarding, executives needing instant insights
-
-### 3. **Meeting Intelligence Without the Manual Work**
-Zoom, Teams, and Google Meet integration with AI-powered transcription and insights.
+### 2. **AI That Understands Your Donors**
+Not generic AI — specialized agents trained on nonprofit operations with access to your donor data, giving history, and organizational context.
 
 **What this means:**
-- Auto-transcribed meetings with searchable history
-- AI-generated summaries and key decisions
-- Automatic action item extraction
-- Meeting efficiency scoring
-- Cross-meeting context and follow-ups
+- AI-generated acknowledgment letters that reference specific gifts, funds, and personal details
+- Donor upgrade recommendations based on giving patterns and engagement scores
+- Automated data health scoring that catches duplicates and incomplete records
+- Natural language queries: "Show me donors who gave to Youth Programs last year"
 
-**Who benefits:** Sales teams, project managers, executives, anyone in back-to-back meetings
+**Who benefits:** Development teams, executive directors, anyone who touches donor relationships.
+
+### 3. **Role-Specific Intelligence**
+Four purpose-built dashboards ensure every team member sees what matters to them — not a generic overview.
+
+**What this means:**
+- **Executive Director** → KPIs, board readiness, grant status, data health score
+- **Development Director** → Donor pipeline, event follow-ups, upgrade opportunities
+- **Finance Manager** → Reconciliation status, fund accounting, grant spending
+- **Operations Manager** → Data health, integration status, AI agent monitoring
+
+**Who benefits:** Leadership teams tired of one-size-fits-all dashboards.
 
 ### 4. **Modular by Design — Use Only What You Need**
-Every feature module can be toggled on/off at the system level.
+Every feature module can be toggled on or off. Start small, grow as you need.
 
 **What this means:**
-- Start with just task management, add projects later
-- Only pay for (and train on) the features you use
-- Gradual adoption without overwhelming teams
-- Custom configurations per department or team
+- Start with Data Health and Grants, add Events and Board Reports later
+- Admin controls which modules are active
+- Feature flags for gradual rollout across teams
+- No wasted screen real estate for features you don't use
 
-**Who benefits:** Growing companies, budget-conscious teams, phased rollouts
+**Who benefits:** Organizations at any stage of digital maturity.
 
 ---
 
 ## 📦 Feature Modules
 
-### **Platform Core — The Foundation**
+### **Dashboard — Role-Specific Command Center**
 
 **What it does:**
-Enterprise-grade authentication, role-based access control, real-time notifications, and module management.
+Personalized dashboards for four nonprofit leadership roles, each showing the metrics, alerts, and actions most relevant to that person's responsibilities.
 
 **Key Features:**
-- Email/password authentication with SSO (Azure AD, Google Workspace)
-- Three-tier role system (Admin, Moderator, User)
-- Personal OAuth connections (Zoom, Google, Microsoft)
-- Real-time in-app notifications via Supabase subscriptions
-- Dark mode and customizable branding
-- Activity logging and audit trails
+- Personalized greeting with real-time stats (Active Donors: 1,847 · Grants Active: 4 · Data Health: 82% · Tasks Pending: 7)
+- AI recommendation feed with actionable alerts
+- "Meet Your AI Team" quick access to 16 specialized agents
+- Role switcher for users who wear multiple hats
 
-**Use Cases:**
-- IT admins provisioning users with proper access levels
-- Employees connecting personal calendar and meeting accounts
-- Compliance teams reviewing audit logs
-- Marketing customizing platform branding for white-label deployments
+**Role Views:**
 
-**Technical Highlights:**
-- Row-level security (RLS) on all database tables
-- Supabase Auth for enterprise-grade authentication
-- Feature flags for gradual rollouts
-- Modular routing with protected and admin routes
+| Role | Key Widgets |
+|------|-------------|
+| **Executive Director** | KPI summary, board readiness score, grant pipeline, data health overview |
+| **Development Director** | Donor pipeline Kanban, event follow-up queue, mid-donor upgrade opportunities |
+| **Finance Manager** | Reconciliation dashboard, fund utilization, unmatched transactions, grant spending |
+| **Operations Manager** | Data health score, integration status, AI agent activity, system health |
 
 ---
 
-### **Actions — Task Management Reimagined**
+### **Donor Pipeline — From Identification to Upgrade**
 
 **What it does:**
-Task CRUD with streams, categories, comments, subtasks, and cross-module assignment.
+A visual Kanban board that tracks donor upgrade opportunities through five stages, giving Development Directors a clear picture of their cultivation pipeline.
 
 **Key Features:**
-- **Task Streams** — organize tasks into logical workflows (e.g., "Sprint 42", "Q1 Initiatives")
-- **Smart Categories** — reusable labels across all tasks (e.g., "Bug", "Feature Request")
-- **Rich Comments** — threaded discussions on every task
-- **Subtasks** — break complex work into trackable pieces
-- **Advanced Filters** — by status, priority, assignee, stream, category, date
-- **Cross-Module Links** — connect tasks to projects, meetings, OKRs
+- **5-Stage Pipeline**: Identified → Outreach Scheduled → In Conversation → Pledge Made → Upgraded
+- **Donor Profile Drawer**: Click any donor to see full context — giving history, contact notes, fund designations, volunteer history
+- **AI Acknowledgment Letter Generator**: One-click personalized thank-you letters drafted in the ED's voice
+- **Action Modals**: Schedule outreach, log contact, record pledges — all from the Kanban board
+- **Engagement Scoring**: Each donor shows a consistency score and upgrade readiness indicator
+
+**AI Acknowledgment Letter Generator (Highlight Feature):**
+- Staff opens a donor profile → clicks "Generate Acknowledgment Letter"
+- AI reads: donor name, gift amount, gift date, fund designation, giving history, contact notes, volunteer/event history
+- Generates a personalized letter in the Executive Director's voice with:
+  - Correct salutation using the donor's first name
+  - Specific gift reference ("your generous gift of $2,500 to our Youth Programs fund")
+  - Personal touch from contact notes
+  - Impact statement matching the fund they gave to
+  - Warm closing signed by the ED
+- **Action buttons**: Copy to Clipboard · Download · Attach to Donor Record · Edit Before Sending
 
 **Use Cases:**
-- Engineering teams managing sprint backlogs
-- Marketing coordinating campaign launches
-- Support teams triaging customer issues
-- Leadership tracking strategic initiatives
-
-**Differentiators vs. Competitors:**
-- **Streams** provide flexible grouping beyond rigid boards
-- Native integration with EOS Scorecard and OKRs
-- Task comments auto-populate meeting agendas
-- AI can suggest task assignments based on workload
-
-**Technical Highlights:**
-- 6 database tables (tasks, task_streams, task_categories, task_comments, subtasks, task_stream_members)
-- Real-time collaboration via Supabase subscriptions
-- 12 custom hooks for CRUD, filtering, and assignments
-- Seed data includes 5 streams, 6 categories, 20 sample tasks
+- Development Director reviewing the week's cultivation priorities
+- ED generating personalized thank-you letters in 30 seconds
+- Board members seeing pipeline health at a glance
 
 ---
 
-### **EOS Framework — Strategy Meets Execution**
+### **Data Health — CRM Quality Intelligence**
 
 **What it does:**
-The complete Entrepreneurial Operating System toolkit — V/TO, OKRs, Issues (IDS), Scorecard, and Accountability Chart.
+Surfaces data quality issues from your connected CRM — duplicates, incomplete profiles, stale records — and provides tools to fix them without leaving the platform.
 
 **Key Features:**
+- **Data Health Score**: Overall CRM quality as a percentage (e.g., 82%)
+- **Duplicate Detection**: Probability-scored duplicate records with side-by-side comparison
+- **Merge Workflow**: Review duplicates, approve merges, or dismiss false positives
+- **Profile Completion**: Identify records missing email, phone, address, or giving history
+- **Stale Record Detection**: Flag donors not contacted in 12+ months
+- **Mid-Donor Upgrade Opportunities**: AI-identified donors ready for higher giving tiers based on consistency and engagement scores
 
-#### **Vision/Traction Organizer (V/TO)**
-- Core values, core focus, 10-year target
-- 3-year picture, 1-year plan
-- Quarterly Rocks (OKRs)
-
-#### **OKRs (Objectives & Key Results)**
-- Quarterly and annual objectives
-- Measurable key results with target values
-- Weekly/monthly check-ins and progress tracking
-- Roll-up dashboards for leadership visibility
-
-#### **IDS (Identify, Discuss, Solve)**
-- Issue tracking for Level 10 meetings
-- Categorization by department/priority
-- Resolution workflow with history
-
-#### **Scorecard Metrics**
-- Weekly/monthly KPIs per department
-- Automated data entry via integrations
-- Visual trends and alerts for off-track metrics
-
-#### **Accountability Chart**
-- Visual org chart with role clarity
-- GWC (Gets it, Wants it, Capacity) scoring
-- Integration with user roles and permissions
+**UI Pattern:** Insight cards with action buttons (Approve Merge · Review · Dismiss · Complete Profile), NOT spreadsheet-style record tables.
 
 **Use Cases:**
-- Leadership teams running quarterly planning sessions
-- Integrators tracking company-wide progress
-- Department heads managing team scorecards
-- HR mapping accountability and reporting lines
-
-**Why It Matters:**
-Most EOS companies use spreadsheets and disconnected tools. Control Tower is the **first platform built natively for EOS**.
-
-**Technical Highlights:**
-- 17 user-facing pages + 4 admin pages
-- 14 database tables (vto_*, okr_*, eos_issues, scorecard_metrics, accountability_chart_positions)
-- Integration with task streams (Rocks become tasks)
-- AI agent can answer "What are our Q1 priorities?" using V/TO data
+- Operations Manager running a weekly data quality audit
+- Development Director identifying donors ready for upgrade cultivation
+- Finance Manager ensuring accurate donor records for tax receipts
 
 ---
 
-### **Meetings — Intelligence Without the Manual Work**
+### **Grants Management — Lifecycle Tracking**
 
 **What it does:**
-Meeting management with Zoom, Microsoft Teams, and Google Meet integration, AI transcription, and auto-extracted action items.
+Track active grants, monitor deadlines, visualize fund utilization, and generate compliance summaries.
 
 **Key Features:**
-
-#### **Meeting Creation & Sync**
-- Create meetings from within Control Tower
-- Auto-sync with Zoom, Teams, Google Calendar
-- Recurring series support with flexible schedules
-- Participant management with role assignments
-
-#### **Agenda & Structure**
-- Pre-meeting agenda creation with time blocks
-- Agenda templates (Level 10, Sprint Planning, 1-on-1)
-- Real-time collaborative editing
-- Carry-over unfinished items to next meeting
-
-#### **AI-Powered Intelligence**
-- Auto-transcription via Zoom/Teams/Google APIs
-- AI-generated meeting summaries
-- Automatic action item extraction
-- Key decisions and next steps highlighted
-- Meeting efficiency scoring (time vs. outcomes)
-
-#### **Meeting History & Search**
-- Full-text search across all meeting transcripts
-- Cross-meeting context ("What did we decide about X last month?")
-- Linked action items tracked to completion
-- Meeting analytics (frequency, duration, participant patterns)
+- Active grants dashboard with status indicators ($497K total across 4 grants)
+- Upcoming deadline alerts with countdown timers
+- Fund utilization progress bars (visual spending vs. allocation)
+- Spending alerts when grants approach budget thresholds
+- Deliverable checklists with staff assignment
+- Generate Compliance Summary action (one-click report generation)
 
 **Use Cases:**
-- Sales teams reviewing discovery call transcripts
-- Product managers tracking feature discussions across sprints
-- Executives seeing all action items assigned to them
-- HR conducting structured 1-on-1s with note history
-
-**Integration Highlights:**
-- **Zoom:** Meeting creation, transcripts via Zoom API
-- **Microsoft Teams:** Teams meetings, calendar sync, channel messaging
-- **Google Meet:** Meeting creation, OAuth integration, calendar sync
-
-**Technical Highlights:**
-- 7-tab detail view (Overview, Agenda, Participants, Takeaways, Transcripts, Tasks, Efficiency)
-- 8 database tables (meetings, meeting_participants, meeting_transcripts, meeting_agenda_items, meeting_takeaways)
-- 3 edge functions (categorize-meeting, sync-zoom-meeting, sync-google-meet)
-- Seed data includes 10 meetings across different types
+- Finance Manager monitoring grant spending against budget
+- Program Manager tracking deliverable deadlines
+- ED preparing for funder check-in calls
 
 ---
 
-### **Knowledge Base — Your Company's Second Brain**
+### **Events — Post-Event Engagement Intelligence**
 
 **What it does:**
-Searchable articles, file uploads, process documentation, and semantic search (RAG) with vector embeddings.
+Turns raw event attendance data into engagement opportunities — tag attendees, identify volunteers, and create follow-up tasks automatically.
 
 **Key Features:**
+- Recent events dashboard with attendance data
+- **"Thank + Tag" Workflow**: Bulk-tag attendees in Salesforce (donor, volunteer, prospect, board candidate)
+- Volunteer interest flags from event interactions
+- AI-suggested follow-up actions based on attendee behavior
+- Create Follow-Up Task action with one click
+- Automated follow-up task creation for prospects and volunteers
 
-#### **Content Management**
+**Use Cases:**
+- Development team processing Spring Gala attendees the day after the event
+- Volunteer coordinator identifying new volunteer prospects
+- ED reviewing which board candidates attended the cultivation dinner
+
+---
+
+### **Board Reports — Board-Ready in One Click**
+
+**What it does:**
+Generate polished, board-ready reports from aggregated data across all connected systems.
+
+**Key Features:**
+- **KPI Summary Cards**: Key metrics formatted for board presentation
+- **Financial Snapshot**: Revenue, expenses, and variance highlights (green for positive, red for negative)
+- **Engagement Metrics**: Donor retention, new donor acquisition, event attendance
+- **Document-Style Preview**: See the report exactly as the board will receive it
+- **Approval Workflow**: Draft → Review → Approve → Distribute
+- **Download PDF**: One-click export for email distribution
+- **Generate New Draft**: Pull latest data and create a fresh report
+
+**Use Cases:**
+- ED preparing for quarterly board meeting
+- Finance Manager reviewing financial snapshot before approval
+- Board chair previewing the report before distribution
+
+---
+
+### **Reconciliation — Financial Integrity**
+
+**What it does:**
+Match transactions across payment processors (Stripe, PayPal) and CRM/finance systems (Salesforce, QuickBooks) to ensure every dollar is accounted for.
+
+**Key Features:**
+- **Unmatched Transactions List**: Stripe charges with no corresponding CRM record
+- **Match or Create Workflow**: Match to existing donor record or create a new one
+- **Fee Variance Alerts**: Flag transactions where processor fees don't match expectations
+- **Restricted Fund Mismatches**: Identify gifts posted to the wrong fund
+- **Monthly Reconciliation Summary**: Dashboard showing reconciled vs. pending
+- **Export Reconciliation Report**: Download for audit trail
+- **Mark as Balanced**: Sign off on completed reconciliation periods
+
+**Use Cases:**
+- Finance Manager reconciling monthly Stripe transactions against Salesforce
+- Auditor reviewing restricted fund accuracy
+- ED checking financial integrity before board report
+
+---
+
+### **Knowledge Base — Institutional Memory**
+
+**What it does:**
+Searchable articles, file uploads, process documentation, and semantic search (RAG) with vector embeddings — your organization's second brain.
+
+**Key Features:**
 - Rich-text articles with markdown support
 - Hierarchical categories and tags
-- File attachments (PDFs, docs, images, videos)
-- Version history and change tracking
-- Draft/published workflow
-
-#### **Search & Discovery**
-- Full-text search across all articles
-- Semantic search using vector embeddings (pgvector)
-- "Find similar" recommendations
-- Most viewed / recently updated feeds
-
-#### **Access Control**
-- Public, team-only, or private articles
-- Role-based editing permissions
-- Personal knowledge files (Google Drive, OneDrive sync)
-- Shared team libraries
-
-#### **AI Integration**
-- AI agents can reference knowledge base (RAG)
-- Auto-tagging and categorization
-- Content summarization
-- "Ask our docs" conversational interface
+- File attachments (PDFs, docs, images)
+- **Semantic Search**: Find information using natural language, not just keywords
+- **AI Integration**: AI agents can reference knowledge base articles when answering questions
+- Personal knowledge files for individual team members
 
 **Use Cases:**
-- Engineering teams documenting architecture decisions
-- HR creating employee handbooks and policies
-- Sales storing battle cards and competitive intel
-- Support building a customer-facing FAQ
-
-**Competitive Advantages:**
-- **Native vector search** — not bolted on
-- **Multi-file-type support** — not just markdown
-- **AI-native** — knowledge feeds directly to agents
-- **Modular** — runs standalone or integrates with tasks/meetings
-
-**Technical Highlights:**
-- 5 database tables (knowledge_entries, knowledge_categories, knowledge_files, user_knowledge_files, embeddings)
-- pgvector extension for semantic search
-- 2 edge functions (semantic-search, google-drive-upload)
-- Seed data includes 15 articles across 5 categories
+- New staff member searching "How do we process matching gifts?"
+- ED asking AI assistant "What's our policy on anonymous donations?"
+- Development team storing donor research and cultivation plans
 
 ---
 
-### **Projects — Delivery at Scale**
+## 🤖 AI Features — 16 Agents Across 4 Teams
 
-**What it does:**
-Full project lifecycle management with milestones, risk tracking, team assignments, client portal, and ActiveCollab sync.
+### **AI Agent Discovery**
+Browse and explore 16 specialized AI agents organized into 4 teams. Each agent is purpose-built for a specific nonprofit workflow.
 
-**Key Features:**
+### **Donor Intelligence Team**
+| Agent | What It Does |
+|-------|-------------|
+| **Deal Coach** | Provides real-time coaching on donor cultivation strategies |
+| **Daily Briefing** | Morning digest of donor pipeline changes and recommended actions |
+| **Quick Email** | Draft personalized donor emails based on context and history |
+| **Deal AI Chat** | Conversational Q&A about your donor pipeline and opportunities |
 
-#### **Project Setup**
-- Multi-template project creation (Fixed Price, T&M, Retainer, Internal)
-- Client association and billing settings
-- Team member assignments with role clarity
-- Project status pipeline (Planning → Active → On Hold → Completed)
+### **Meeting AI Team**
+| Agent | What It Does |
+|-------|-------------|
+| **Meeting Summarizer** | Auto-generate summaries from meeting transcripts |
+| **Action Extractor** | Pull action items from meeting notes and assign to team members |
+| **Efficiency Analyzer** | Score meeting productivity and suggest improvements |
+| **Client Call Analyzer** | Analyze donor/funder calls for sentiment and key decisions |
 
-#### **Milestone Management**
-- Deadline tracking with automated alerts
-- Deliverable checklists
-- Progress percentage and burn-down charts
-- Dependency mapping
+### **Strategy AI Team**
+| Agent | What It Does |
+|-------|-------------|
+| **EOS Coach** | Strategic planning guidance for organizational health |
+| **Pattern Detective** | Surface trends and patterns across organizational data |
+| **Pod Health** | Monitor team workload and collaboration health |
+| **Quarterly Digest** | Automated quarterly performance narrative from your data |
 
-#### **Risk & Issue Tracking**
-- Risk register with probability × impact scoring
-- Mitigation plans and ownership
-- Issue escalation workflows
-- Real-time risk dashboards for leadership
+### **Project AI Team**
+| Agent | What It Does |
+|-------|-------------|
+| **Project Analyst** | Analyze project health, risks, and resource allocation |
+| **Bug & Feature Planner** | Plan and prioritize technical improvements |
+| **Technical Planner** | Generate technical implementation plans |
+| **Code Reviewer** | Automated code quality review and suggestions |
 
-#### **Client Portal**
-- Password-protected client access
-- Project overview with milestones
-- File sharing and feedback
-- Invoice and payment history
+### **AI-Powered Features**
+- **Acknowledgment Letter Generator**: Personalized donor thank-you letters in 30 seconds
+- **Semantic Search (RAG)**: Natural language search across all knowledge base content
+- **Data Health Scoring**: AI-driven CRM quality assessment
+- **Donor Upgrade Recommendations**: Pattern-based identification of upgrade-ready donors
+- **Event Follow-Up Suggestions**: AI-recommended actions based on attendee behavior
 
-#### **Integrations**
-- **ActiveCollab sync** — bi-directional task updates
-- **Jira sync** — engineering ticket integration
-- **HubSpot** — link deals to delivery projects
-- **Time tracking** — Toggl/Harvest integration ready
-
-**Use Cases:**
-- Agencies managing multiple client projects
-- Internal IT delivering strategic initiatives
-- Professional services firms tracking billable vs. non-billable
-- PMOs ensuring cross-project resource allocation
-
-**Differentiators:**
-- **Client portal included** — no extra tool needed
-- **EOS integration** — projects roll up to Scorecard metrics
-- **Risk-first mindset** — proactive issue management
-- **Modular billing** — fixed, T&M, retainer, or hybrid
-
-**Technical Highlights:**
-- 9 database tables (projects, project_milestones, project_members, project_risks, project_files, project_billing)
-- Client portal with secure token-based access
-- 15 custom hooks for CRUD, filtering, team management
-- Seed data includes 8 projects across different types
-
----
-
-### **Business Development — Pipeline to Revenue**
-
-**What it does:**
-Deal pipeline, contact management, lead follow-ups, and HubSpot CRM sync.
-
-**Key Features:**
-
-#### **Deal Management**
-- Visual pipeline (Lead → Qualified → Proposal → Negotiation → Closed)
-- Deal value and probability scoring
-- Expected close date tracking
-- Win/loss analysis and reasons
-
-#### **Contact Management**
-- Centralized contact database
-- Relationship mapping (decision maker, influencer, champion)
-- Communication history (calls, emails, meetings)
-- LinkedIn and social profile links
-
-#### **Lead Follow-Up System**
-- Automated follow-up reminders
-- Email sequence templates
-- Activity logging (calls, demos, proposals sent)
-- Conversion metrics and funnel analytics
-
-#### **CRM Sync**
-- **HubSpot integration** — bi-directional sync for deals, contacts, companies
-- **Salesforce ready** — data model compatible
-- **Meeting link** — auto-log meeting participants as contacts
-
-**Use Cases:**
-- Sales teams managing inbound and outbound pipelines
-- Founders tracking early customer conversations
-- Account managers nurturing existing clients
-- Marketing measuring campaign-to-revenue attribution
-
-**Why It Matters:**
-Most companies use HubSpot or Salesforce but need a **unified view** with project delivery, OKRs, and team productivity. Control Tower connects sales to operations.
-
-**Technical Highlights:**
-- 4 database tables (deals, contacts, deal_contacts, deal_activities)
-- HubSpot sync via edge functions (planned Q2 2026)
-- 8 custom hooks for pipeline management
-- Seed data includes 12 deals across different stages
-
----
-
-### **Productivity & Process Documentation**
-
-**What it does:**
-Department productivity dashboards, employee profiles, process documentation library, and HR data sync.
-
-**Key Features:**
-
-#### **Productivity Dashboard**
-- Department-level metrics (velocity, utilization, output)
-- Employee-level performance tracking
-- Time tracking integration (Toggl, Harvest)
-- Real-time leaderboards (gamification)
-
-#### **Employee Profiles**
-- Skills inventory and certifications
-- Career goals and development plans
-- Performance review history
-- Project and task history
-
-#### **Process Documentation**
-- Step-by-step workflow guides
-- SOP (Standard Operating Procedure) library
-- Video tutorials and screen recordings
-- Department-specific best practices
-
-#### **HR System Sync**
-- **BambooHR integration** — employee data sync
-- **Gusto/ADP payroll** — cost tracking
-- Org chart auto-generation
-- Onboarding checklists
-
-**Use Cases:**
-- Department heads tracking team output
-- HR managing employee development
-- Operations teams documenting repeatable processes
-- Leadership seeing productivity trends across departments
-
-**Unique Value:**
-Links productivity metrics to **EOS Scorecard**, so leadership sees business health in one view.
-
-**Technical Highlights:**
-- 5 database tables (productivity_metrics, employee_profiles, process_docs, departments)
-- 12 edge functions for data sync and analytics
-- Integration with task and project modules
-- Seed data includes 6 departments, 20 employees, 10 process docs
-
----
-
-### **Admin Panel — Control Center for Admins**
-
-**What it does:**
-User management, system settings, integration configuration, activity logs, feature flags, and roadmap tracking.
-
-**Key Features:**
-
-#### **User & Role Management**
-- Bulk user provisioning
-- Role assignments (Admin, Moderator, User)
-- Module access permissions per user
-- User activity monitoring
-
-#### **System Settings**
-- Feature flag toggles (gradual rollouts)
-- Module enable/disable controls
-- Branding customization (logo, colors, domain)
-- Email templates and SMTP configuration
-
-#### **Integration Hub**
-- OAuth app configuration (Zoom, Google, Microsoft)
-- API key management for AI providers
-- Webhook endpoints for third-party tools
-- Sync status and error logs
-
-#### **Analytics & Reporting**
-- User activity logs (login, actions, API calls)
-- Module adoption metrics
-- System health dashboards
-- Export to CSV/PDF
-
-#### **Product Roadmap (Internal)**
-- Implementation status tracker (37 admin pages)
-- QA checklist management
-- Developer task assignments
-- Release planning and sign-off workflow
-
-**Use Cases:**
-- IT admins onboarding new teams
-- Security teams auditing access logs
-- Product managers tracking feature adoption
-- Leadership reviewing roadmap progress
-
-**Technical Highlights:**
-- 37 admin pages across 9 categories
-- Real-time activity logs via Supabase subscriptions
-- Role-based route protection (AdminRoute wrapper)
-- Integration with all other modules for cross-module analytics
-
----
-
-## 🤖 AI & Automation Features
-
-### **AI Agents**
-
-**What it does:**
-Configurable AI agents with memory, tools, execution history, and conversational chat interface.
-
-**Key Features:**
-- **Multi-Provider Support** — OpenAI, Anthropic, Google, Perplexity
-- **Agent Builder** — define agent purpose, tone, available tools
-- **Memory & Context** — agents remember past conversations
-- **Tool Integration** — agents can create tasks, search knowledge, summarize meetings
-- **Execution History** — audit trail of all agent actions
-- **Usage Analytics** — token usage, cost tracking, response times
-
-**Use Cases:**
-- "Summarize all meetings about Project Phoenix"
-- "What are the top risks across all active projects?"
-- "Create tasks for all action items from today's Level 10 meeting"
-- "Find me the process doc for onboarding a new client"
-
-**Competitive Edge:**
-Not generic ChatGPT — these agents have **full access to your Control Tower data** (meetings, tasks, projects, knowledge) via RAG.
-
-**Technical Highlights:**
-- 4 database tables (ai_agents, ai_agent_runs, ai_chat_history, ai_models)
-- MCP (Model Context Protocol) server integration
-- Vector embeddings for semantic search
-- Edge function for ai-chat-assistant
-
----
-
-### **Semantic Search (RAG)**
-
-**What it does:**
-Vector embeddings pipeline for semantic search across all knowledge base content.
-
-**Key Features:**
-- **Automatic Embedding Generation** — all articles/files vectorized on upload
-- **Similarity Search** — find conceptually related content, not just keyword matches
-- **Cross-Module Search** — search across knowledge base, meeting transcripts, task comments
-- **AI-Powered Results** — LLM synthesizes answers from multiple sources
-
-**Use Cases:**
-- "Find all discussions about the new pricing model" (searches meetings + knowledge + tasks)
-- "What's our process for handling customer escalations?" (semantic match across process docs)
-- "Show me everything related to [competitor name]" (across all modules)
-
-**Technical Highlights:**
-- pgvector extension for vector storage
-- Gemini API for embedding generation
-- Semantic-search edge function
-- Real-time index updates on content changes
+### **AI Provider**
+- **Built-in AI** (Lovable AI) — no API key needed, works out of the box
+- **Custom providers** — OpenAI, Anthropic, Google AI supported for self-hosted deployments
 
 ---
 
 ## 🔗 Integrations
 
-### **Communication & Meetings**
+### **CRM Systems**
 | Provider | Features | Status |
 |----------|----------|--------|
-| **Zoom** | Meeting sync, transcripts | ✅ Available |
-| **Microsoft Teams** | Teams, Calendar, OneDrive | ✅ Available |
-| **Google Meet** | Meeting creation, sync | ✅ Available |
+| **Salesforce** | Bi-directional donor/contact sync, bulk tagging | ✅ Supported |
+| **Blackbaud RE NXT** | Donor data sync, gift matching | 🔜 Coming Soon |
+| **Bloomerang** | Contact and giving sync | 🔜 Coming Soon |
+| **Neon CRM** | Donor management integration | 📋 Planned |
+| **Virtuous** | CRM data sync | 📋 Planned |
 
-### **Productivity**
+### **Finance & Payments**
 | Provider | Features | Status |
 |----------|----------|--------|
-| **Google Drive** | File sync, knowledge base upload | ✅ Available |
-| **Microsoft OneDrive** | File storage, document sharing | ✅ Available |
+| **QuickBooks Online** | Fund accounting, transaction matching | ✅ Supported |
+| **Stripe** | Payment reconciliation, transaction matching | ✅ Supported |
+| **PayPal** | Donation matching, fee tracking | 🔜 Coming Soon |
 
-### **CRM & Business Development**
+### **Events**
 | Provider | Features | Status |
 |----------|----------|--------|
-| **HubSpot** | Deals, contacts, companies sync | 🔜 Q2 2026 |
-| **Salesforce** | Bi-directional CRM sync | 📋 Planned |
-
-### **Project Management**
-| Provider | Features | Status |
-|----------|----------|--------|
-| **ActiveCollab** | Task and project sync | 🔜 Q2 2026 |
-| **Jira** | Engineering ticket integration | 📋 Planned |
-
-### **HR & Productivity**
-| Provider | Features | Status |
-|----------|----------|--------|
-| **BambooHR** | Employee data sync | 📋 Planned |
-| **Toggl / Harvest** | Time tracking integration | 📋 Planned |
+| **Eventbrite** | Attendance data, attendee tagging | 🔜 Coming Soon |
+| **Givebutter** | Fundraising event integration | 📋 Planned |
+| **OneCause** | Auction and event data | 📋 Planned |
 
 ### **Communication**
 | Provider | Features | Status |
 |----------|----------|--------|
-| **Slack** | Notifications, meeting summaries | 🔜 Q2 2026 |
-| **SendGrid** | Transactional email | ✅ Available |
+| **Google Workspace** | Calendar sync, Drive integration, OAuth SSO | ✅ Supported |
+| **Microsoft 365** | Teams meetings, OneDrive, Azure AD SSO | ✅ Supported |
+| **Zoom** | Meeting sync, transcripts | ✅ Supported |
+| **Mailchimp** | Email campaign sync | 📋 Planned |
 
 ---
 
-## 🎯 Use Cases by Persona
+## 🎯 Use Cases by Role
 
-### **For CEOs & Executives**
-**Goal:** See the entire business at a glance without asking for updates
+### **For Executive Directors**
+**Goal:** Board-ready visibility without chasing reports
 
-**How Control Tower Helps:**
-- **EOS Scorecard Dashboard** — all KPIs in real-time
-- **OKR Roll-Up View** — quarterly progress across all departments
-- **Meeting Intelligence** — read AI summaries instead of attending every meeting
-- **AI Agent Assistant** — "What are our top 3 risks right now?"
-- **Activity Feed** — see what every team is working on
+**How Nonprofit Control Tower Helps:**
+- **Dashboard**: See KPIs, data health score, grant pipeline, and donor metrics at a glance
+- **Board Reports**: Generate polished board packets in one click
+- **AI Letters**: Draft personalized acknowledgment letters in the ED's voice in 30 seconds
+- **Data Health**: Know your CRM quality score and take action on issues
+- **Grants**: Monitor fund utilization and upcoming deadlines
 
 **ROI:**
-- Save 5-10 hours/week previously spent in status meetings
-- Make data-driven decisions with real-time visibility
-- Catch red flags before they become crises
+- Save 10+ hours/month on board report preparation
+- Eliminate "I'll get you those numbers" delays
+- Personalize donor stewardship at scale
 
 ---
 
-### **For Sales Leaders**
-**Goal:** Close more deals faster with full pipeline visibility
+### **For Development Directors**
+**Goal:** Grow the donor base and upgrade mid-level donors
 
-**How Control Tower Helps:**
-- **Deal Pipeline Dashboard** — visual funnel with probability scoring
-- **Meeting History** — auto-logged customer conversations
-- **AI Summaries** — get the highlights from every sales call
-- **Contact Relationship Mapping** — know who's the decision maker
-- **HubSpot Sync** — keep CRM updated without manual data entry
+**How Nonprofit Control Tower Helps:**
+- **Donor Pipeline**: Visual Kanban of cultivation progress across all prospects
+- **Upgrade Opportunities**: AI-identified donors ready for higher giving tiers
+- **Event Follow-Ups**: Turn event attendees into engaged supporters
+- **AI Agents**: Get coaching on cultivation strategies and draft communications
+- **Acknowledgment Letters**: Generate personalized thank-yous referencing specific gifts and history
 
 **ROI:**
-- Increase win rate with better follow-up (automated reminders)
-- Reduce sales cycle with meeting intelligence
-- Improve forecast accuracy with real-time pipeline data
+- Increase donor upgrade rate with data-driven cultivation
+- Follow up with 100% of event attendees (not just the ones you remember)
+- Reduce donor thank-you turnaround from days to minutes
 
 ---
 
-### **For Project Managers**
-**Goal:** Deliver on time, on budget, with full client visibility
+### **For Finance Managers**
+**Goal:** Clean books, accurate fund accounting, audit readiness
 
-**How Control Tower Helps:**
-- **Project Dashboards** — milestones, risks, team workload
-- **Client Portal** — clients see progress without Slack/email spam
-- **Risk Register** — proactive issue management
-- **Task Integration** — project tasks link to EOS Rocks
-- **Meeting Action Items** — auto-extracted and assigned
+**How Nonprofit Control Tower Helps:**
+- **Reconciliation**: Match Stripe/PayPal transactions to CRM records
+- **Fund Accounting**: Ensure restricted gifts are posted to correct funds
+- **Grant Spending**: Monitor utilization against budget
+- **Board Financial Snapshot**: Automated variance highlighting
 
 **ROI:**
-- Reduce project delays with proactive risk tracking
-- Improve client satisfaction with transparency (portal)
-- Save 3-5 hours/week on status reporting
+- Reduce monthly close time by automating transaction matching
+- Catch restricted fund posting errors before audit
+- Eliminate manual reconciliation spreadsheets
 
 ---
 
-### **For Engineering Managers**
-**Goal:** Ship features predictably while managing team capacity
+### **For Operations Managers**
+**Goal:** Clean data, healthy integrations, efficient systems
 
-**How Control Tower Helps:**
-- **Task Streams** — sprint planning and backlog management
-- **Team Workload View** — see who's over/under capacity
-- **Meeting Transcripts** — searchable engineering discussions
-- **Knowledge Base** — architecture docs and decisions
-- **Jira Sync** — unified view with existing tools
+**How Nonprofit Control Tower Helps:**
+- **Data Health Dashboard**: CRM quality score with actionable fix-it workflows
+- **Integration Status**: See which systems are connected and healthy
+- **AI Agent Monitoring**: Track what the AI agents are finding and recommending
+- **Duplicate Management**: Merge duplicates with side-by-side comparison
 
 **ROI:**
-- Improve sprint predictability with capacity planning
-- Reduce onboarding time with searchable knowledge
-- Fewer context-switching tools (Control Tower → Jira → Slack)
-
----
-
-### **For HR & People Ops**
-**Goal:** Develop talent and improve team productivity
-
-**How Control Tower Helps:**
-- **Employee Profiles** — skills, goals, performance history
-- **Productivity Metrics** — department and individual output
-- **Process Documentation** — onboarding and SOP library
-- **1-on-1 Meeting History** — structured feedback over time
-- **BambooHR Sync** — employee data stays in sync
-
-**ROI:**
-- Faster onboarding with documented processes
-- Data-driven performance reviews
-- Proactive career development planning
-
----
-
-## 🏆 Competitive Advantages
-
-### **vs. Monday.com / Asana / ClickUp**
-| Feature | Control Tower | Competitors |
-|---------|---------------|-------------|
-| EOS-native | ✅ Built-in V/TO, OKRs, Scorecard | ❌ Generic templates |
-| AI Agents with RAG | ✅ Full business context | ❌ Basic ChatGPT integration |
-| Meeting Intelligence | ✅ Auto-transcripts, action items | ❌ Manual notes |
-| Client Portal | ✅ Included | 💰 Extra cost |
-| Modular Pricing | ✅ Pay only for what you use | ❌ All-or-nothing tiers |
-
-### **vs. HubSpot / Salesforce**
-| Feature | Control Tower | CRMs |
-|---------|---------------|------|
-| Project Delivery Tracking | ✅ Full project module | ❌ Sales-only |
-| EOS Framework | ✅ Native | ❌ Not supported |
-| Knowledge Base with RAG | ✅ Built-in | 💰 Separate tool |
-| Task Management | ✅ Streams, categories, subtasks | ⚠️ Basic tasks |
-| Meeting Transcripts | ✅ AI-powered | ❌ Manual logging |
-
-### **vs. Notion / Confluence**
-| Feature | Control Tower | Knowledge Tools |
-|---------|---------------|-----------------|
-| Structured Workflows | ✅ Tasks, projects, deals | ❌ Freeform docs |
-| Real-Time Dashboards | ✅ Live KPIs | ❌ Static docs |
-| AI Agents | ✅ Conversational, actionable | ⚠️ Search-only |
-| CRM & Project Mgmt | ✅ Built-in | ❌ Requires integrations |
+- Maintain 90%+ data health score across all systems
+- Catch integration failures before they create data gaps
+- Reduce manual data cleanup hours by 80%
 
 ---
 
@@ -712,156 +413,92 @@ Vector embeddings pipeline for semantic search across all knowledge base content
 
 ### **Enterprise-Grade Security**
 - **Row-Level Security (RLS)** — every database query enforces user permissions
-- **Supabase Auth** — SOC 2 Type II certified authentication provider
-- **Encrypted at Rest** — all data encrypted via PostgreSQL + Supabase storage
+- **SOC 2 Certified Infrastructure** — hosted on enterprise-grade cloud
+- **Encrypted at Rest** — all data encrypted via PostgreSQL
 - **Encrypted in Transit** — TLS 1.3 for all API calls
-- **OAuth 2.0** — industry-standard for third-party integrations
+- **OAuth 2.0** — industry-standard SSO (Google, Microsoft)
 
 ### **Access Controls**
 - **Role-Based Access Control (RBAC)** — Admin, Moderator, User roles
-- **Module Permissions** — granular control per feature
-- **API Key Management** — secure storage for integrations
-- **Activity Logs** — full audit trail for compliance
+- **Module Permissions** — granular control per feature per user
+- **Audit Trails** — full activity logging for compliance
+- **API Key Management** — secure storage for all integrations
 
-### **Compliance Ready**
-- **GDPR** — data export and deletion workflows
-- **SOC 2** — via Supabase infrastructure
-- **HIPAA** — can be configured for healthcare use cases
-- **Data Residency** — deploy in your preferred region (US, EU, APAC)
+### **Nonprofit Compliance**
+- **GDPR Ready** — data export and deletion workflows
+- **SOC 2 Compliant** — via infrastructure provider
+- **Data Residency** — deploy in your preferred region
+- **No-Retain AI Mode** — AI processes data without storing conversation history
 
 ---
 
-## 📊 Pricing & Packaging (Indicative)
+## 🏆 Why Nonprofit Control Tower?
 
-### **Modular Approach**
-Pay only for the modules you activate. No forced bundles.
+### **vs. Building Custom Reports in Your CRM**
+| Feature | Nonprofit Control Tower | CRM Reports |
+|---------|------------------------|-------------|
+| Role-specific dashboards | ✅ 4 purpose-built views | ❌ One-size-fits-all |
+| AI-generated letters | ✅ 30-second personalized drafts | ❌ Manual |
+| Cross-system reconciliation | ✅ Stripe ↔ CRM matching | ❌ Manual spreadsheets |
+| Data health scoring | ✅ Automated with fix workflows | ❌ Manual audits |
+| Board reports | ✅ One-click generation | ❌ Hours of compilation |
 
-| Module | Price/User/Month | Min Users |
-|--------|------------------|-----------|
-| **Platform Core** | Included | — |
-| **Actions (Tasks)** | $5 | 5 |
-| **EOS Framework** | $10 | 10 |
-| **Meetings** | $8 | 5 |
-| **Projects** | $12 | 5 |
-| **Business Dev (CRM)** | $15 | 3 |
-| **Knowledge Base** | $6 | 5 |
-| **Productivity** | $7 | 10 |
-| **AI Agents** | $20 | 5 |
-
-### **Bundled Plans**
-
-#### **Starter** — $25/user/month
-Includes: Platform + Actions + Meetings + Knowledge
-Best for: Small teams (5-15 people) starting with basics
-
-#### **Professional** — $50/user/month
-Includes: Starter + Projects + Business Dev + Productivity
-Best for: Growing companies (15-50 people) needing full ops
-
-#### **Enterprise** — $75/user/month
-Includes: All modules + AI Agents + Priority Support + Custom integrations
-Best for: Mid-market and enterprises (50-500 people)
-
-### **Add-Ons**
-- **AI Usage** — Token-based pricing (beyond free tier)
-- **Advanced Integrations** — HubSpot, Salesforce, Jira sync
-- **White-Label Branding** — Custom domain, logo, colors
-- **Dedicated Support** — Slack channel with <2hr SLA
+### **vs. Other Nonprofit Tools**
+| Feature | Nonprofit Control Tower | Alternatives |
+|---------|------------------------|--------------|
+| Keeps your existing CRM | ✅ Sits on top | ❌ Replace everything |
+| AI agents with donor context | ✅ 16 specialized agents | ❌ Generic chatbots |
+| Modular — use what you need | ✅ Toggle features on/off | ❌ All-or-nothing |
+| Real-time sync | ✅ Live CRM connection | ⚠️ Batch imports |
+| Donor pipeline Kanban | ✅ Visual cultivation tracking | ❌ Spreadsheet lists |
 
 ---
 
 ## 🚀 Getting Started
 
-### **Demo Credentials**
-Try the full platform immediately:
+### **Two Deployment Options**
 
-**Demo User:**
-Email: `demo@collabai.software`
-Password: `Demo@123`
-Access: All modules, read-only data
+#### **Option A: Lovable Cloud (Recommended)**
+- ✅ 10-minute setup, no CLI needed
+- ✅ AI features included (no API key required)
+- ✅ One-click publish
+- ✅ Automatic updates
 
-**Admin User:**
-Email: `admin@collabai.software`
-Password: `Admin@123`
-Access: Full admin panel, all modules, can modify settings
-
-> **For deployers:** If Quick Login or these credentials fail with "Invalid login credentials", create the users in your Supabase project under **Authentication → Users → Add user** (or invite by email) using the emails and passwords above.
-
-1. **Log in** at [your-control-tower.com/login](#)
-2. **Explore the dashboard** — see live metrics and activity feed
-3. **Create your first task** — Actions module → New Task
-4. **Schedule a meeting** — Meetings module → Create Meeting (connects to Zoom/Teams/Google)
-5. **Set up your first OKR** — EOS module → Objectives
-6. **Ask the AI** — Chat with an AI agent about your business
+#### **Option B: Self-Hosted**
+- ✅ Full code ownership
+- ✅ Use your own AI API keys
+- ✅ Deploy anywhere (AWS, GCP, Azure, on-premise)
+- ✅ Complete data sovereignty
 
 ### **Onboarding Timeline**
-- **Week 1:** Admin setup (users, roles, modules, integrations)
-- **Week 2:** Team training (2-hour workshop per module)
-- **Week 3:** Data migration (import existing tasks, projects, contacts)
-- **Week 4:** Go-live and optimization
+- **Day 1:** Connect your CRM and finance systems
+- **Day 2:** Configure roles and dashboards for your team
+- **Week 1:** Team training (1-hour workshop)
+- **Week 2:** Full adoption with AI agents active
 
 ---
 
-## 📈 Roadmap & Future Features
+## 📈 Technology Stack
 
-### **Q2 2026 — AI & Integrations**
-- ✅ AI Agents & Chat (70% complete)
-- ✅ Semantic Search (40% complete)
-- 🔜 HubSpot CRM Sync
-- 🔜 ActiveCollab Project Sync
-- 🔜 Google Calendar Two-Way Sync
-- 🔜 Slack Notifications & Bot
-
-### **Q3 2026 — Automation & Scale**
-- 📋 Workflow Automation (if/then rules, triggers)
-- 📋 Advanced Reporting (PDF/Excel exports, scheduled reports)
-- 📋 Resource Utilization Dashboards
-- 📋 Mobile App (iOS/Android)
-
-### **Q4 2026 — Enterprise Features**
-- 📋 Multi-Workspace Support (agencies managing multiple clients)
-- 📋 Advanced Analytics (custom dashboards, predictive insights)
-- 📋 API & Webhooks for Custom Integrations
-- 📋 On-Premise Deployment Option
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18 + TypeScript + Tailwind CSS + shadcn/ui |
+| **Backend** | Supabase (PostgreSQL + Edge Functions + Auth) |
+| **AI** | Lovable AI (built-in) or OpenAI/Anthropic/Google |
+| **Search** | pgvector for semantic search (RAG) |
+| **Auth** | SSO via Google Workspace + Microsoft Azure AD |
+| **Deployment** | Lovable.dev (managed) or self-hosted |
 
 ---
 
-## 🤝 Support & Resources
+## 📞 Learn More
 
-### **Documentation**
-- **Getting Started Guide** — `/docs/00-getting-started/`
-- **Module Blueprints** — `/docs/02-modules/`
-- **Integration Setup** — `/docs/05-integrations/`
-- **API Reference** — `/docs/api/`
-
-### **Support Channels**
-- **Email:** support@sjinnovation.com
-- **Slack Community:** [Join here](#)
-- **Video Tutorials:** [YouTube Channel](#)
-- **Office Hours:** Every Tuesday 2-3pm ET
-
-### **Professional Services**
-- **Implementation Consulting** — Custom onboarding and training
-- **Data Migration** — From existing tools (Monday, Asana, HubSpot)
-- **Custom Integrations** — Connect proprietary systems
-- **White-Label Deployment** — For agencies and resellers
+**Website:** [NonprofitAI.software](https://nonprofitai.software)  
+**Live Demo:** [nonprofitctdemo.lovable.app](https://nonprofitctdemo.lovable.app)
 
 ---
 
-## 📞 Contact & Next Steps
+**Nonprofit Control Tower** — The operational intelligence layer for modern nonprofits.  
+*Connect your systems. Surface your insights. Amplify your mission.*
 
-### **Ready to See a Demo?**
-Book a personalized walkthrough: [Schedule Demo](#)
-
-### **Questions?**
-Email: sales@sjinnovation.com
-Phone: +1 (XXX) XXX-XXXX
-
-### **Start Your Free Trial**
-30-day trial, no credit card required: [Sign Up](#)
-
----
-
-**SJ Control Tower** — One platform. Every team. Real-time visibility. AI-powered execution.
-
-*Built for businesses that refuse to settle for tool sprawl.*
+Built with ❤️ using [Lovable.dev](https://lovable.dev)

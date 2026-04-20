@@ -262,6 +262,15 @@ export function TopNav({ sidebarOpen = true, onToggleSidebar }: TopNavProps) {
                     {profile?.full_name || "User"}
                   </span>
                 </div>
+                {profile?.role === "admin" && (
+                  <Badge
+                    variant="outline"
+                    className="ml-1 hidden border-orange-500/40 bg-orange-500/10 px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide text-orange-600 dark:text-orange-400 md:inline-flex"
+                  >
+                    <Shield className="mr-1 h-3 w-3" />
+                    Admin
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

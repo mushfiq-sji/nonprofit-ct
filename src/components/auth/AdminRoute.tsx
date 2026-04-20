@@ -1,11 +1,28 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function AdminRoute() {
   const { user, profile, loading } = useAuth();
+  const { toast } = useToast();
+
+  // Safety net: demo accounts can never access admin
+  const isDemoAccount = user?.email?.toLowerCase().includes("demo@") ?? false;
+
+  const isAdmin = profile?.role === "admin" || profile?.role === "moderator";
+  const shouldRedirect = !loading && !!user && !!profile && (isDemoAccount || !isAdmin);
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      toast({
+        title: "Access denied",
+        description: "You don't have permission to access the admin panel.",
+        variant: "destructive",
+      });
+    }
+  }, [shouldRedirect, toast]);
 
   if (loading) {
     return (
@@ -28,21 +45,8 @@ export function AdminRoute() {
     );
   }
 
-  // Check if user has admin or moderator role
-  const isAdmin = profile?.role === "admin" || profile?.role === "moderator";
-
-  if (!isAdmin) {
-    return (
-      <div className="flex h-screen items-center justify-center p-4">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>
-            You don't have permission to access this area. This section is restricted to administrators only.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+  if (isDemoAccount || !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

@@ -1,27 +1,19 @@
-## Plan: Demo Login Security & Admin Panel Restriction
+## Fix: Remove Admin Access from Executive Director
 
-### Change 1: Remove Admin One-Click Login Button
+The Executive Director (`director@nonprofitai.software`) currently has the `admin` role in the `user_roles` table, which is why they still see the ADMIN badge and can access the admin panel.
 
-**File: `src/pages/Login.tsx`**
-- Delete line 16 (the Admin entry from `TEST_ACCOUNTS` array)
-- Remove the `ShieldCheck` import from lucide-react (line 9) since it's no longer used
-- All other 4 quick-login buttons remain unchanged
+### What will be done
 
-### Change 2: Create Hidden Demo Account
+1. **Create a one-time edge function** (`admin-cleanup`) that uses the service role key to:
+   - Delete the `admin` role from `director@nonprofitai.software` in `user_roles`
+   - Delete the accidentally created `demo@nonprofitai.software` user and their role entry
 
-**Database migration:** Create a new Supabase Auth user:
-- Email: `demo@nonprofitai.software`
-- Password: `NonprofitDemo2026!`
-- Assign `executive_director` role equivalent (or a suitable nonprofit role)
+2. **Deploy and invoke** the edge function to apply the changes immediately
 
-**New file: `src/lib/demoConfig.ts`**
-- Store the hidden demo credentials as a TypeScript constant
-- This file is a developer reference only — never imported by any UI component
+3. **Delete the edge function** after it runs — it's a one-time cleanup
 
-### What stays the same
-- All 4 non-admin quick-login buttons (ED, DD, FM, OM)
-- Login form, auth logic, AdminRoute guard, TopNav badge
-- Production hide logic for quick-login section
+4. **Verify** that the Executive Director no longer has admin access by querying the database
 
-### Technical note
-The user mentioned creating the Supabase auth user manually, but since this project uses Lovable Cloud, I can provision the user via a database migration (same approach used previously for `admin@nonprofitai.software`).
+### Result
+- Logging in as Executive Director will show no ADMIN badge and no access to `/admin`
+- The admin account (`admin@nonprofitai.software` / `Demo@123`) remains the only way to access the admin panel

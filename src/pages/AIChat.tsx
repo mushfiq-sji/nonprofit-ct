@@ -8,6 +8,7 @@ import { Bot, Send, Loader2, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   id: string;

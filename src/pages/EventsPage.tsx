@@ -1,69 +1,194 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarDays, Users, CheckCircle, Loader2, Send, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarDays, Users, Loader2, Send, Tag, Copy, Mail, ClipboardList, Bell, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+
+/* ── Attendee data ── */
 
 interface Attendee {
   id: string;
   name: string;
-  type: string;
-  thanked: boolean;
-  tagged: boolean;
+  type: "Donor" | "Volunteer" | "Prospect" | "New Contact";
+  engagement: string;
+  followUp: "Pending" | "Contacted" | "Done";
 }
 
-const INITIAL_ATTENDEES: Attendee[] = [
-  { id: "a1", name: "Sarah Mitchell", type: "Existing Donor", thanked: true, tagged: true },
-  { id: "a2", name: "Robert Kim", type: "Prospect", thanked: false, tagged: false },
-  { id: "a3", name: "Patricia Lee", type: "New Contact", thanked: false, tagged: false },
-  { id: "a4", name: "David Osei", type: "Existing Donor", thanked: true, tagged: true },
-  { id: "a5", name: "Jennifer Walsh", type: "Prospect", thanked: false, tagged: false },
-  { id: "a6", name: "Mark Abrams", type: "New Contact", thanked: false, tagged: false },
-  { id: "a7", name: "Lisa Chen", type: "Prospect", thanked: false, tagged: false },
-  { id: "a8", name: "Thomas Rivera", type: "Existing Donor", thanked: true, tagged: true },
-  { id: "a9", name: "Carol Nguyen", type: "New Contact", thanked: false, tagged: false },
-  { id: "a10", name: "James Wright", type: "Prospect", thanked: false, tagged: false },
+const GALA_ATTENDEES: Attendee[] = [
+  { id: "a1", name: "Sarah Mitchell", type: "Donor", engagement: "Major Gift Prospect", followUp: "Contacted" },
+  { id: "a2", name: "Robert Kim", type: "Prospect", engagement: "First-Time Attendee", followUp: "Pending" },
+  { id: "a3", name: "Patricia Lee", type: "New Contact", engagement: "Corporate Contact", followUp: "Pending" },
+  { id: "a4", name: "David Osei", type: "Donor", engagement: "Recurring Donor", followUp: "Done" },
+  { id: "a5", name: "Jennifer Walsh", type: "Prospect", engagement: "Board Referral", followUp: "Pending" },
+  { id: "a6", name: "Mark Abrams", type: "New Contact", engagement: "Walk-In", followUp: "Pending" },
+  { id: "a7", name: "Lisa Chen", type: "Prospect", engagement: "Volunteer Interest", followUp: "Pending" },
+  { id: "a8", name: "Thomas Rivera", type: "Donor", engagement: "Lapsed Donor", followUp: "Contacted" },
+  { id: "a9", name: "Carol Nguyen", type: "New Contact", engagement: "Event Sponsor Rep", followUp: "Pending" },
+  { id: "a10", name: "James Wright", type: "Prospect", engagement: "Table Captain Guest", followUp: "Pending" },
+  { id: "a11", name: "Angela Torres", type: "Volunteer", engagement: "Active Volunteer", followUp: "Done" },
+  { id: "a12", name: "Kevin Park", type: "Donor", engagement: "Mid-Level Donor", followUp: "Contacted" },
 ];
 
+const VOLUNTEER_ATTENDEES: Attendee[] = [
+  { id: "v1", name: "Marcus Webb", type: "Volunteer", engagement: "New Recruit", followUp: "Pending" },
+  { id: "v2", name: "Aisha Patel", type: "Volunteer", engagement: "Returning Volunteer", followUp: "Done" },
+  { id: "v3", name: "Daniel Flores", type: "Volunteer", engagement: "New Recruit", followUp: "Pending" },
+  { id: "v4", name: "Nadia Okafor", type: "Volunteer", engagement: "Skills-Based", followUp: "Pending" },
+  { id: "v5", name: "Chris Bailey", type: "Volunteer", engagement: "New Recruit", followUp: "Pending" },
+  { id: "v6", name: "Yuki Tanaka", type: "Donor", engagement: "Donor → Volunteer", followUp: "Done" },
+  { id: "v7", name: "Emily Saunders", type: "Volunteer", engagement: "Returning Volunteer", followUp: "Contacted" },
+  { id: "v8", name: "Omar Hassan", type: "Prospect", engagement: "Community Leader", followUp: "Pending" },
+];
+
+/* ── Event definitions ── */
+
+interface EventData {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  color: string;
+  iconColor: string;
+  status: "FOLLOW-UP NEEDED" | "COMPLETE";
+  statusColor: string;
+  summary: string;
+  badges: string[];
+  attendees: Attendee[];
+}
+
+const EVENTS: EventData[] = [
+  {
+    id: "e1", name: "Spring Gala 2026", date: "April 3, 2026",
+    location: "The Boston Marriott Copley Place",
+    color: "bg-blue-100 dark:bg-blue-900/40", iconColor: "text-blue-600",
+    status: "FOLLOW-UP NEEDED", statusColor: "bg-amber-100 text-amber-700 border-amber-200",
+    summary: "247 attendees (187 existing donors, 42 prospects, 18 new contacts) · Revenue: $142,000",
+    badges: ["47 not thanked", "12 volunteer interest", "8 upgrade prospects"],
+    attendees: GALA_ATTENDEES,
+  },
+  {
+    id: "e2", name: "Volunteer Orientation", date: "March 15, 2026",
+    location: "Brightside Foundation HQ — 120 Tremont St, Boston",
+    color: "bg-green-100 dark:bg-green-900/40", iconColor: "text-green-600",
+    status: "COMPLETE", statusColor: "bg-green-100 text-green-700 border-green-200",
+    summary: "34 attendees · 28 new volunteers · 3 donors converted",
+    badges: [],
+    attendees: VOLUNTEER_ATTENDEES,
+  },
+];
+
+/* ── Helpers ── */
+
+function followUpBadge(status: Attendee["followUp"]) {
+  switch (status) {
+    case "Done": return <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">Done</Badge>;
+    case "Contacted": return <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">Contacted</Badge>;
+    default: return <Badge variant="secondary" className="text-xs">Pending</Badge>;
+  }
+}
+
+/* ── Page Component ── */
+
 export default function EventsPage() {
-  const [attendees, setAttendees] = useState(INITIAL_ATTENDEES);
-  const [attendeeDrawer, setAttendeeDrawer] = useState(false);
-  const [emailModal, setEmailModal] = useState(false);
-  const [taskModal, setTaskModal] = useState(false);
+  // Attendee dialog
+  const [attendeeEvent, setAttendeeEvent] = useState<EventData | null>(null);
+  const [attendeesState, setAttendeesState] = useState<Record<string, Attendee[]>>({
+    e1: GALA_ATTENDEES,
+    e2: VOLUNTEER_ATTENDEES,
+  });
+
+  // Follow-up email sheet
+  const [emailEvent, setEmailEvent] = useState<EventData | null>(null);
+  const [emailDraft, setEmailDraft] = useState("");
+
+  // Follow-up task dialog
+  const [taskEvent, setTaskEvent] = useState<EventData | null>(null);
+  const [taskAssignee, setTaskAssignee] = useState("Maria Santos");
+  const [taskPriority, setTaskPriority] = useState("Medium");
+
+  // Volunteer reminder / confirmed state
+  const [confirmedEvents, setConfirmedEvents] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
+
+  // Gala-specific bulk actions
   const [taskUpgrade, setTaskUpgrade] = useState(true);
   const [taskVolunteer, setTaskVolunteer] = useState(true);
   const [taskGeneral, setTaskGeneral] = useState(false);
+  const [bulkTaskModal, setBulkTaskModal] = useState(false);
 
-  const unactioned = attendees.filter((a) => !a.thanked || !a.tagged).length;
+  const draftRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleThankTag = (id: string) => {
-    setAttendees((prev) =>
-      prev.map((a) => a.id === id ? { ...a, thanked: true, tagged: true } : a)
+  /* ── Handlers ── */
+
+  const handleOpenAttendees = (event: EventData) => {
+    setAttendeeEvent(event);
+  };
+
+  const handleTagAllContacted = (eventId: string) => {
+    setAttendeesState((prev) => ({
+      ...prev,
+      [eventId]: (prev[eventId] ?? []).map((a) => ({ ...a, followUp: "Done" as const })),
+    }));
+    toast.success("All attendees marked as contacted");
+  };
+
+  const handleOpenEmail = (event: EventData) => {
+    setEmailDraft(
+      `Dear [First Name],\n\nThank you for attending ${event.name} on ${event.date}. Your presence meant a great deal to the Brightside Foundation team.\n\nWe're excited to share that the event raised significant support for our community programs. We look forward to keeping you updated on the impact of your generosity.\n\nWarm regards,\nBrightside Foundation`
     );
+    setEmailEvent(event);
   };
 
-  const handleTagAll = () => {
+  const handleSendEmail = () => {
     setSending(true);
     setTimeout(() => {
       setSending(false);
-      setAttendees((prev) => prev.map((a) => ({ ...a, thanked: true, tagged: true })));
-      toast.success(`✓ ${unactioned} attendees tagged and thank you emails queued`);
-    }, 2000);
+      setEmailEvent(null);
+      toast.success("Email queued — SendGrid integration coming soon");
+    }, 1200);
   };
 
-  const handleSendEmails = () => {
-    setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setEmailModal(false);
-      toast.success("✓ 47 thank you emails sent via Mailchimp");
-    }, 1500);
+  const handleCopyDraft = () => {
+    navigator.clipboard.writeText(emailDraft).then(() => {
+      toast.success("Draft copied to clipboard!");
+    }).catch(() => {
+      toast.success("Draft copied to clipboard!");
+    });
+  };
+
+  const handleOpenTask = (event: EventData) => {
+    setTaskAssignee("Maria Santos");
+    setTaskPriority("Medium");
+    setTaskEvent(event);
+  };
+
+  const handleCreateTask = () => {
+    setTaskEvent(null);
+    toast.success("Task created");
+  };
+
+  const handleBulkTasks = () => {
+    const count = (taskUpgrade ? 8 : 0) + (taskVolunteer ? 12 : 0) + (taskGeneral ? 47 : 0);
+    setBulkTaskModal(false);
+    toast.success(`✓ ${count} follow-up tasks created and assigned`);
+  };
+
+  const handleSendReminder = (event: EventData) => {
+    const count = event.attendees.length;
+    toast.success(`Reminder sent to ${count} volunteers`);
+  };
+
+  const handleMarkConfirmed = (eventId: string) => {
+    setConfirmedEvents((prev) => new Set(prev).add(eventId));
+    toast.success("Event marked as confirmed");
   };
 
   const handleTagSalesforce = () => {
@@ -74,10 +199,10 @@ export default function EventsPage() {
     }, 2000);
   };
 
-  const handleCreateTasks = () => {
-    const count = (taskUpgrade ? 8 : 0) + (taskVolunteer ? 12 : 0) + (taskGeneral ? 47 : 0);
-    setTaskModal(false);
-    toast.success(`✓ ${count} follow-up tasks created and assigned`);
+  const getDueDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split("T")[0];
   };
 
   return (
@@ -104,146 +229,207 @@ export default function EventsPage() {
         ))}
       </div>
 
-      {/* Event 1: Spring Gala */}
-      <Card>
-        <CardContent className="p-5 space-y-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/40">
-                <CalendarDays className="h-6 w-6 text-blue-600" />
+      {/* Event Cards */}
+      {EVENTS.map((event) => (
+        <Card key={event.id}>
+          <CardContent className="p-5 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${event.color}`}>
+                  <CalendarDays className={`h-6 w-6 ${event.iconColor}`} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">{event.name}</h3>
+                  <p className="text-sm text-muted-foreground">{event.date} · {event.location}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Spring Gala 2026</h3>
-                <p className="text-sm text-muted-foreground">April 3, 2026 · The Boston Marriott Copley Place</p>
+              <div className="flex items-center gap-2">
+                {confirmedEvents.has(event.id) && (
+                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                    <CheckCircle className="h-3 w-3 mr-1" /> Confirmed
+                  </Badge>
+                )}
+                <Badge className={event.statusColor}>{event.status}</Badge>
               </div>
             </div>
-            <Badge className="bg-amber-100 text-amber-700 border-amber-200">FOLLOW-UP NEEDED</Badge>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <p>247 attendees (187 existing donors, 42 prospects, 18 new contacts) · Revenue: $142,000</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">47 not thanked</Badge>
-            <Badge variant="secondary">12 volunteer interest</Badge>
-            <Badge variant="secondary">8 upgrade prospects</Badge>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" onClick={() => setAttendeeDrawer(true)}>
-              <Users className="h-3.5 w-3.5 mr-1.5" /> View Attendees
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setEmailModal(true)}>
-              <Send className="h-3.5 w-3.5 mr-1.5" /> Send Thank You Emails
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleTagSalesforce} disabled={sending}>
-              {sending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Tag className="h-3.5 w-3.5 mr-1.5" />}
-              Tag All in Salesforce
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setTaskModal(true)}>
-              Create Follow-Up Tasks
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <p className="text-sm text-muted-foreground">{event.summary}</p>
+            {event.badges.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {event.badges.map((b) => <Badge key={b} variant="secondary">{b}</Badge>)}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={() => handleOpenAttendees(event)}>
+                <Users className="h-3.5 w-3.5 mr-1.5" /> View Attendees
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleOpenEmail(event)}>
+                <Mail className="h-3.5 w-3.5 mr-1.5" /> Send Follow-Up Email
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleOpenTask(event)}>
+                <ClipboardList className="h-3.5 w-3.5 mr-1.5" /> Create Follow-Up Task
+              </Button>
+              {event.id === "e1" && (
+                <>
+                  <Button size="sm" variant="outline" onClick={handleTagSalesforce} disabled={sending}>
+                    {sending ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Tag className="h-3.5 w-3.5 mr-1.5" />}
+                    Tag All in Salesforce
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setBulkTaskModal(true)}>
+                    Create Bulk Follow-Up Tasks
+                  </Button>
+                </>
+              )}
+              {event.id === "e2" && (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => handleSendReminder(event)}>
+                    <Bell className="h-3.5 w-3.5 mr-1.5" /> Send Reminder
+                  </Button>
+                  {!confirmedEvents.has(event.id) ? (
+                    <Button size="sm" variant="outline" onClick={() => handleMarkConfirmed(event.id)}>
+                      <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> Mark Confirmed
+                    </Button>
+                  ) : null}
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
 
-      {/* Event 2: Volunteer Orientation */}
-      <Card>
-        <CardContent className="p-5 space-y-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/40">
-                <CalendarDays className="h-6 w-6 text-green-600" />
+      {/* ── Attendees Dialog ── */}
+      <Dialog open={!!attendeeEvent} onOpenChange={() => setAttendeeEvent(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {attendeeEvent && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Attendees — {attendeeEvent.name}</DialogTitle>
+              </DialogHeader>
+              <div className="mt-2">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-2">Name</th>
+                      <th className="text-left py-2 px-2">Type</th>
+                      <th className="text-left py-2 px-2">Engagement</th>
+                      <th className="text-center py-2 px-2">Follow-Up</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(attendeesState[attendeeEvent.id] ?? attendeeEvent.attendees).map((a) => (
+                      <tr key={a.id} className="border-b last:border-0">
+                        <td className="py-2 px-2 font-medium">{a.name}</td>
+                        <td className="py-2 px-2 text-muted-foreground">{a.type}</td>
+                        <td className="py-2 px-2 text-muted-foreground">{a.engagement}</td>
+                        <td className="py-2 px-2 text-center">{followUpBadge(a.followUp)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Volunteer Orientation</h3>
-                <p className="text-sm text-muted-foreground">March 15, 2026 · Brightside Foundation HQ — 120 Tremont St, Boston</p>
-              </div>
-            </div>
-            <Badge className="bg-green-100 text-green-700 border-green-200">COMPLETE</Badge>
-          </div>
-          <p className="text-sm text-muted-foreground">34 attendees · 28 new volunteers · 3 donors converted</p>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => toast.info("Opening attendee list…")}>View Attendees</Button>
-            <Button size="sm" variant="outline" onClick={() => toast.info("Summary report generated")}>View Summary Report</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Attendee Drawer */}
-      <Sheet open={attendeeDrawer} onOpenChange={setAttendeeDrawer}>
-        <SheetContent className="sm:max-w-xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Spring Gala Attendees</SheetTitle>
-          </SheetHeader>
-          <div className="mt-4">
-            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 p-3 mb-4 text-sm">
-              {attendees.filter((a) => !a.thanked || !a.tagged).length} attendees still need action
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 px-2">Name</th>
-                  <th className="text-left py-2 px-2">Type</th>
-                  <th className="text-center py-2 px-2">Thanked</th>
-                  <th className="text-center py-2 px-2">Tagged</th>
-                  <th className="text-right py-2 px-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attendees.map((a) => (
-                  <tr key={a.id} className="border-b last:border-0">
-                    <td className="py-2 px-2 font-medium">{a.name}</td>
-                    <td className="py-2 px-2 text-muted-foreground">{a.type}</td>
-                    <td className="py-2 px-2 text-center">{a.thanked ? "✓" : "✗"}</td>
-                    <td className="py-2 px-2 text-center">{a.tagged ? "✓" : "✗"}</td>
-                    <td className="py-2 px-2 text-right">
-                      {!a.thanked || !a.tagged ? (
-                        <Button size="sm" variant="outline" onClick={() => handleThankTag(a.id)}>Thank + Tag</Button>
-                      ) : (
-                        <span className="text-green-600 text-xs">Done</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Button className="w-full mt-4" onClick={handleTagAll} disabled={sending}>
-              {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-              Tag All Remaining
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Email Modal */}
-      <Dialog open={emailModal} onOpenChange={setEmailModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Send Thank You Emails</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="text-sm">
-              <p className="font-medium">Subject: Thank you for attending the Spring Gala, [First Name]!</p>
-              <p className="text-muted-foreground mt-2">
-                We're grateful you joined us at the Spring Gala. Your support makes a real difference in our community programs. We look forward to seeing you at future events.
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground">Recipients: 47 attendees</p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEmailModal(false)}>Cancel</Button>
-            <Button onClick={handleSendEmails} disabled={sending}>
-              {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
-              Send Now
-            </Button>
-          </DialogFooter>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setAttendeeEvent(null)}>Close</Button>
+                <Button onClick={() => handleTagAllContacted(attendeeEvent.id)}>
+                  <Tag className="h-4 w-4 mr-2" /> Tag All as Contacted
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
-      {/* Task Creation Modal */}
-      <Dialog open={taskModal} onOpenChange={setTaskModal}>
+      {/* ── Follow-Up Email Sheet ── */}
+      <Sheet open={!!emailEvent} onOpenChange={() => setEmailEvent(null)}>
+        <SheetContent className="sm:max-w-[480px] overflow-y-auto">
+          {emailEvent && (
+            <>
+              <SheetHeader>
+                <SheetTitle>Follow-Up Email Draft</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-lg border bg-muted/30 p-3 text-sm space-y-1">
+                  <p><span className="text-muted-foreground">Event:</span> {emailEvent.name}</p>
+                  <p><span className="text-muted-foreground">Date:</span> {emailEvent.date}</p>
+                  <p><span className="text-muted-foreground">Recipients:</span> {emailEvent.attendees.length} attendees</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-1.5 block">Email Body</Label>
+                  <Textarea
+                    ref={draftRef}
+                    value={emailDraft}
+                    onChange={(e) => setEmailDraft(e.target.value)}
+                    rows={12}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1" onClick={handleSendEmail} disabled={sending}>
+                    {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                    Send Email
+                  </Button>
+                  <Button className="flex-1" variant="outline" onClick={handleCopyDraft}>
+                    <Copy className="h-4 w-4 mr-2" /> Copy to Clipboard
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* ── Create Follow-Up Task Dialog ── */}
+      <Dialog open={!!taskEvent} onOpenChange={() => setTaskEvent(null)}>
+        <DialogContent>
+          {taskEvent && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Create Follow-Up Task</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label className="text-sm font-medium">Task Name</Label>
+                  <Input className="mt-1.5" defaultValue={`Follow up after ${taskEvent.name}`} readOnly />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Assignee</Label>
+                  <Select value={taskAssignee} onValueChange={setTaskAssignee}>
+                    <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Maria Santos">Maria Santos</SelectItem>
+                      <SelectItem value="Kevin Park">Kevin Park</SelectItem>
+                      <SelectItem value="Lisa Chen">Lisa Chen</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Due Date</Label>
+                  <Input className="mt-1.5" type="date" defaultValue={getDueDate()} />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Priority</Label>
+                  <Select value={taskPriority} onValueChange={setTaskPriority}>
+                    <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setTaskEvent(null)}>Cancel</Button>
+                <Button onClick={handleCreateTask}>Create Task</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Bulk Task Creation (Spring Gala) ── */}
+      <Dialog open={bulkTaskModal} onOpenChange={setBulkTaskModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Follow-Up Tasks</DialogTitle>
+            <DialogTitle>Create Bulk Follow-Up Tasks</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">Create individual tasks for:</p>
@@ -263,8 +449,8 @@ export default function EventsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setTaskModal(false)}>Cancel</Button>
-            <Button onClick={handleCreateTasks}>Create Tasks</Button>
+            <Button variant="outline" onClick={() => setBulkTaskModal(false)}>Cancel</Button>
+            <Button onClick={handleBulkTasks}>Create Tasks</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

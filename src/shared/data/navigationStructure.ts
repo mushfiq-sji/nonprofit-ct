@@ -61,12 +61,12 @@ export const navigationGroups: NavGroup[] = [
     title: "Nonprofit Operations",
     icon: "ShieldCheck",
     items: [
-      { title: "Data Health", href: "/data-health", icon: "ShieldCheck" },
-      { title: "Grants", href: "/grants", icon: "FileText" },
-      { title: "Events", href: "/events", icon: "Calendar" },
-      { title: "Board Reports", href: "/board-reports", icon: "BarChart2" },
-      { title: "Reconciliation", href: "/reconciliation", icon: "ArrowLeftRight" },
-      { title: "Donor Pipeline", href: "/donor-pipeline", icon: "Users" },
+      { title: "Data Health", href: "/data-health", icon: "ShieldCheck", requiredPermission: { type: "module", key: "data-health" } },
+      { title: "Grants", href: "/grants", icon: "FileText", requiredPermission: { type: "module", key: "grants" } },
+      { title: "Events", href: "/events", icon: "Calendar", requiredPermission: { type: "module", key: "events" } },
+      { title: "Board Reports", href: "/board-reports", icon: "BarChart2", requiredPermission: { type: "module", key: "board-reports" } },
+      { title: "Reconciliation", href: "/reconciliation", icon: "ArrowLeftRight", requiredPermission: { type: "module", key: "reconciliation" } },
+      { title: "Donor Pipeline", href: "/donor-pipeline", icon: "Users", requiredPermission: { type: "module", key: "donor-pipeline" } },
     ],
   },
   {

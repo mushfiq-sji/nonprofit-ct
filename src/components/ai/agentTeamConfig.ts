@@ -255,6 +255,9 @@ export const AGENT_ICON_MAP: Record<string, string> = {
   "grant-compliance": "FileText",
   "event-intelligence": "Calendar",
   "board-reporting": "BarChart3",
+  "grant-budget-watcher": "AlertTriangle",
+  "integration-health-monitor": "Plug",
+  "onboarding-checklist-ai": "ClipboardList",
 };
 
 /** Category color map keyed by team id */

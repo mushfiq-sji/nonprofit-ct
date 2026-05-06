@@ -36,6 +36,9 @@ const CORE_LAST_RUN: Record<string, string> = {
   "grant-compliance": hoursAgo(2, 4),
   "event-intelligence": hoursAgo(5, 7),
   "board-reporting": hoursAgo(1, 2),
+  "grant-budget-watcher": hoursAgo(2, 4),
+  "integration-health-monitor": hoursAgo(1, 3),
+  "onboarding-checklist-ai": hoursAgo(4, 8),
 };
 
 /* ── helpers ── */

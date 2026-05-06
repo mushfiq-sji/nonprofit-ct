@@ -108,7 +108,13 @@ export const coreProtectedRoutes = (
 
     {/* Agent discovery pages */}
     <Route path="/agents" element={<AgentsBrowse />} />
+    <Route path="/agents/activity" element={<AgentActivityFeed />} />
     <Route path="/agents/:slug" element={<AgentDetail />} />
+
+    {/* New nonprofit pages */}
+    <Route path="/donor-retention" element={<DonorRetentionPage />} />
+    <Route path="/programs" element={<ProgramsPage />} />
+    <Route path="/communications" element={<CommunicationsPage />} />
 
     {/* Voice Notes */}
     <Route path="/voice-notes" element={<VoiceNotesPage />} />

@@ -99,7 +99,7 @@ npm run migrations:hook        # Setup migration hook
 ├── .claude/                       # Claude Code configuration
 │   ├── agents.md                  # Agent delegation rules
 │   ├── agents/                    # 11 specialized agent definitions
-│   ├── skills/                    # Skill definitions
+│   ├── skills/                    # Skill definitions + 6 gstack skills
 │   ├── hooks/                     # Session hooks
 │   └── settings.json              # Hook configuration
 │
@@ -265,7 +265,7 @@ VITE_MODULE_KNOWLEDGE=true
 ## Key Files Reference
 
 | File | Purpose |
-|------|---------|
+|------|--------|
 | `src/App.tsx` | Root component with all route definitions |
 | `src/contexts/AuthContext.tsx` | Authentication state management |
 | `src/shared/config/modules.ts` | Module registry |
@@ -287,7 +287,7 @@ Available in `.claude/agents/` for delegating complex tasks:
 
 | # | Agent | Specialization |
 |---|-------|---------------|
-| 1 | **react-frontend-dev** | Pages, components, hooks, forms, routing, UI |
+| 1 | **react-frontend-dev** | Pages, components, hooks, routing, UI |
 | 2 | **supabase-backend-dev** | Edge Functions, migrations, RLS, auth, DB schema |
 | 3 | **code-reviewer** | Code quality, convention enforcement |
 | 4 | **debugger** | Bug investigation, error analysis |
@@ -312,6 +312,12 @@ Available in `.claude/agents/` for delegating complex tasks:
 | 7 | **ai-agents-domain** | AI agents domain knowledge |
 | 8 | **edge-function-patterns** | Edge Function best practices |
 | 9 | **type-safety-patterns** | TypeScript type safety patterns |
+| 10 | **plan-ceo-review** | CEO-level adversarial plan review (run in Claude.ai) |
+| 11 | **plan-eng-review** | Engineering manager spec + architecture review |
+| 12 | **design-consultation** | Full design system creation for new projects |
+| 13 | **ship** | Pre-production push checklist |
+| 14 | **document-release** | Post-deploy documentation sync |
+| 15 | **retro** | Weekly engineering retrospective |
 
 ## Session Rules
 
@@ -348,3 +354,34 @@ Comprehensive docs in `/docs/` organized by topic:
 - `07-admin/` — Admin panel and feature flags
 - `08-edge-functions/` — Edge function catalog
 - `nonprofit-control-tower-roadmap.md` — Living roadmap
+
+---
+
+## gstack Skills — SJ Innovation
+Installed: 2026-05-10
+Source: github.com/garrytan/gstack
+
+Slash commands now available:
+- `/plan-ceo-review` — Adversarial CEO-level plan review; finds scope gaps and 10-star opportunities (run in Claude.ai before any spec)
+- `/plan-eng-review` — Engineering manager architecture + spec review; locks data flow, edge cases, test plan (run in Claude Code Desktop)
+- `/design-consultation` — Full design system creation for new projects; produces DESIGN.md (run in Claude.ai, new projects only)
+- `/ship` — Pre-production push checklist: lint, build, type-safety, code review, version bump, PR creation (run in Claude Code Desktop)
+- `/document-release` — Post-deploy documentation sync; updates CLAUDE.md, README, CHANGELOG to match what shipped (run in Claude Code Desktop, same session)
+- `/retro` — Weekly engineering retrospective with shipping velocity, quality signals, and per-contributor analysis (run in Claude.ai, every Friday)
+
+Build flow (follow this order every time):
+1. /plan-ceo-review → Claude.ai (before any spec)
+2. /plan-eng-review → Claude Code Desktop (spec + architecture)
+3. /design-consultation → Claude.ai (new projects only)
+4. Build → Lovable → Cowork QA pass
+5. /review → Claude Code Desktop (before staging push)
+6. /ship → Claude Code Desktop (before production push)
+7. /document-release → Claude Code Desktop (after every deploy, same session)
+8. /retro → Claude.ai (every Friday)
+
+Garry Tan's top rules applied to our workflow:
+- Context rot is real — stay under 60%, new session per feature
+- CLAUDE.md stays lean — this section only, no bloat added
+- Every token in this file must earn its place
+- Skills are knowledge, /commands are deterministic triggers
+- Subagents: always Opus unless specified otherwise

@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import {
-  CalendarPlus, Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2,
+  CalendarPlus, Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2, Mic2, Clock, Ticket,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   useNonprofitEvents, useCreateNonprofitEvent, useEventRegistrants, useToggleCheckin,
+  useEventSpeakers, useEventAgendaItems, useEventTicketTypes,
   type NonprofitEvent, type ManagedEventStatus,
 } from "@/hooks/useNonprofitEvents";
 import { useAuth } from "@/contexts/AuthContext";

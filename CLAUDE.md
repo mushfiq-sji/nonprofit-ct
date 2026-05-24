@@ -133,10 +133,17 @@ Modules are the primary organizational unit. Defined in `src/shared/config/modul
 
 These pages use demo data from `src/shared/data/nonprofitDemoData.ts`:
 - `/grants` — Grants Management
-- `/events` — Events
+- `/events` — Events (post-event intelligence)
 - `/board-reports` — Board Reports
 - `/data-health` — Data Health
 - `/reconciliation` — Reconciliation
+- `/membership` — Membership Management
+- `/volunteers` — Volunteer Management
+- `/event-management` — Full Event Lifecycle (separate from `/events`)
+- `/donations` — Donation Center
+- `/public-presence` — Public Presence / Website Layer
+- `/impact-dashboard` — Impact Dashboard (AI annual report via `ai-chat-assistant`)
+- `/engagement-scoring` — AI Engagement Scoring (AI next best action via `ai-chat-assistant`)
 
 ### AI Agent Browse System
 

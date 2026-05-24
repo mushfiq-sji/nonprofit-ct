@@ -16,10 +16,18 @@ Choose your deployment path:
 
 - 📊 **Dashboard** — Role-specific analytics (Executive Director, Development Director, Finance Manager, Operations Manager)
 - 💰 **Grants Management** — Track grant lifecycle, deadlines, and fund utilization
+- ✍️ **Grant Writer** — AI-assisted section-by-section grant draft generation
 - 🎪 **Events** — Post-event engagement intelligence and follow-up automation
 - 📋 **Board Reports** — Generate board-ready KPI summaries and financial snapshots
 - 🔍 **Data Health** — Surface CRM data quality issues (duplicates, incomplete profiles)
 - 💱 **Reconciliation** — Match transactions across payment processors and CRM/finance systems
+- 🪪 **Membership Management** — Member directory, tier/status tracking, renewals, onboarding
+- 🤝 **Volunteer Management** — Roster, shift tracking, skills, economic value reporting
+- 📅 **Event Management** — Full event lifecycle: create, capacity, speakers, registrations, tickets
+- 💳 **Donation Center** — Campaign management, fund tracking, donation history, record donations
+- 🌐 **Public Presence** — Website visibility controls, embed codes, social sharing
+- 📈 **Impact Dashboard** — Program outcomes, milestones, AI-drafted annual report
+- 🎯 **AI Engagement Scoring** — 0–100 member scores, at-risk detection, AI next-best-action
 - 🤖 **AI Agent Teams** — 16 specialized agents across 4 teams (Donor, Meeting, Strategy, Project)
 - 📚 **Knowledge Base** — Semantic search across documents
 - 🔐 **Role-Based Access** — Admin, moderator, and user roles

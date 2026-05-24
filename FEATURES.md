@@ -68,12 +68,10 @@ Nonprofit Control Tower is an **operational intelligence layer** that sits on to
 Sidebar (`src/shared/data/navigationStructure.ts`) is organized in logical groupings:
 
 - **Overview** — Dashboard, Notifications
-- **Fundraising** — Donor Pipeline, Donor Retention, Grants, Grant Writer, Events
-- **Programs & Impact** — Programs, Communications
-- **Finance & Compliance** — Reconciliation, Board Reports
-- **Data & Health** — Data Health, Integrations
-- **AI** — AI Chat, AI Agents (Browse), Agent Activity Feed
-- **Knowledge** — Knowledge Base, Semantic Search, Personal Knowledge
+- **Nonprofit Operations** — Data Health, Grants, Events, Board Reports, Reconciliation, Donor Pipeline, Donor Retention, Programs, Communications, Grant Writer, Membership, Volunteers, Event Management, Donation Center, Public Presence, Impact Dashboard, AI Engagement Scoring
+- **AI** — AI Agents (Browse), Agent Activity Feed, AI Chat, Voice Notes
+- **Intelligence** — Knowledge Base
+- **Settings** — Integrations, Help & Support, Settings
 - **Admin** (admin only) — full admin sub-navigation
 
 Branded as **Brightside Foundation** in the sidebar header.
@@ -107,14 +105,21 @@ All operational pages use centralized demo data from `src/shared/data/nonprofitD
 |--------|-------|--------------|
 | **Data Health** | `/data-health` | Duplicate detection, incomplete profiles, stale data flags, AI-suggested merges |
 | **Grants Management** | `/grants` | Lifecycle tracking, deadlines, fund utilization, compliance status |
-| **Grant Writer** | `/grants/writer` | AI-assisted draft generation via `generate-grant-draft` edge function (deployed) |
+| **Grant Writer** | `/grant-writer` | AI-assisted draft generation via `generate-grant-draft` edge function (deployed) |
 | **Events** | `/events` | Post-event engagement intelligence, follow-up automation, attendance tracking |
 | **Board Reports** | `/board-reports` | Document-style preview, KPI summaries, financial snapshots, export simulation |
 | **Reconciliation** | `/reconciliation` | Match transactions across Stripe/PayPal/CRM/finance systems |
-| **Donor Pipeline** | `/donors` | Major gift pipeline, stage tracking, AI next-best-action suggestions |
+| **Donor Pipeline** | `/donor-pipeline` | Major gift pipeline, stage tracking, AI next-best-action suggestions |
 | **Donor Retention** | `/donor-retention` | Lapsed donor analytics, retention cohorts, re-engagement playbooks |
 | **Program Impact** | `/programs` | Program outcomes, beneficiary counts, impact storytelling, KPI tracking |
 | **Communication Center** | `/communications` | Donor and board outreach drafts, templates, AI-assisted copy |
+| **Membership Management** | `/membership` | Member directory, tier/status management, renewals, onboarding form |
+| **Volunteer Management** | `/volunteers` | Volunteer roster, shift tracking, skills, donor crossover, economic value |
+| **Event Management** | `/event-management` | Full event lifecycle: create, capacity, speakers, agenda, registrations, tickets |
+| **Donation Center** | `/donations` | Campaign management, donation history, fund breakdown, record donation form |
+| **Public Presence** | `/public-presence` | Visibility toggles, embed codes, social sharing, website layer controls |
+| **Impact Dashboard** | `/impact-dashboard` | Program outcomes, milestones, AI-drafted annual report |
+| **AI Engagement Scoring** | `/engagement-scoring` | 0–100 member scores, At Risk detection, AI next-best-action per member |
 
 ---
 
@@ -258,4 +263,4 @@ Checklist to rebrand/repurpose:
 
 ---
 
-_Last updated: May 18, 2026_
+_Last updated: May 24, 2026_

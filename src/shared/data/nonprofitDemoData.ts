@@ -939,3 +939,506 @@ export const DEMO_BOARD_REPORT_HISTORY: BoardReportHistoryItem[] = [
   { id: "br-002", title: `${prevQuarter} Board Packet`, generatedDate: formatRelativeDate(subDays(NOW, 90)), generatedBy: "Lisa Patel", quarter: prevQuarter, status: "published" },
   { id: "br-003", title: "Annual Summary Report", generatedDate: formatRelativeDate(subDays(NOW, 180)), generatedBy: "AI Assistant", quarter: `FY${NOW.getFullYear() - 1}`, status: "archived" },
 ];
+
+// ─── Membership ──────────────────────────────────────────────────
+
+export type MemberTier = "General" | "Professional" | "Board" | "Honorary";
+export type MemberStatus = "Active" | "Expiring" | "Lapsed" | "Pending";
+
+export interface DemoMember {
+  id: string;
+  name: string;
+  email: string;
+  tier: MemberTier;
+  status: MemberStatus;
+  joinDate: string;
+  renewalDate: string;
+  phone?: string;
+  employer?: string;
+  interests: string[];
+}
+
+export const DEMO_MEMBERS: DemoMember[] = [
+  // General — 9 members
+  { id: "m-01", name: "Angela Torres", email: "angela.torres@email.com", tier: "General", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 730)), renewalDate: formatRelativeDate(addDays(NOW, 180)), phone: "(617) 555-0101", employer: "Boston Public Schools", interests: ["Youth Programs", "Education", "Mentorship"] },
+  { id: "m-02", name: "Marcus Webb", email: "marcus.webb@email.com", tier: "General", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 540)), renewalDate: formatRelativeDate(addDays(NOW, 210)), employer: "Webb Construction", interests: ["Community Development", "Workforce"] },
+  { id: "m-03", name: "Sandra Osei", email: "sandra.osei@email.com", tier: "General", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 400)), renewalDate: formatRelativeDate(addDays(NOW, 95)), phone: "(617) 555-0103", interests: ["Health", "Family Services"] },
+  { id: "m-04", name: "Daniel Flores", email: "d.flores@email.com", tier: "General", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 300)), renewalDate: formatRelativeDate(addDays(NOW, 65)), employer: "Flores Media", interests: ["Communications", "Fundraising"] },
+  { id: "m-05", name: "Nadia Okafor", email: "nadia.okafor@email.com", tier: "General", status: "Expiring", joinDate: formatRelativeDate(subDays(NOW, 355)), renewalDate: formatRelativeDate(addDays(NOW, 10)), phone: "(617) 555-0105", interests: ["Digital Literacy", "Youth"] },
+  { id: "m-06", name: "Chris Bailey", email: "c.bailey@email.com", tier: "General", status: "Expiring", joinDate: formatRelativeDate(subDays(NOW, 360)), renewalDate: formatRelativeDate(addDays(NOW, 5)), interests: ["Environment", "Community Garden"] },
+  { id: "m-07", name: "Yuki Tanaka", email: "yuki.tanaka@email.com", tier: "General", status: "Lapsed", joinDate: formatRelativeDate(subDays(NOW, 400)), renewalDate: formatRelativeDate(subDays(NOW, 35)), employer: "Tanaka Design", interests: ["Arts", "Culture"] },
+  { id: "m-08", name: "Omar Hassan", email: "omar.hassan@email.com", tier: "General", status: "Lapsed", joinDate: formatRelativeDate(subDays(NOW, 500)), renewalDate: formatRelativeDate(subDays(NOW, 60)), phone: "(617) 555-0108", interests: ["Advocacy", "Policy"] },
+  { id: "m-09", name: "Emily Saunders", email: "emily.s@email.com", tier: "General", status: "Pending", joinDate: formatRelativeDate(subDays(NOW, 7)), renewalDate: formatRelativeDate(addDays(NOW, 358)), employer: "Saunders Consulting", interests: ["Nonprofit Strategy", "Governance"] },
+  // Professional — 6 members
+  { id: "m-10", name: "Dr. Alicia Ramos", email: "a.ramos@healthpartners.org", tier: "Professional", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 720)), renewalDate: formatRelativeDate(addDays(NOW, 245)), phone: "(617) 555-0110", employer: "Health Partners Network", interests: ["Public Health", "Research", "Grants"] },
+  { id: "m-11", name: "Kevin Park", email: "kevin.park@kpmg.com", tier: "Professional", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 600)), renewalDate: formatRelativeDate(addDays(NOW, 120)), employer: "KPMG", interests: ["Finance", "Nonprofit Auditing"] },
+  { id: "m-12", name: "Jennifer Walsh", email: "j.walsh@lawfirm.com", tier: "Professional", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 450)), renewalDate: formatRelativeDate(addDays(NOW, 275)), phone: "(617) 555-0112", employer: "Walsh & Associates", interests: ["Legal Aid", "Pro Bono"] },
+  { id: "m-13", name: "Thomas Rivera", email: "t.rivera@email.com", tier: "Professional", status: "Expiring", joinDate: formatRelativeDate(subDays(NOW, 362)), renewalDate: formatRelativeDate(addDays(NOW, 3)), employer: "Rivera Financial", interests: ["Wealth Management", "Philanthropy"] },
+  { id: "m-14", name: "Priya Mehta", email: "priya.mehta@tech.com", tier: "Professional", status: "Expiring", joinDate: formatRelativeDate(subDays(NOW, 350)), renewalDate: formatRelativeDate(addDays(NOW, 15)), employer: "TechBridge Solutions", interests: ["Technology", "Digital Inclusion"] },
+  { id: "m-15", name: "Carlos Diaz", email: "carlos.diaz@email.com", tier: "Professional", status: "Lapsed", joinDate: formatRelativeDate(subDays(NOW, 480)), renewalDate: formatRelativeDate(subDays(NOW, 45)), phone: "(617) 555-0115", interests: ["Real Estate", "Community Housing"] },
+  // Board — 3 members
+  { id: "m-16", name: "Patricia Lee", email: "p.lee@brightsideboard.org", tier: "Board", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 1200)), renewalDate: formatRelativeDate(addDays(NOW, 365)), phone: "(617) 555-0116", employer: "Lee Foundation", interests: ["Governance", "Strategic Planning", "Major Gifts"] },
+  { id: "m-17", name: "Robert Kim", email: "r.kim@brightsideboard.org", tier: "Board", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 900)), renewalDate: formatRelativeDate(addDays(NOW, 300)), employer: "Kim Enterprises", interests: ["Finance", "Operations", "Audit"] },
+  { id: "m-18", name: "Sarah Mitchell", email: "s.mitchell@brightsideboard.org", tier: "Board", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 1500)), renewalDate: formatRelativeDate(addDays(NOW, 180)), phone: "(617) 555-0118", employer: "Mitchell Group", interests: ["Fundraising", "Communications", "Events"] },
+  // Honorary — 2 members
+  { id: "m-19", name: "Mayor Gloria Chen", email: "g.chen@boston.gov", tier: "Honorary", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 800)), renewalDate: formatRelativeDate(addDays(NOW, 365)), employer: "City of Boston", interests: ["Community Development", "Policy"] },
+  { id: "m-20", name: "Dr. James Wright", email: "j.wright@university.edu", tier: "Honorary", status: "Active", joinDate: formatRelativeDate(subDays(NOW, 1000)), renewalDate: formatRelativeDate(addDays(NOW, 365)), employer: "Northeastern University", interests: ["Research", "Education", "Youth"] },
+];
+
+export const DEMO_MEMBERSHIP_STATS = {
+  totalMembers: 20,
+  activeMembers: 13,
+  expiringMembers: 4,
+  lapsedMembers: 3,
+  tierBreakdown: { General: 9, Professional: 6, Board: 3, Honorary: 2 },
+};
+
+// ─── Volunteers ──────────────────────────────────────────────────
+
+export type AvailabilitySlot = "Weekday Mornings" | "Weekday Afternoons" | "Weekends" | "Evenings" | "Flexible";
+export type ShiftStatus = "Upcoming" | "Completed" | "Cancelled";
+
+export interface VolunteerShift {
+  id: string;
+  eventName: string;
+  date: string;
+  hours: number;
+  status: ShiftStatus;
+}
+
+export interface DemoVolunteer {
+  id: string;
+  name: string;
+  email: string;
+  skills: string[];
+  availability: AvailabilitySlot[];
+  totalHours: number;
+  joinedDate: string;
+  isAlsoDonor: boolean;
+  donorTotalGiving?: number;
+  shifts: VolunteerShift[];
+}
+
+export const DEMO_VOLUNTEERS: DemoVolunteer[] = [
+  { id: "v-01", name: "Angela Torres", email: "angela.torres@email.com", skills: ["Youth Mentoring", "Administrative"], availability: ["Weekday Afternoons", "Weekends"], totalHours: 312, joinedDate: formatRelativeDate(subDays(NOW, 720)), isAlsoDonor: true, donorTotalGiving: 4800,
+    shifts: [
+      { id: "vs-01a", eventName: "Spring Gala Setup", date: formatRelativeDate(subDays(NOW, 5)), hours: 4, status: "Completed" },
+      { id: "vs-01b", eventName: "Youth Mentorship Session", date: formatRelativeDate(addDays(NOW, 7)), hours: 2, status: "Upcoming" },
+    ]},
+  { id: "v-02", name: "Marcus Webb", email: "marcus.webb@email.com", skills: ["Event Setup", "Fundraising", "Photography"], availability: ["Weekends", "Flexible"], totalHours: 185, joinedDate: formatRelativeDate(subDays(NOW, 540)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-02a", eventName: "Community Health Fair", date: formatRelativeDate(subDays(NOW, 21)), hours: 6, status: "Completed" },
+      { id: "vs-02b", eventName: "Summer Leadership Summit", date: formatRelativeDate(addDays(NOW, 45)), hours: 8, status: "Upcoming" },
+    ]},
+  { id: "v-03", name: "Nadia Okafor", email: "nadia.okafor@email.com", skills: ["Digital Skills", "Translation"], availability: ["Evenings", "Weekends"], totalHours: 98, joinedDate: formatRelativeDate(subDays(NOW, 300)), isAlsoDonor: true, donorTotalGiving: 1200,
+    shifts: [
+      { id: "vs-03a", eventName: "Tech Training Workshop", date: formatRelativeDate(subDays(NOW, 14)), hours: 3, status: "Completed" },
+      { id: "vs-03b", eventName: "Community Dinner", date: formatRelativeDate(addDays(NOW, 12)), hours: 4, status: "Upcoming" },
+    ]},
+  { id: "v-04", name: "Daniel Flores", email: "d.flores@email.com", skills: ["Photography", "Event Setup", "Fundraising"], availability: ["Weekends", "Flexible"], totalHours: 240, joinedDate: formatRelativeDate(subDays(NOW, 400)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-04a", eventName: "Spring Gala", date: formatRelativeDate(subDays(NOW, 5)), hours: 6, status: "Completed" },
+      { id: "vs-04b", eventName: "Summer Leadership Summit", date: formatRelativeDate(addDays(NOW, 45)), hours: 8, status: "Upcoming" },
+    ]},
+  { id: "v-05", name: "Lisa Chen", email: "lisa.chen@email.com", skills: ["Health Screening", "Administrative"], availability: ["Weekday Mornings", "Weekday Afternoons"], totalHours: 420, joinedDate: formatRelativeDate(subDays(NOW, 900)), isAlsoDonor: true, donorTotalGiving: 8500,
+    shifts: [
+      { id: "vs-05a", eventName: "Community Health Fair", date: formatRelativeDate(subDays(NOW, 21)), hours: 8, status: "Completed" },
+      { id: "vs-05b", eventName: "Health Screening Drive", date: formatRelativeDate(addDays(NOW, 30)), hours: 6, status: "Upcoming" },
+    ]},
+  { id: "v-06", name: "David Osei", email: "david.osei@email.com", skills: ["Food Distribution", "Event Setup"], availability: ["Weekends"], totalHours: 156, joinedDate: formatRelativeDate(subDays(NOW, 500)), isAlsoDonor: true, donorTotalGiving: 2400,
+    shifts: [
+      { id: "vs-06a", eventName: "Monthly Community Dinner", date: formatRelativeDate(subDays(NOW, 30)), hours: 3, status: "Completed" },
+      { id: "vs-06b", eventName: "Monthly Community Dinner", date: formatRelativeDate(addDays(NOW, 12)), hours: 3, status: "Upcoming" },
+    ]},
+  { id: "v-07", name: "Carol Nguyen", email: "carol.nguyen@email.com", skills: ["Administrative", "Translation", "Digital Skills"], availability: ["Weekday Mornings", "Evenings"], totalHours: 287, joinedDate: formatRelativeDate(subDays(NOW, 650)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-07a", eventName: "Board Orientation Breakfast", date: formatRelativeDate(subDays(NOW, 21)), hours: 4, status: "Completed" },
+      { id: "vs-07b", eventName: "Community Dinner", date: formatRelativeDate(addDays(NOW, 12)), hours: 3, status: "Upcoming" },
+    ]},
+  { id: "v-08", name: "James Wright Jr.", email: "j.wright.jr@email.com", skills: ["Legal", "Administrative"], availability: ["Flexible"], totalHours: 72, joinedDate: formatRelativeDate(subDays(NOW, 180)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-08a", eventName: "Volunteer Orientation", date: formatRelativeDate(subDays(NOW, 14)), hours: 2, status: "Completed" },
+      { id: "vs-08b", eventName: "Summer Leadership Summit", date: formatRelativeDate(addDays(NOW, 45)), hours: 4, status: "Upcoming" },
+    ]},
+  { id: "v-09", name: "Aisha Patel", email: "aisha.patel@email.com", skills: ["Youth Mentoring", "Digital Skills", "Photography"], availability: ["Weekday Afternoons", "Weekends"], totalHours: 345, joinedDate: formatRelativeDate(subDays(NOW, 730)), isAlsoDonor: true, donorTotalGiving: 3600,
+    shifts: [
+      { id: "vs-09a", eventName: "Youth Mentorship Session", date: formatRelativeDate(subDays(NOW, 7)), hours: 2, status: "Completed" },
+      { id: "vs-09b", eventName: "Youth Mentorship Session", date: formatRelativeDate(addDays(NOW, 7)), hours: 2, status: "Upcoming" },
+    ]},
+  { id: "v-10", name: "Robert Santos", email: "r.santos@email.com", skills: ["Food Distribution", "Event Setup", "Fundraising"], availability: ["Weekends", "Evenings"], totalHours: 201, joinedDate: formatRelativeDate(subDays(NOW, 420)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-10a", eventName: "Spring Gala", date: formatRelativeDate(subDays(NOW, 5)), hours: 8, status: "Completed" },
+      { id: "vs-10b", eventName: "Community Dinner", date: formatRelativeDate(addDays(NOW, 12)), hours: 3, status: "Upcoming" },
+    ]},
+  { id: "v-11", name: "Michelle Kim", email: "michelle.kim@email.com", skills: ["Health Screening", "Translation"], availability: ["Weekday Mornings"], totalHours: 118, joinedDate: formatRelativeDate(subDays(NOW, 260)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-11a", eventName: "Community Health Fair", date: formatRelativeDate(subDays(NOW, 21)), hours: 6, status: "Completed" },
+      { id: "vs-11b", eventName: "Health Screening Drive", date: formatRelativeDate(addDays(NOW, 30)), hours: 6, status: "Upcoming" },
+    ]},
+  { id: "v-12", name: "Steven Park", email: "s.park@email.com", skills: ["Administrative", "Fundraising"], availability: ["Evenings", "Weekends"], totalHours: 89, joinedDate: formatRelativeDate(subDays(NOW, 150)), isAlsoDonor: true, donorTotalGiving: 950,
+    shifts: [
+      { id: "vs-12a", eventName: "Phone Banking Session", date: formatRelativeDate(subDays(NOW, 10)), hours: 3, status: "Completed" },
+      { id: "vs-12b", eventName: "Annual Fund Drive", date: formatRelativeDate(addDays(NOW, 20)), hours: 3, status: "Upcoming" },
+    ]},
+  { id: "v-13", name: "Fatima Hassan", email: "fatima.hassan@email.com", skills: ["Translation", "Food Distribution", "Youth Mentoring"], availability: ["Weekday Afternoons", "Weekends"], totalHours: 263, joinedDate: formatRelativeDate(subDays(NOW, 600)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-13a", eventName: "Community Dinner", date: formatRelativeDate(subDays(NOW, 30)), hours: 3, status: "Completed" },
+      { id: "vs-13b", eventName: "Community Dinner", date: formatRelativeDate(addDays(NOW, 12)), hours: 3, status: "Upcoming" },
+    ]},
+  { id: "v-14", name: "Brian O'Connor", email: "b.oconnor@email.com", skills: ["Event Setup", "Photography"], availability: ["Weekends", "Flexible"], totalHours: 134, joinedDate: formatRelativeDate(subDays(NOW, 380)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-14a", eventName: "Spring Gala", date: formatRelativeDate(subDays(NOW, 5)), hours: 10, status: "Completed" },
+      { id: "vs-14b", eventName: "Summer Leadership Summit", date: formatRelativeDate(addDays(NOW, 45)), hours: 8, status: "Upcoming" },
+    ]},
+  { id: "v-15", name: "Jasmine Rivera", email: "jasmine.rivera@email.com", skills: ["Youth Mentoring", "Administrative", "Digital Skills"], availability: ["Weekday Afternoons", "Evenings"], totalHours: 200, joinedDate: formatRelativeDate(subDays(NOW, 450)), isAlsoDonor: false,
+    shifts: [
+      { id: "vs-15a", eventName: "Youth Mentorship Session", date: formatRelativeDate(subDays(NOW, 7)), hours: 2, status: "Cancelled" },
+      { id: "vs-15b", eventName: "Youth Mentorship Session", date: formatRelativeDate(addDays(NOW, 7)), hours: 2, status: "Upcoming" },
+    ]},
+];
+
+export const DEMO_VOLUNTEER_STATS = {
+  totalVolunteers: 15,
+  activeThisMonth: 9,
+  totalHoursAllTime: 4320,
+  dollarValuePerHour: 31.80,
+  volunteersWhoAreDonors: 6,
+};
+
+// ─── Event Management ────────────────────────────────────────────
+
+export type ManagedEventStatus = "Upcoming" | "Active" | "Past";
+export type TicketTier = "Free" | "General Admission" | "VIP" | "Member-Only";
+
+export interface EventTicketType {
+  tier: TicketTier;
+  price: number;
+  capacity: number;
+  sold: number;
+}
+
+export interface EventSpeaker {
+  name: string;
+  title: string;
+  organization: string;
+}
+
+export interface EventAgendaItem {
+  time: string;
+  title: string;
+  speaker?: string;
+}
+
+export interface EventRegistrant {
+  id: string;
+  name: string;
+  email: string;
+  ticketTier: TicketTier;
+  registeredDate: string;
+  checkedIn: boolean;
+}
+
+export interface DemoManagedEvent {
+  id: string;
+  title: string;
+  status: ManagedEventStatus;
+  date: string;
+  location: string;
+  description: string;
+  capacity: number;
+  registrationCount: number;
+  ticketTypes: EventTicketType[];
+  speakers: EventSpeaker[];
+  agenda: EventAgendaItem[];
+  registrants: EventRegistrant[];
+  fundRaised?: number;
+}
+
+export const DEMO_MANAGED_EVENTS: DemoManagedEvent[] = [
+  {
+    id: "me-01",
+    title: "Summer Leadership Summit",
+    status: "Upcoming",
+    date: formatRelativeDate(addDays(NOW, 45)),
+    location: "Boston Convention & Exhibition Center",
+    description: "Our flagship annual summit bringing together nonprofit leaders, community advocates, and major donors for a full day of keynotes, workshops, and networking. This year's theme: 'Building Resilient Communities.'",
+    capacity: 200,
+    registrationCount: 112,
+    ticketTypes: [
+      { tier: "Free", price: 0, capacity: 20, sold: 18 },
+      { tier: "General Admission", price: 75, capacity: 130, sold: 75 },
+      { tier: "VIP", price: 250, capacity: 50, sold: 19 },
+    ],
+    speakers: [
+      { name: "Dr. Alicia Ramos", title: "Director of Community Health", organization: "Health Partners Network" },
+      { name: "Mayor Gloria Chen", title: "Mayor", organization: "City of Boston" },
+      { name: "Robert Kim", title: "Board Chair", organization: "Brightside Foundation" },
+    ],
+    agenda: [
+      { time: "8:30 AM", title: "Registration & Breakfast Networking" },
+      { time: "9:15 AM", title: "Opening Keynote: The State of Community", speaker: "Mayor Gloria Chen" },
+      { time: "10:30 AM", title: "Workshop Block A — Choose from 4 sessions" },
+      { time: "12:00 PM", title: "Lunch & Sponsor Recognition" },
+      { time: "1:30 PM", title: "Panel: Funding the Future", speaker: "Dr. Alicia Ramos" },
+      { time: "3:00 PM", title: "Workshop Block B — Choose from 3 sessions" },
+      { time: "4:30 PM", title: "Closing Remarks & Next Steps", speaker: "Robert Kim" },
+      { time: "5:00 PM", title: "Networking Reception" },
+    ],
+    registrants: [
+      { id: "r-01a", name: "Sarah Mitchell", email: "s.mitchell@email.com", ticketTier: "VIP", registeredDate: formatRelativeDate(subDays(NOW, 15)), checkedIn: false },
+      { id: "r-01b", name: "Kevin Park", email: "kevin.park@kpmg.com", ticketTier: "General Admission", registeredDate: formatRelativeDate(subDays(NOW, 12)), checkedIn: false },
+      { id: "r-01c", name: "Angela Torres", email: "angela.torres@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 10)), checkedIn: false },
+      { id: "r-01d", name: "Dr. Marcus Webb", email: "mwebb@community.org", ticketTier: "General Admission", registeredDate: formatRelativeDate(subDays(NOW, 8)), checkedIn: false },
+      { id: "r-01e", name: "Priya Mehta", email: "priya.mehta@tech.com", ticketTier: "VIP", registeredDate: formatRelativeDate(subDays(NOW, 6)), checkedIn: false },
+    ],
+  },
+  {
+    id: "me-02",
+    title: "Monthly Community Dinner",
+    status: "Upcoming",
+    date: formatRelativeDate(addDays(NOW, 12)),
+    location: "Brightside Community Center, 45 Harrison Ave",
+    description: "Our monthly gathering for community members, volunteers, and supporters. A warm meal, meaningful connections, and program updates from our team. Open to all — no one turned away.",
+    capacity: 80,
+    registrationCount: 67,
+    ticketTypes: [
+      { tier: "Free", price: 0, capacity: 80, sold: 67 },
+    ],
+    speakers: [],
+    agenda: [
+      { time: "6:00 PM", title: "Doors Open & Social Time" },
+      { time: "6:30 PM", title: "Welcome & Program Updates" },
+      { time: "6:45 PM", title: "Community Dinner" },
+      { time: "7:30 PM", title: "Open Mic — Community Stories" },
+      { time: "8:00 PM", title: "Closing" },
+    ],
+    registrants: [
+      { id: "r-02a", name: "David Osei", email: "david.osei@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 5)), checkedIn: false },
+      { id: "r-02b", name: "Fatima Hassan", email: "fatima.hassan@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 4)), checkedIn: false },
+      { id: "r-02c", name: "Carol Nguyen", email: "carol.nguyen@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 3)), checkedIn: false },
+    ],
+  },
+  {
+    id: "me-03",
+    title: "Community Health Fair",
+    status: "Active",
+    date: formatRelativeDate(NOW),
+    location: "Roxbury Community Park Pavilion",
+    description: "Free health screenings, wellness resources, and community connections. Partnered with Health Partners Network to provide blood pressure checks, diabetes screening, mental health resources, and more.",
+    capacity: 150,
+    registrationCount: 98,
+    ticketTypes: [
+      { tier: "Free", price: 0, capacity: 100, sold: 80 },
+      { tier: "General Admission", price: 0, capacity: 50, sold: 18 },
+    ],
+    speakers: [
+      { name: "Dr. Alicia Ramos", title: "Director of Community Health", organization: "Health Partners Network" },
+    ],
+    agenda: [
+      { time: "9:00 AM", title: "Setup & Volunteer Briefing" },
+      { time: "10:00 AM", title: "Doors Open — Health Screenings Begin" },
+      { time: "11:00 AM", title: "Wellness Workshop: Nutrition Basics", speaker: "Dr. Alicia Ramos" },
+      { time: "1:00 PM", title: "Kids Health Activity Zone Opens" },
+      { time: "3:00 PM", title: "Resource Fair & Community Partners" },
+      { time: "5:00 PM", title: "Wrap-Up & Volunteer Thank You" },
+    ],
+    registrants: [
+      { id: "r-03a", name: "Lisa Chen", email: "lisa.chen@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 10)), checkedIn: true },
+      { id: "r-03b", name: "Michelle Kim", email: "michelle.kim@email.com", ticketTier: "Free", registeredDate: formatRelativeDate(subDays(NOW, 8)), checkedIn: true },
+      { id: "r-03c", name: "Marcus Webb", email: "marcus.webb@email.com", ticketTier: "General Admission", registeredDate: formatRelativeDate(subDays(NOW, 7)), checkedIn: false },
+    ],
+  },
+  {
+    id: "me-04",
+    title: "Annual Spring Gala",
+    status: "Past",
+    date: formatRelativeDate(subDays(NOW, 5)),
+    location: "The Boston Marriott Copley Place",
+    description: "Our premier annual fundraising gala celebrating the impact of our community. An evening of dinner, dancing, live auction, and recognition of our top donors and volunteers.",
+    capacity: 150,
+    registrationCount: 120,
+    fundRaised: 42000,
+    ticketTypes: [
+      { tier: "General Admission", price: 150, capacity: 80, sold: 68 },
+      { tier: "VIP", price: 350, capacity: 40, sold: 35 },
+      { tier: "Member-Only", price: 100, capacity: 30, sold: 17 },
+    ],
+    speakers: [
+      { name: "Patricia Lee", title: "Board Chair", organization: "Brightside Foundation" },
+      { name: "Sarah Mitchell", title: "Executive Director", organization: "Brightside Foundation" },
+    ],
+    agenda: [
+      { time: "6:00 PM", title: "VIP Reception & Silent Auction Opens" },
+      { time: "7:00 PM", title: "Doors Open — Cocktail Hour" },
+      { time: "7:30 PM", title: "Welcome & Mission Moment", speaker: "Patricia Lee" },
+      { time: "8:00 PM", title: "Dinner Service" },
+      { time: "8:45 PM", title: "Impact Video & Fund-a-Need" },
+      { time: "9:15 PM", title: "Live Auction" },
+      { time: "10:00 PM", title: "Dancing & Networking" },
+    ],
+    registrants: [
+      { id: "r-04a", name: "Robert Kim", email: "robert.kim@email.com", ticketTier: "VIP", registeredDate: formatRelativeDate(subDays(NOW, 30)), checkedIn: true },
+      { id: "r-04b", name: "Jennifer Walsh", email: "j.walsh@lawfirm.com", ticketTier: "General Admission", registeredDate: formatRelativeDate(subDays(NOW, 25)), checkedIn: true },
+      { id: "r-04c", name: "Thomas Rivera", email: "t.rivera@email.com", ticketTier: "Member-Only", registeredDate: formatRelativeDate(subDays(NOW, 20)), checkedIn: false },
+      { id: "r-04d", name: "Mayor Gloria Chen", email: "g.chen@boston.gov", ticketTier: "VIP", registeredDate: formatRelativeDate(subDays(NOW, 28)), checkedIn: true },
+    ],
+  },
+  {
+    id: "me-05",
+    title: "Board Orientation Breakfast",
+    status: "Past",
+    date: formatRelativeDate(subDays(NOW, 21)),
+    location: "Brightside Foundation HQ, Conference Room A",
+    description: "Orientation and onboarding session for new board members and advisory committee additions. Covers governance responsibilities, committee assignments, and strategic priorities for the year.",
+    capacity: 25,
+    registrationCount: 22,
+    ticketTypes: [
+      { tier: "Member-Only", price: 0, capacity: 25, sold: 22 },
+    ],
+    speakers: [
+      { name: "Patricia Lee", title: "Board Chair", organization: "Brightside Foundation" },
+    ],
+    agenda: [
+      { time: "8:00 AM", title: "Breakfast & Introductions" },
+      { time: "8:30 AM", title: "Governance Overview", speaker: "Patricia Lee" },
+      { time: "9:30 AM", title: "Strategic Plan Review" },
+      { time: "10:30 AM", title: "Committee Assignments & Q&A" },
+      { time: "11:00 AM", title: "Adjourn" },
+    ],
+    registrants: [
+      { id: "r-05a", name: "Emily Saunders", email: "emily.s@email.com", ticketTier: "Member-Only", registeredDate: formatRelativeDate(subDays(NOW, 28)), checkedIn: true },
+      { id: "r-05b", name: "Kevin Park", email: "kevin.park@kpmg.com", ticketTier: "Member-Only", registeredDate: formatRelativeDate(subDays(NOW, 25)), checkedIn: true },
+      { id: "r-05c", name: "Dr. Alicia Ramos", email: "a.ramos@healthpartners.org", ticketTier: "Member-Only", registeredDate: formatRelativeDate(subDays(NOW, 27)), checkedIn: true },
+    ],
+  },
+];
+
+// ─── Donation Center ──────────────────────────────────────────────
+
+export type DonationFrequency = "One-Time" | "Monthly" | "Quarterly" | "Annual";
+export type DonationFundDesignation = "General Operating" | "Youth Programs" | "Health Initiative" | "Technology Fund" | "Emergency Relief";
+
+export interface DemoCampaign {
+  id: string;
+  name: string;
+  description: string;
+  goal: number;
+  raised: number;
+  donorCount: number;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  fundDesignation: DonationFundDesignation;
+}
+
+export interface DemoDonation {
+  id: string;
+  donorName: string;
+  amount: number;
+  frequency: DonationFrequency;
+  campaignId: string;
+  campaignName: string;
+  date: string;
+  fundDesignation: DonationFundDesignation;
+  isAnonymous: boolean;
+  paymentMethod: "Credit Card" | "ACH" | "Check" | "PayPal";
+}
+
+export const DEMO_CAMPAIGNS: DemoCampaign[] = [
+  {
+    id: "c-01", name: "Spring Annual Fund", description: "Our core operating fund that supports all Brightside programs, staff, and community services. Every dollar goes directly to our mission.",
+    goal: 75000, raised: 48200, donorCount: 183, startDate: formatRelativeDate(subDays(NOW, 60)),
+    endDate: formatRelativeDate(addDays(NOW, 30)), isActive: true, fundDesignation: "General Operating",
+  },
+  {
+    id: "c-02", name: "Technology Access Initiative", description: "Bridging the digital divide for underserved youth and families. Funds laptops, internet access stipends, and digital literacy training.",
+    goal: 25000, raised: 18400, donorCount: 67, startDate: formatRelativeDate(subDays(NOW, 45)),
+    endDate: formatRelativeDate(addDays(NOW, 45)), isActive: true, fundDesignation: "Technology Fund",
+  },
+  {
+    id: "c-03", name: "Youth Mentorship Endowment", description: "Building a permanent endowment to sustain our youth mentorship programs in perpetuity. A legacy gift that will serve Boston's youth for generations.",
+    goal: 100000, raised: 31000, donorCount: 42, startDate: formatRelativeDate(subDays(NOW, 90)),
+    isActive: true, fundDesignation: "Youth Programs",
+  },
+];
+
+export const DEMO_DONATIONS_RECENT: DemoDonation[] = [
+  { id: "d-01", donorName: "Sarah Mitchell", amount: 2500, frequency: "Annual", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 1)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "Credit Card" },
+  { id: "d-02", donorName: "Robert Kim", amount: 500, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 1)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "ACH" },
+  { id: "d-03", donorName: "Anonymous", amount: 1000, frequency: "One-Time", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 2)), fundDesignation: "Youth Programs", isAnonymous: true, paymentMethod: "Credit Card" },
+  { id: "d-04", donorName: "Patricia Lee", amount: 5000, frequency: "Annual", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 3)), fundDesignation: "Youth Programs", isAnonymous: false, paymentMethod: "Check" },
+  { id: "d-05", donorName: "Margaret Chen", amount: 150, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 4)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "Credit Card" },
+  { id: "d-06", donorName: "David Chen", amount: 750, frequency: "One-Time", campaignId: "c-02", campaignName: "Technology Access Initiative", date: formatRelativeDate(subDays(NOW, 5)), fundDesignation: "Technology Fund", isAnonymous: false, paymentMethod: "PayPal" },
+  { id: "d-07", donorName: "Jennifer Walsh", amount: 250, frequency: "Quarterly", campaignId: "c-02", campaignName: "Technology Access Initiative", date: formatRelativeDate(subDays(NOW, 7)), fundDesignation: "Technology Fund", isAnonymous: false, paymentMethod: "ACH" },
+  { id: "d-08", donorName: "Kevin Park", amount: 1000, frequency: "Annual", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 8)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "Check" },
+  { id: "d-09", donorName: "Anonymous", amount: 50, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 9)), fundDesignation: "General Operating", isAnonymous: true, paymentMethod: "Credit Card" },
+  { id: "d-10", donorName: "Thomas Rivera", amount: 300, frequency: "One-Time", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 10)), fundDesignation: "Youth Programs", isAnonymous: false, paymentMethod: "Credit Card" },
+  { id: "d-11", donorName: "Dr. Alicia Ramos", amount: 200, frequency: "Monthly", campaignId: "c-02", campaignName: "Technology Access Initiative", date: formatRelativeDate(subDays(NOW, 12)), fundDesignation: "Technology Fund", isAnonymous: false, paymentMethod: "ACH" },
+  { id: "d-12", donorName: "Lisa Chen", amount: 10000, frequency: "Annual", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 14)), fundDesignation: "Youth Programs", isAnonymous: false, paymentMethod: "Check" },
+  { id: "d-13", donorName: "Carol Nguyen", amount: 75, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 15)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "Credit Card" },
+  { id: "d-14", donorName: "Marcus Webb", amount: 500, frequency: "One-Time", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 17)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "PayPal" },
+  { id: "d-15", donorName: "Priya Mehta", amount: 1500, frequency: "Annual", campaignId: "c-02", campaignName: "Technology Access Initiative", date: formatRelativeDate(subDays(NOW, 20)), fundDesignation: "Technology Fund", isAnonymous: false, paymentMethod: "ACH" },
+  { id: "d-16", donorName: "Anonymous", amount: 25, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 22)), fundDesignation: "General Operating", isAnonymous: true, paymentMethod: "Credit Card" },
+  { id: "d-17", donorName: "Angela Torres", amount: 400, frequency: "Quarterly", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 25)), fundDesignation: "Youth Programs", isAnonymous: false, paymentMethod: "Credit Card" },
+  { id: "d-18", donorName: "James Wright", amount: 2000, frequency: "Annual", campaignId: "c-03", campaignName: "Youth Mentorship Endowment", date: formatRelativeDate(subDays(NOW, 30)), fundDesignation: "Youth Programs", isAnonymous: false, paymentMethod: "Check" },
+  { id: "d-19", donorName: "Robert Okafor", amount: 100, frequency: "Monthly", campaignId: "c-01", campaignName: "Spring Annual Fund", date: formatRelativeDate(subDays(NOW, 35)), fundDesignation: "General Operating", isAnonymous: false, paymentMethod: "ACH" },
+  { id: "d-20", donorName: "Susan Park", amount: 600, frequency: "One-Time", campaignId: "c-02", campaignName: "Technology Access Initiative", date: formatRelativeDate(subDays(NOW, 45)), fundDesignation: "Technology Fund", isAnonymous: false, paymentMethod: "Credit Card" },
+];
+
+export const DEMO_DONATION_STATS = {
+  totalRaisedAllTime: 284000,
+  totalRaisedThisYear: 198000,
+  averageGift: 287,
+  recurringDonors: 143,
+  oneTimeDonors: 312,
+  largestGift: 10000,
+  activeCampaigns: 3,
+  fundBreakdown: [
+    { fund: "General Operating" as DonationFundDesignation, amount: 89000, pct: 45 },
+    { fund: "Youth Programs" as DonationFundDesignation, amount: 55800, pct: 28 },
+    { fund: "Health Initiative" as DonationFundDesignation, amount: 29700, pct: 15 },
+    { fund: "Technology Fund" as DonationFundDesignation, amount: 13860, pct: 7 },
+    { fund: "Emergency Relief" as DonationFundDesignation, amount: 9900, pct: 5 },
+  ],
+};
+
+// ─── Public Presence ──────────────────────────────────────────────
+
+export interface PublicVisibilityConfig {
+  publicEventFeed: boolean;
+  donationWidget: boolean;
+  memberDirectoryPublic: boolean;
+  programsPublicPage: boolean;
+  teamPage: boolean;
+  impactStats: boolean;
+}
+
+export interface SocialShareConfig {
+  facebookUrl: string;
+  twitterHandle: string;
+  linkedinUrl: string;
+  instagramHandle: string;
+}
+
+export const DEMO_PUBLIC_PRESENCE = {
+  orgWebsiteUrl: "https://brightsidecommunity.org",
+  visibility: {
+    publicEventFeed: true,
+    donationWidget: true,
+    memberDirectoryPublic: false,
+    programsPublicPage: true,
+    teamPage: false,
+    impactStats: true,
+  } satisfies PublicVisibilityConfig,
+  social: {
+    facebookUrl: "https://facebook.com/brightsidecommunity",
+    twitterHandle: "@BrightsideFdn",
+    linkedinUrl: "https://linkedin.com/company/brightside-foundation",
+    instagramHandle: "@brightsidecommunity",
+  } satisfies SocialShareConfig,
+  embedCodes: {
+    donationWidget: `<iframe src="https://brightsidecommunity.org/donate-widget" width="400" height="600" frameborder="0" title="Donate to Brightside Foundation"></iframe>`,
+    eventFeed: `<iframe src="https://brightsidecommunity.org/events-widget" width="600" height="400" frameborder="0" title="Upcoming Events — Brightside Foundation"></iframe>`,
+  },
+  lastPublishedAt: formatRelativeDate(subDays(NOW, 2)),
+};

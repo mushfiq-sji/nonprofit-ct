@@ -108,6 +108,115 @@ Match transactions across payment processors and CRM/finance systems.
 
 ---
 
+---
+
+### Membership Management (`/membership`)
+
+Member directory, renewals management, and onboarding.
+
+**Features:**
+- Member directory with search and tier filter (General / Professional / Board / Honorary)
+- Status badges: Active, Expiring (within 30 days), Lapsed, Pending
+- 4 KPI cards: Total Members, Active, Expiring Soon, Lapsed
+- Renewals tab: Expiring-soon list + Lapsed list with Send Reminder / Re-Engage actions (toast)
+- Add Member form (React Hook Form + Zod: name, email, tier)
+- Member detail Sheet: contact info, employer, interests as badges, action buttons
+
+**Key components:** `MembershipPage.tsx`
+
+---
+
+### Volunteer Management (`/volunteers`)
+
+Volunteer roster, shift tracking, and economic value reporting.
+
+**Features:**
+- 4 KPI cards: Total Volunteers, Active This Month, Total Hours, Economic Value ($31.80/hr × hours)
+- Card grid with avatar initials, skills as badges, availability slots, donor crossover indicator (❤️)
+- Shifts tab: flat table of all shifts sorted by date (Upcoming / Completed / Cancelled)
+- Add Volunteer form (RHF + Zod: name, email, skills, availability)
+- Volunteer detail Sheet: skills, availability, hours gauge, shift history, donor crossover amber callout
+
+**Key components:** `VolunteersPage.tsx`
+
+---
+
+### Full Event Management (`/event-management`)
+
+Full event lifecycle — create, manage registrations, track capacity, and record revenue.
+
+**Important:** This is separate from `/events` (post-event intelligence). `/events` is not modified.
+
+**Features:**
+- Status filters: All / Upcoming / Active / Past
+- Event cards with capacity progress bar (green → amber → red at 90%), ticket summary
+- Event detail Sheet: description, speakers, agenda, ticket types with revenue
+- Registrations Sheet: attendee table with check-in status
+- Create Event Dialog (RHF + Zod: title, date, location, capacity, description)
+
+**Key components:** `EventManagementPage.tsx`
+
+---
+
+### Donation Center (`/donations`)
+
+Campaign management, donation tracking, and fund breakdown reporting.
+
+**Features:**
+- 4 KPI cards: Raised This Year, Average Gift, Recurring Donors, Active Campaigns
+- Campaigns tab: Campaign cards with name, fund designation badge, goal progress bar (raised/goal %)
+- Donations tab: Frequency filter pills (All / One-Time / Monthly / Quarterly / Annual) + Table
+- Fund Breakdown tab: Horizontal progress bars per fund with amounts and percentages
+- New Donation tab: RHF + Zod (donor name, amount, frequency, campaign, fund designation)
+
+**Key components:** `DonationCenterPage.tsx`
+
+---
+
+### Public Presence (`/public-presence`)
+
+Website visibility controls, embed codes, and social sharing.
+
+**Features:**
+- Visibility Controls tab: 6 Switch toggles (event feed, donation widget, member directory, programs page, team page, impact stats) with instant feedback toasts
+- Previews tab: 3 mock preview cards (Event Feed, Donation Widget, Impact Stats)
+- Embed Codes tab: `<iframe>` snippets for Donation Widget and Event Feed with async clipboard copy
+- Social Sharing tab: Facebook, Twitter/X, LinkedIn, Instagram — show handle/URL + copy button
+
+**Key components:** `PublicPresencePage.tsx`
+
+---
+
+### Impact Dashboard (`/impact-dashboard`)
+
+Program outcomes, milestone tracking, and AI-drafted annual report.
+
+**Features:**
+- 6 KPI cards: Beneficiaries Served, Volunteer Hours, Funds Raised, Active Programs, Events Held, New Donors
+- Programs tab: 6 expandable program cards with beneficiary progress bars and outcome lists
+- Milestones tab: 8 milestone items with category badges (Programs / Finance / Community / Partnerships)
+- Annual Report tab: AI-drafted report via `ai-chat-assistant` edge function with graceful plain-text fallback
+- Public-facing badge in page header
+
+**Key components:** `ImpactDashboardPage.tsx`
+
+---
+
+### AI Engagement Scoring (`/engagement-scoring`)
+
+AI-powered member/donor engagement scores with next-best-action recommendations.
+
+**Features:**
+- 12 demo members scored 0–100 across Active (≥70) / At Risk (40–69) / Lapsed (<40) tiers
+- 4 KPI cards: Average Score, Active Members, At Risk, Lapsed
+- Amber at-risk alert banner with bulk "Re-Engage All" action
+- Tabbed table filtered by tier with score bar column (width driven by score %)
+- Member detail Sheet: large score gauge (green/amber/red), engagement signals breakdown (positive/negative), AI Next Best Action via `ai-chat-assistant` edge function with tier-appropriate fallback
+
+**Key components:** `AIEngagementScoringPage.tsx`
+
+---
+
 ## Demo Data
 
 All nonprofit modules use demo data from `src/shared/data/nonprofitDemoData.ts` and inline component state. This provides:
@@ -118,6 +227,13 @@ All nonprofit modules use demo data from `src/shared/data/nonprofitDemoData.ts` 
 - Data health scores and duplicate detection results
 - Reconciliation transaction matches
 - Donor pipeline with 8+ enriched donor profiles (giving history, fund designations, contact notes, volunteer history)
+- 20 members across General / Professional / Board / Honorary tiers with status and renewal dates
+- 15 volunteers with skills, availability slots, shift history, and donor crossover flags
+- 5 managed events (2 Upcoming, 1 Active, 2 Past) with speakers, agenda, ticket types, and registrants
+- 3 active donation campaigns + 20 recent donations + fund breakdown stats
+- Public presence config (visibility toggles, social handles, embed codes)
+- 6 programs with outcome metrics, 8 milestones, and impact KPIs
+- 12 engagement-scored members with signal breakdowns
 
 ---
 

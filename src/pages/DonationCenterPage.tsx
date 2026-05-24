@@ -69,6 +69,9 @@ export default function DonationCenterPage() {
     },
   });
 
+  // Destructure once to avoid multiple watch() subscriptions causing excessive re-renders
+  const { frequency: watchedFrequency, campaignId: watchedCampaignId, fundDesignation: watchedFundDesignation } = form.watch();
+
   const filteredDonations = DEMO_DONATIONS_RECENT.filter(
     (d) => frequencyFilter === "All" || d.frequency === frequencyFilter
   );
@@ -310,7 +313,7 @@ export default function DonationCenterPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Frequency</Label>
-                  <Select value={form.watch("frequency")} onValueChange={(v) => form.setValue("frequency", v as DonationFrequency)}>
+                  <Select value={watchedFrequency} onValueChange={(v) => form.setValue("frequency", v as DonationFrequency)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="One-Time">One-Time</SelectItem>
@@ -322,7 +325,7 @@ export default function DonationCenterPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Campaign</Label>
-                  <Select value={form.watch("campaignId")} onValueChange={(v) => form.setValue("campaignId", v)}>
+                  <Select value={watchedCampaignId} onValueChange={(v) => form.setValue("campaignId", v)}>
                     <SelectTrigger><SelectValue placeholder="Select campaign" /></SelectTrigger>
                     <SelectContent>
                       {DEMO_CAMPAIGNS.map((c) => (
@@ -336,7 +339,7 @@ export default function DonationCenterPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Fund Designation</Label>
-                  <Select value={form.watch("fundDesignation")} onValueChange={(v) => form.setValue("fundDesignation", v as DonationFundDesignation)}>
+                  <Select value={watchedFundDesignation} onValueChange={(v) => form.setValue("fundDesignation", v as DonationFundDesignation)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="General Operating">General Operating</SelectItem>

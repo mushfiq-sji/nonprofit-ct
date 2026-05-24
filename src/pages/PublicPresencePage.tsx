@@ -62,8 +62,9 @@ export default function PublicPresencePage() {
   };
 
   const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied to clipboard`);
+    navigator.clipboard.writeText(text)
+      .then(() => toast.success(`${label} copied to clipboard`))
+      .catch(() => toast.error("Failed to copy — please copy manually"));
   };
 
   const activeCount = Object.values(visibility).filter(Boolean).length;
@@ -97,7 +98,7 @@ export default function PublicPresencePage() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => window.open(DEMO_PUBLIC_PRESENCE.orgWebsiteUrl, "_blank")}
+          onClick={() => window.open(DEMO_PUBLIC_PRESENCE.orgWebsiteUrl, "_blank", "noopener,noreferrer")}
         >
           <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
           Visit Website
@@ -341,7 +342,7 @@ export default function PublicPresencePage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => window.open(social.value, "_blank")}
+                        onClick={() => window.open(social.value, "_blank", "noopener,noreferrer")}
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Button>

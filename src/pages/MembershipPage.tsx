@@ -74,6 +74,9 @@ export default function MembershipPage() {
     defaultValues: { name: "", email: "", tier: "General" },
   });
 
+  // Destructure once to avoid multiple watch() subscriptions causing excessive re-renders
+  const { tier: watchedTier } = form.watch();
+
   const filteredMembers = DEMO_MEMBERS.filter((m) => {
     const matchesSearch =
       searchQuery === "" ||
@@ -352,7 +355,7 @@ export default function MembershipPage() {
                 <div className="space-y-1.5">
                   <Label htmlFor="tier">Membership Tier</Label>
                   <Select
-                    value={form.watch("tier")}
+                    value={watchedTier}
                     onValueChange={(val) => form.setValue("tier", val as MemberTier)}
                   >
                     <SelectTrigger>

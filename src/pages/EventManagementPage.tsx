@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import {
-  CalendarPlus, Calendar, MapPin, Users, Ticket, Plus, Eye, ClipboardList, CheckCircle2,
+  CalendarPlus, Calendar, MapPin, Users, Ticket, Plus, Eye, ClipboardList, CheckCircle2, DollarSign,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -175,8 +175,9 @@ export default function EventManagementPage() {
                     </div>
 
                     {event.fundRaised !== undefined && (
-                      <p className="text-sm text-green-700 dark:text-green-400 font-medium mt-2">
-                        💰 ${event.fundRaised.toLocaleString()} raised
+                      <p className="text-sm text-green-700 dark:text-green-400 font-medium mt-2 flex items-center gap-1">
+                        <DollarSign className="h-3.5 w-3.5" />
+                        {event.fundRaised.toLocaleString()} raised
                       </p>
                     )}
                   </div>
@@ -231,8 +232,9 @@ export default function EventManagementPage() {
 
                 {detailEvent.fundRaised !== undefined && (
                   <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-800 p-3">
-                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">
-                      💰 ${detailEvent.fundRaised.toLocaleString()} raised at this event
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-400 flex items-center gap-1">
+                      <DollarSign className="h-4 w-4" />
+                      {detailEvent.fundRaised.toLocaleString()} raised at this event
                     </p>
                   </div>
                 )}
@@ -242,8 +244,8 @@ export default function EventManagementPage() {
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Speakers</h4>
                     <div className="space-y-2">
-                      {detailEvent.speakers.map((speaker, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm">
+                      {detailEvent.speakers.map((speaker) => (
+                        <div key={speaker.name} className="flex items-center gap-2 text-sm">
                           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium shrink-0">
                             {speaker.name[0]}
                           </div>
@@ -262,8 +264,8 @@ export default function EventManagementPage() {
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Agenda</h4>
                     <div className="space-y-1">
-                      {detailEvent.agenda.map((item, i) => (
-                        <div key={i} className="flex gap-3 text-sm py-1.5 border-b last:border-0">
+                      {detailEvent.agenda.map((item) => (
+                        <div key={item.time} className="flex gap-3 text-sm py-1.5 border-b last:border-0">
                           <span className="text-muted-foreground w-20 shrink-0">{item.time}</span>
                           <div>
                             <span>{item.title}</span>

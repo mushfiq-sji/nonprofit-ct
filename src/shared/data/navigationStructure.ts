@@ -76,6 +76,8 @@ export const navigationGroups: NavGroup[] = [
       { title: "Event Management", href: "/event-management", icon: "CalendarPlus", requiredPermission: { type: "module", key: "event-management" } },
       { title: "Donation Center", href: "/donations", icon: "BadgeDollarSign", requiredPermission: { type: "module", key: "donations" } },
       { title: "Public Presence", href: "/public-presence", icon: "Globe", requiredPermission: { type: "module", key: "public-presence" } },
+      { title: "Impact Dashboard", href: "/impact-dashboard", icon: "BarChart3", requiredPermission: { type: "module", key: "impact-dashboard" } },
+      { title: "Engagement Scoring", href: "/engagement-scoring", icon: "Sparkles", requiredPermission: { type: "module", key: "engagement-scoring" } },
     ],
   },
   {

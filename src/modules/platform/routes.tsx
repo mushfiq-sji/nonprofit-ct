@@ -23,7 +23,6 @@ import Dashboard from "@/pages/Dashboard";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
 import Sessions from "@/pages/Sessions";
-import Help from "@/pages/Help";
 import HelpPage from "@/pages/HelpPage";
 import Notifications from "@/pages/Notifications";
 import Feedback from "@/pages/Feedback";
@@ -57,6 +56,8 @@ import VolunteersPage from "@/pages/VolunteersPage";
 import EventManagementPage from "@/pages/EventManagementPage";
 import DonationCenterPage from "@/pages/DonationCenterPage";
 import PublicPresencePage from "@/pages/PublicPresencePage";
+import ImpactDashboardPage from "@/pages/ImpactDashboardPage";
+import AIEngagementScoringPage from "@/pages/AIEngagementScoringPage";
 
 /**
  * Public routes - no auth required
@@ -134,6 +135,8 @@ export const coreProtectedRoutes = (
     <Route path="/event-management" element={<EventManagementPage />} />
     <Route path="/donations" element={<DonationCenterPage />} />
     <Route path="/public-presence" element={<PublicPresencePage />} />
+    <Route path="/impact-dashboard" element={<ImpactDashboardPage />} />
+    <Route path="/engagement-scoring" element={<AIEngagementScoringPage />} />
   </>
 );
 

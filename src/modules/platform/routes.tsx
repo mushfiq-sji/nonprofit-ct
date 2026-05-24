@@ -52,6 +52,11 @@ import ProgramsPage from "@/pages/ProgramsPage";
 import CommunicationsPage from "@/pages/CommunicationsPage";
 import VoiceNotesPage from "@/pages/VoiceNotesPage";
 import GrantWriterPage from "@/pages/GrantWriterPage";
+import MembershipPage from "@/pages/MembershipPage";
+import VolunteersPage from "@/pages/VolunteersPage";
+import EventManagementPage from "@/pages/EventManagementPage";
+import DonationCenterPage from "@/pages/DonationCenterPage";
+import PublicPresencePage from "@/pages/PublicPresencePage";
 
 /**
  * Public routes - no auth required
@@ -122,6 +127,13 @@ export const coreProtectedRoutes = (
 
     {/* Grant Writer */}
     <Route path="/grant-writer" element={<GrantWriterPage />} />
+
+    {/* Tier 1 new pages */}
+    <Route path="/membership" element={<MembershipPage />} />
+    <Route path="/volunteers" element={<VolunteersPage />} />
+    <Route path="/event-management" element={<EventManagementPage />} />
+    <Route path="/donations" element={<DonationCenterPage />} />
+    <Route path="/public-presence" element={<PublicPresencePage />} />
   </>
 );
 

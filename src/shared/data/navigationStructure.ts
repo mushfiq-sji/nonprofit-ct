@@ -71,6 +71,11 @@ export const navigationGroups: NavGroup[] = [
       { title: "Programs", href: "/programs", icon: "Target", requiredPermission: { type: "module", key: "programs" } },
       { title: "Communications", href: "/communications", icon: "Mail", requiredPermission: { type: "module", key: "communications" } },
       { title: "Grant Writer", href: "/grant-writer", icon: "PenTool", requiredPermission: { type: "module", key: "grant-writer" } },
+      { title: "Membership", href: "/membership", icon: "CreditCard", requiredPermission: { type: "module", key: "membership" } },
+      { title: "Volunteers", href: "/volunteers", icon: "HandHeart", requiredPermission: { type: "module", key: "volunteers" } },
+      { title: "Event Management", href: "/event-management", icon: "CalendarPlus", requiredPermission: { type: "module", key: "event-management" } },
+      { title: "Donation Center", href: "/donations", icon: "BadgeDollarSign", requiredPermission: { type: "module", key: "donations" } },
+      { title: "Public Presence", href: "/public-presence", icon: "Globe", requiredPermission: { type: "module", key: "public-presence" } },
     ],
   },
   {

@@ -11,6 +11,72 @@ import { FileText, CheckCircle, ChevronDown, Loader2, Users, Copy, Download, Clo
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
+import { jsPDF } from "jspdf";
+
+function buildReportText(g: {
+  name: string; funder: string; amount: number; period: string; programOfficer: string;
+  utilization: number; reportDueDays: number;
+  budgetBreakdown: { label: string; pct: number }[];
+  deliverables: { text: string; done: boolean }[];
+}) {
+  const utilized = Math.round(g.amount * g.utilization / 100);
+  const remaining = g.amount - utilized;
+  const completed = g.deliverables.filter(d => d.done);
+  const pending = g.deliverables.filter(d => !d.done);
+  const lines: string[] = [];
+  lines.push(`Report Draft — ${g.name}`, "");
+  lines.push(`Funder: ${g.funder}`);
+  lines.push(`Award Amount: $${g.amount.toLocaleString()}`);
+  lines.push(`Grant Period: ${g.period}`);
+  lines.push(`Program Officer: ${g.programOfficer}`, "");
+  lines.push("Fund Utilization");
+  lines.push(`${g.utilization}% of $${g.amount.toLocaleString()} utilized ($${utilized.toLocaleString()} spent, $${remaining.toLocaleString()} remaining)`);
+  g.budgetBreakdown.forEach(b => {
+    lines.push(`  • ${b.label}: ${b.pct}% — $${Math.round(g.amount * b.pct / 100).toLocaleString()}`);
+  });
+  lines.push("", "Key Activities Summary");
+  completed.forEach(d => lines.push(`  • ${d.text} — Completed`));
+  if (pending.length > 0) {
+    lines.push(`  • ${pending.length} deliverable${pending.length > 1 ? "s" : ""} remaining: ${pending.map(d => d.text).join("; ")}`);
+  }
+  if (g.reportDueDays <= 14) {
+    lines.push("", `⚠ Report due in ${g.reportDueDays} days — action required`);
+  }
+  return lines.join("\n");
+}
+
+function downloadGrantReportPdf(g: Parameters<typeof buildReportText>[0]) {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const marginX = 48;
+  const marginTop = 56;
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const maxWidth = pageWidth - marginX * 2;
+  let y = marginTop;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  const titleLines = doc.splitTextToSize(`Report Draft — ${g.name}`, maxWidth);
+  doc.text(titleLines, marginX, y);
+  y += titleLines.length * 20 + 8;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  const body = buildReportText(g).split("\n").slice(2).join("\n");
+  const wrapped = doc.splitTextToSize(body, maxWidth);
+  const lineHeight = 15;
+  wrapped.forEach((line: string) => {
+    if (y + lineHeight > pageHeight - marginTop) {
+      doc.addPage();
+      y = marginTop;
+    }
+    doc.text(line, marginX, y);
+    y += lineHeight;
+  });
+
+  const slug = g.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  doc.save(`grant-report-${slug || "draft"}.pdf`);
+}
 
 interface GrantDeliverable {
   text: string;
@@ -421,10 +487,21 @@ export default function GrantsPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button className="flex-1" variant="outline" onClick={() => { toast.success("Draft copied to clipboard!"); }}>
+                    <Button className="flex-1" variant="outline" onClick={() => {
+                      navigator.clipboard.writeText(buildReportText(reportGrant));
+                      toast.success("Draft copied to clipboard!");
+                    }}>
                       <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy Draft
                     </Button>
-                    <Button className="flex-1" variant="outline" onClick={() => { toast.success("Download ready — check your downloads folder"); }}>
+                    <Button className="flex-1" variant="outline" onClick={() => {
+                      try {
+                        downloadGrantReportPdf(reportGrant);
+                        toast.success("PDF downloaded — check your downloads folder");
+                      } catch (e) {
+                        console.error(e);
+                        toast.error("Failed to generate PDF");
+                      }
+                    }}>
                       <Download className="h-3.5 w-3.5 mr-1.5" /> Download as PDF
                     </Button>
                   </div>

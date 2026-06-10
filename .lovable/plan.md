@@ -1,27 +1,29 @@
-## Plan: Refresh FEATURES.md
+## Issue
 
-`FEATURES.md` already exists at project root (353 lines, last generated earlier this session). I'll update it in place so it reflects the current state of the system, including everything added in recent loops.
+The "Download as PDF" button on the `/grants` Report Draft sheet (line 427 of `src/pages/GrantsPage.tsx`) only shows a success toast — it does not generate or download any file. That's why nothing appears in your Downloads folder. The "Copy Draft" button next to it has the same fake behavior.
 
-### What I'll refresh
+## Fix Plan
 
-1. **Header/version** — bump to current date (May 2026), confirm demo org + stack.
-2. **Auth & Access** — email/password, Google OAuth, Microsoft Azure AD, ProtectedRoute, AdminRoute.
-3. **Role-Based Dashboards** — Executive Director, Development Director, Finance Manager, Operations Manager, including the new `AIActivityWidget` on ED + Ops dashboards.
-4. **Nonprofit Operations Modules** — Data Health, Grants Management, Grant Writer (with deployed `generate-grant-draft` edge function), Events, Board Reports, Reconciliation, Donor Pipeline, Donor Retention (new), Program Impact (new), Communication Center (new).
-5. **AI Agent System** — 8 core operations agents + 16 discovery agents across 4 teams, plus:
-   - New `/agents/activity` Agent Activity Feed page
-   - Agent presence indicators, pulse badges
-   - Dashboard AI activity widget
-6. **AI Features** — Lovable AI Gateway, donor letter generator, grant draft generator, AI chat, semantic search, agentic memory framework.
-7. **Knowledge Base** — categories, semantic search, personal knowledge, file uploads, embeddings.
-8. **Integration Center** — provider-agnostic catalog, simulated setup, active/test toggles.
-9. **Admin Panel** — centralized routing, role management, dashboard widgets, environment validator, integration analytics, memory analytics, AI dashboard, agent analytics.
-10. **RBAC** — `nonprofit_role_permissions` table, `RoleGate` component, `ROLE_GATING_ENABLED` flag, permission keys (incl. new: grants, donor_retention, board_reports, programs, communications).
-11. **Backend & Edge Functions** — Supabase (Auth, DB, pgvector, Storage), ~117+ edge functions, key ones called out (generate-donor-letter, generate-grant-draft, ai-chat-assistant, semantic-search, agentic memory functions).
-12. **Navigation** — sidebar structure with new groupings for the added pages.
-13. **Demo Mode** — Brightside Foundation, centralized `nonprofitDemoData.ts`, runtime timestamps, demo logins.
-14. **Remixing** — checklist for rebranding.
+Generate a real PDF client-side using `jspdf` (already listed in `package.json`) and trigger a browser download.
 
-### Deliverable
+### Changes — `src/pages/GrantsPage.tsx`
 
-A single updated `FEATURES.md` at project root. No code changes, no other files touched.
+1. Add `import { jsPDF } from "jspdf";` at the top.
+2. Replace the inline `onClick` on the Download as PDF button with a handler that:
+   - Builds a `jsPDF` doc (A4, portrait).
+   - Adds the report content: title (`Report Draft — {grant name}`), funder, award amount, period, program officer, fund utilization summary + budget breakdown, completed deliverables, pending deliverables, and deadline note when ≤14 days.
+   - Uses `doc.text` with simple line wrapping (`doc.splitTextToSize`) and page-break handling.
+   - Calls `doc.save(\`grant-report-${slug(reportGrant.name)}.pdf\`)`.
+   - Shows `toast.success("PDF downloaded")` after save; `toast.error(...)` on failure.
+3. Fix the "Copy Draft" button (line 424) to actually copy a plain-text version of the same report content via `navigator.clipboard.writeText(...)`, since it's the same kind of dead stub.
+
+### Technical Notes
+
+- Keep it lightweight — pure `jspdf` text rendering, no `html2canvas`, since the sheet content is straightforward text/numbers.
+- No backend or schema changes.
+- No new dependencies (jspdf already present).
+
+### Verification
+
+- Open `/grants`, click "Draft Report" on any grant card, click "Download as PDF" → a `.pdf` file appears in Downloads and opens with the expected content.
+- Click "Copy Draft" → paste into a text editor shows the formatted draft.

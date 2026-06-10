@@ -60,16 +60,20 @@ See dedicated section below — primary implementation target after landing.
 | Artificial 500ms skeleton | `AgentsBrowse.tsx` L257–260 | Remove fake delay; skeleton only while permissions query loads |
 | `allTeams[0]` only | `AgentsBrowse.tsx` L263 | Loop `allTeams` with team section headers when multi-team ships |
 
-### P1 — Visual / Hallmark (agents-specific)
+### P1 — Visual / Hallmark (agents-specific) — ⏪ REVERTED 2026-06-10 (user preferred original look; statuses below are historical)
 
-| What | Where | Fix |
-|------|-------|-----|
-| Gradient profile cards | `AgentsBrowse.tsx` L157–176; `AgentDetail.tsx` L64–90 | Operational inbox rows or document-style brief — no gradient header + overlapping avatar |
-| `animate-ping` on every agent | `AgentsBrowse.tsx` L73–75, L89–99 | Static “Active” chip; ping only when `running === true` |
-| Italic finding quotes | `AgentsBrowse.tsx` L196 | Roman text + left hairline rule |
-| Gradient CTAs on detail | `AgentDetail.tsx` L109–126 | Solid `bg-primary` button |
-| Floating orbs on detail hero | `AgentDetail.tsx` L71–78 | Remove decorative circles |
-| Identical page rhythm | Icon + h1 + subtitle + 4-col grid | Workbench: summary strip + dense findings table |
+| What | Where | Status |
+|------|-------|--------|
+| Gradient profile cards | `AgentsBrowse.tsx`; `AgentDetail.tsx` | ✅ Done — Workbench ranked rows (browse) + typographic masthead (detail) |
+| `animate-ping` on every agent | `AgentsBrowse.tsx` | ✅ Done — static `bg-success` dot; ActivityBanner + ActivePulse removed |
+| Italic finding quotes | `AgentsBrowse.tsx` | ✅ Done — roman finding text in rows |
+| Gradient CTAs on detail | `AgentDetail.tsx` | ✅ Done — solid `bg-primary`, single CTA in masthead |
+| Floating orbs on detail hero | `AgentDetail.tsx` | ✅ Done — banner + orbs deleted |
+| Identical page rhythm | Icon + h1 + subtitle + 4-col grid | ✅ Done — masthead + summary line + divided rows, left-biased `max-w-5xl` |
+| Token improvisation (inline gradients, raw palette colors) | both pages | ✅ Done — `--warning-ink`/`--success-ink` tokens added; all inline `hsl(...)` styles removed from route |
+| Inter-everywhere | route | ✅ Done — Fraunces Variable (display) + Source Sans 3 Variable (body), piloted on `/agents` via `font-display`/`font-body` |
+
+Remaining majors on this route (not yet done): icon-tile stat cards on `/agents/activity`, tabular-nums there, hardcoded `CATEGORY_COLORS` still used by `AITeamsDashboardCard`/`AgentTeamBanner`.
 
 ### P2 — Detail page polish
 

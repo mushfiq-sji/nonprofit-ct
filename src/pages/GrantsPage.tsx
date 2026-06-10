@@ -487,10 +487,21 @@ export default function GrantsPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button className="flex-1" variant="outline" onClick={() => { toast.success("Draft copied to clipboard!"); }}>
+                    <Button className="flex-1" variant="outline" onClick={() => {
+                      navigator.clipboard.writeText(buildReportText(reportGrant));
+                      toast.success("Draft copied to clipboard!");
+                    }}>
                       <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy Draft
                     </Button>
-                    <Button className="flex-1" variant="outline" onClick={() => { toast.success("Download ready — check your downloads folder"); }}>
+                    <Button className="flex-1" variant="outline" onClick={() => {
+                      try {
+                        downloadGrantReportPdf(reportGrant);
+                        toast.success("PDF downloaded — check your downloads folder");
+                      } catch (e) {
+                        console.error(e);
+                        toast.error("Failed to generate PDF");
+                      }
+                    }}>
                       <Download className="h-3.5 w-3.5 mr-1.5" /> Download as PDF
                     </Button>
                   </div>

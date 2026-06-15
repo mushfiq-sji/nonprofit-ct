@@ -1,10 +1,12 @@
 /**
  * Meeting Summarizer Hook — Claude Sonnet 4 via Lovable gateway.
  *
- * Priority: client key (local dev) → meeting-summarizer edge → event-intelligence Sonnet mode.
+ * Priority: optional client key → generate-meeting-summary-v2 (v2 PR) →
+ * meeting-summarizer → event-intelligence Sonnet mode.
  */
 
 import { useMutation } from "@tanstack/react-query";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { API } from "@/shared/config/api";
 import {
@@ -21,18 +23,40 @@ export interface MeetingSummarizerResult {
   provider: string;
 }
 
+const LOVABLE_PUBLISH_HINT =
+  "In Lovable, click Publish (top right) so the updated edge function is deployed to Lovable Cloud, then try again.";
+
+const DEDICATED_SUMMARIZER_FN = "meeting-summarizer";
+
 function extractErrorMessage(error: unknown, data: unknown): string {
-  if (data && typeof data === "object" && "error" in data) {
-    return String((data as { error: string }).error);
+  if (data && typeof data === "object") {
+    if ("message" in data && data.message) {
+      return String((data as { message: string }).message);
+    }
+    if ("error" in data && typeof (data as { error: unknown }).error === "string") {
+      return String((data as { error: string }).error);
+    }
   }
   if (error instanceof Error) {
     const msg = error.message;
+    if (msg.includes("Failed to send a request to the Edge Function")) {
+      return `Could not reach the AI service. ${LOVABLE_PUBLISH_HINT}`;
+    }
     if (msg.includes("NOT_FOUND") || msg.includes("non-2xx")) {
-      return "AI backend not available on cloud — see dev banner for Claude Sonnet setup.";
+      return `AI backend not available on cloud. ${LOVABLE_PUBLISH_HINT}`;
     }
     return msg;
   }
   return "Failed to generate meeting minutes";
+}
+
+async function parseFunctionsError(error: FunctionsHttpError): Promise<string> {
+  try {
+    const body = await error.context.json();
+    return extractErrorMessage(null, body);
+  } catch {
+    return extractErrorMessage(error, null);
+  }
 }
 
 function isMeetingSummaryShape(data: unknown): data is MeetingSummary {
@@ -55,19 +79,29 @@ function summaryFromEdgePayload(data: unknown): MeetingSummary {
   throw new Error("Unexpected response shape from AI service");
 }
 
-async function tryMeetingSummarizerEdge(transcript: string): Promise<MeetingSummarizerResult> {
-  const start = Date.now();
-  const { data, error } = await supabase.functions.invoke(API.MEETINGS.SUMMARIZER, {
-    body: { transcript },
-  });
+async function invokeEdgeFunction(
+  functionName: string,
+  body: Record<string, unknown>
+): Promise<unknown> {
+  const { data, error } = await supabase.functions.invoke(functionName, { body });
 
   if (error) {
+    if (error instanceof FunctionsHttpError) {
+      throw new Error(await parseFunctionsError(error));
+    }
     throw new Error(extractErrorMessage(error, data));
   }
+
   if (data && typeof data === "object" && "error" in data) {
     throw new Error(extractErrorMessage(null, data));
   }
 
+  return data;
+}
+
+async function trySummaryV2(transcript: string): Promise<MeetingSummarizerResult> {
+  const start = Date.now();
+  const data = await invokeEdgeFunction(API.MEETINGS.SUMMARIZER, { transcript });
   const model =
     data && typeof data === "object" && "model" in data
       ? String((data as { model: string }).model)
@@ -77,23 +111,32 @@ async function tryMeetingSummarizerEdge(transcript: string): Promise<MeetingSumm
     summary: summaryFromEdgePayload(data),
     latencyMs: Date.now() - start,
     model,
-    provider: "meeting-summarizer",
+    provider: API.MEETINGS.SUMMARIZER,
+  };
+}
+
+async function tryMeetingSummarizerEdge(transcript: string): Promise<MeetingSummarizerResult> {
+  const start = Date.now();
+  const data = await invokeEdgeFunction(DEDICATED_SUMMARIZER_FN, { transcript });
+  const model =
+    data && typeof data === "object" && "model" in data
+      ? String((data as { model: string }).model)
+      : MEETING_SUMMARIZER_MODEL;
+
+  return {
+    summary: summaryFromEdgePayload(data),
+    latencyMs: Date.now() - start,
+    model,
+    provider: DEDICATED_SUMMARIZER_FN,
   };
 }
 
 async function tryEventIntelligenceSonnet(transcript: string): Promise<MeetingSummarizerResult> {
   const start = Date.now();
-  const { data, error } = await supabase.functions.invoke(API.AI.EVENT_INTELLIGENCE, {
-    body: { mode: "meeting_summary", transcript },
+  const data = await invokeEdgeFunction(API.AI.EVENT_INTELLIGENCE, {
+    mode: "meeting_summary",
+    transcript,
   });
-
-  if (error) {
-    throw new Error(extractErrorMessage(error, data));
-  }
-  if (data && typeof data === "object" && "error" in data) {
-    throw new Error(extractErrorMessage(null, data));
-  }
-
   const model =
     data && typeof data === "object" && "model" in data
       ? String((data as { model: string }).model)
@@ -103,7 +146,7 @@ async function tryEventIntelligenceSonnet(transcript: string): Promise<MeetingSu
     summary: summaryFromEdgePayload(data),
     latencyMs: Date.now() - start,
     model,
-    provider: "event-intelligence",
+    provider: API.AI.EVENT_INTELLIGENCE,
   };
 }
 
@@ -125,11 +168,13 @@ export function useMeetingSummarizer() {
       const attempts: Array<{ name: string; fn: () => Promise<MeetingSummarizerResult> }> = [];
 
       if (import.meta.env.VITE_LOVABLE_API_KEY) {
-        attempts.push({ name: "client", fn: () => tryClientSonnet(trimmed) });
+        attempts.push({ name: "lovable-client", fn: () => tryClientSonnet(trimmed) });
       }
+
       attempts.push(
-        { name: "meeting-summarizer", fn: () => tryMeetingSummarizerEdge(trimmed) },
-        { name: "event-intelligence", fn: () => tryEventIntelligenceSonnet(trimmed) },
+        { name: API.MEETINGS.SUMMARIZER, fn: () => trySummaryV2(trimmed) },
+        { name: DEDICATED_SUMMARIZER_FN, fn: () => tryMeetingSummarizerEdge(trimmed) },
+        { name: API.AI.EVENT_INTELLIGENCE, fn: () => tryEventIntelligenceSonnet(trimmed) },
       );
 
       const errors: string[] = [];
@@ -145,7 +190,7 @@ export function useMeetingSummarizer() {
       throw new Error(
         errors.length > 0
           ? `Claude Sonnet unavailable. ${errors.join(" | ")}`
-          : "Claude Sonnet unavailable — add VITE_LOVABLE_API_KEY to .env or update event-intelligence on Lovable."
+          : `Claude Sonnet unavailable. ${LOVABLE_PUBLISH_HINT}`
       );
     },
   });

@@ -36,7 +36,10 @@ const EDGE_FUNCTIONS: EdgeFunction[] = [
   { name: "semantic-search", category: "AI", description: "Vector search", required: true, envVars: ["OPENAI_API_KEY"] },
   { name: "run-ai-agent", category: "AI", description: "Execute AI agents", required: true, envVars: ["OPENAI_API_KEY"] },
   { name: "generate-embeddings", category: "AI", description: "Create embeddings", required: true, envVars: ["OPENAI_API_KEY"] },
-  { name: "generate-meeting-summary", category: "AI", description: "Summarize meetings", required: false, envVars: ["OPENAI_API_KEY"] },
+  { name: "event-intelligence", category: "AI", description: "Event Q&A + Meeting Summarizer (Lovable)", required: false, envVars: ["LOVABLE_API_KEY"] },
+  { name: "meeting-summarizer", category: "AI", description: "Paste transcript → structured minutes", required: false, envVars: ["LOVABLE_API_KEY"] },
+  { name: "generate-meeting-summary-v2", category: "AI", description: "Meeting summary by meeting_id or transcript", required: false },
+  { name: "generate-meeting-summary", category: "AI", description: "Summarize meetings (legacy)", required: false, envVars: ["OPENAI_API_KEY"] },
   { name: "generate-business-doc", category: "AI", description: "Generate documents", required: false, envVars: ["OPENAI_API_KEY"] },
 
   // Meetings (5)
@@ -146,6 +149,9 @@ export default function DeploymentStatus() {
         metadata: { source: 'deployment-status', type: 'health-check' },
       },
       'generate-meeting-summary': { ping: true },
+      'generate-meeting-summary-v2': { transcript: 'health check' },
+      'meeting-summarizer': { transcript: 'health check' },
+      'event-intelligence': { question: 'health check ping' },
       'generate-business-doc': { ping: true },
       'semantic-search': { query: 'test', limit: 1 },
       'unified-knowledge-search': { query: 'test', limit: 1 },
@@ -373,6 +379,30 @@ export default function DeploymentStatus() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="font-medium">Lovable Cloud (no Supabase dashboard)</h4>
+            <p className="text-sm text-muted-foreground">
+              Publish updates the <strong>frontend</strong> from git. New edge functions in the repo
+              are <strong>not</strong> auto-deployed — use Lovable chat: &quot;Deploy the
+              meeting-summarizer edge function from supabase/functions&quot;. This page can only
+              <strong> test</strong> what is already on cloud, not deploy.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              For fast iteration: run <code className="text-xs">npm run dev</code> locally — UI on
+              localhost, AI still hits your Lovable Supabase URL from <code className="text-xs">.env</code>.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className="font-medium">Self-host / Supabase dashboard</h4>
+            <p className="text-sm text-muted-foreground">
+              Set secrets in Supabase Dashboard → Edge Functions → Secrets, then deploy via CLI:
+            </p>
+            <code className="block bg-muted p-2 rounded text-sm">
+              supabase functions deploy meeting-summarizer
+            </code>
+          </div>
+
           <div className="space-y-2">
             <h4 className="font-medium">1. Set Environment Variables</h4>
             <p className="text-sm text-muted-foreground">

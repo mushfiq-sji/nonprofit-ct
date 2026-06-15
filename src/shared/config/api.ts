@@ -18,6 +18,8 @@ export const API = {
   // AI
   AI: {
     CHAT: "ai-chat-assistant",
+    /** Post-event Q&A — also used for Meeting Summarizer paste mode on Lovable Cloud */
+    EVENT_INTELLIGENCE: "event-intelligence",
     AGENT_RUN: "run-ai-agent",
     AGENT_CHAT_STREAM: "agent-chat-stream",
     AGENT_CONVERSATION: "agent-conversation-chat",

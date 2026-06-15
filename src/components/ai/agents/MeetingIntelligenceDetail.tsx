@@ -4,6 +4,7 @@ import {
   CheckSquare,
   ClipboardList,
   FileText,
+  Info,
   Loader2,
   Sparkles,
   Users,
@@ -25,6 +26,12 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { useMeetingSummarizer } from "@/hooks/useMeetingSummarizer";
+import { API } from "@/shared/config/api";
+import { MEETING_SUMMARIZER_MODEL } from "@/lib/meetingSummarizer";
+import {
+  probeMeetingSummarizerBackends,
+  type SummarizerBackendProbe,
+} from "@/lib/meetingSummarizerBackendCheck";
 import {
   BRIGHTSIDE_BOARD_MEETING_SAMPLE,
   BRIGHTSIDE_BOARD_MEETING_TITLE,
@@ -36,13 +43,29 @@ function formatLatency(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-function SummaryOutput({ summary, latencyMs }: { summary: MeetingSummary; latencyMs: number }) {
+function SummaryOutput({
+  summary,
+  latencyMs,
+  model,
+  provider,
+}: {
+  summary: MeetingSummary;
+  latencyMs: number;
+  model: string;
+  provider: string;
+}) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary" className="gap-1">
           <Sparkles className="h-3 w-3" />
           Generated in {formatLatency(latencyMs)}
+        </Badge>
+        <Badge variant="outline" className="font-mono text-xs">
+          {model}
+        </Badge>
+        <Badge variant="outline" className="text-xs">
+          via {provider}
         </Badge>
         <Badge variant="outline">
           {summary.action_items.length} action item{summary.action_items.length !== 1 ? "s" : ""}
@@ -168,9 +191,17 @@ function SummaryOutput({ summary, latencyMs }: { summary: MeetingSummary; latenc
 
 export default function MeetingIntelligenceDetail() {
   const [transcript, setTranscript] = useState("");
-  const [result, setResult] = useState<{ summary: MeetingSummary; latencyMs: number } | null>(null);
+  const [result, setResult] = useState<{
+    summary: MeetingSummary;
+    latencyMs: number;
+    model: string;
+    provider: string;
+  } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState(0);
+  const [backendProbes, setBackendProbes] = useState<SummarizerBackendProbe[] | null>(null);
+  const [probingBackends, setProbingBackends] = useState(false);
+  const isDev = import.meta.env.DEV;
 
   const summarizer = useMeetingSummarizer();
   const isLoading = summarizer.isPending;
@@ -202,8 +233,87 @@ export default function MeetingIntelligenceDetail() {
     }
   };
 
+  const handleProbeBackends = async () => {
+    setProbingBackends(true);
+    try {
+      setBackendProbes(await probeMeetingSummarizerBackends());
+    } finally {
+      setProbingBackends(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {isDev && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Local dev — test without Lovable Publish</AlertTitle>
+          <AlertDescription className="space-y-3">
+            <p className="text-sm">
+              <code className="text-xs">npm run dev</code> runs the UI on localhost, but AI calls
+              still go to your cloud project in <code className="text-xs">.env</code> (Lovable
+              Supabase). Edge functions do not run locally unless you use the Supabase CLI.
+            </p>
+            <p className="text-sm">
+              Claude Sonnet target: <strong className="font-mono text-xs">{MEETING_SUMMARIZER_MODEL}</strong>.
+              <strong> You do not need to copy LOVABLE_API_KEY</strong> — Lovable never shows saved secret
+              values (only Rotate / delete). That key is already on the server for edge functions.
+            </p>
+            <p className="text-sm">
+              For Sonnet on localhost: ask Lovable chat once —{" "}
+              <em>
+                &quot;Deploy the latest event-intelligence edge function from GitHub (meeting_summary
+                mode with Claude Sonnet).&quot;
+              </em>
+              Then restart <code className="text-xs">npm run dev</code> and Generate Minutes uses cloud
+              Sonnet via <code className="text-xs">{API.AI.EVENT_INTELLIGENCE}</code> — no local API key.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Optional: Rotate LOVABLE_API_KEY only if Lovable shows the new value once; paste into{" "}
+              <code>VITE_LOVABLE_API_KEY</code> in <code>.env</code> for direct browser calls (local dev
+              only — never commit).
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleProbeBackends}
+                disabled={probingBackends}
+              >
+                {probingBackends ? (
+                  <>
+                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                    Checking…
+                  </>
+                ) : (
+                  "Check which backends exist on cloud"
+                )}
+              </Button>
+            </div>
+            {backendProbes && (
+              <ul className="text-xs space-y-1 font-mono">
+                {backendProbes.map((p) => (
+                  <li key={p.name}>
+                    <Badge
+                      variant={
+                        p.status === "active"
+                          ? "default"
+                          : p.status === "missing"
+                            ? "secondary"
+                            : "destructive"
+                      }
+                      className="mr-2"
+                    >
+                      {p.status}
+                    </Badge>
+                    {p.name}: {p.detail}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -277,7 +387,7 @@ export default function MeetingIntelligenceDetail() {
           <CardContent className="flex items-center gap-3 py-8 justify-center text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
             <span className="text-sm">
-              Claude is extracting decisions, action items, and attendance…
+              Extracting decisions, action items, and attendance…
               {elapsedSec > 0 ? ` (${elapsedSec}s)` : ""}
             </span>
           </CardContent>
@@ -289,7 +399,12 @@ export default function MeetingIntelligenceDetail() {
           <Separator />
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-4">Structured Minutes</h2>
-            <SummaryOutput summary={result.summary} latencyMs={result.latencyMs} />
+            <SummaryOutput
+              summary={result.summary}
+              latencyMs={result.latencyMs}
+              model={result.model}
+              provider={result.provider}
+            />
           </div>
         </>
       )}

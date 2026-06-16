@@ -4617,6 +4617,7 @@ export type Database = {
         Args: { p_conversation_id: string }
         Returns: undefined
       }
+      sync_client_kb_reports: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

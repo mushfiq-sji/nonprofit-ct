@@ -72,7 +72,8 @@ export function PricingPreview() {
         </div>
 
         {/* Comparison Table */}
-        <div className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-elevated">
+        <div className="mx-auto mt-16 max-w-4xl overflow-x-auto rounded-2xl border border-border bg-card shadow-elevated">
+          <div className="min-w-[640px]">
           {/* Table Header */}
           <div className="grid grid-cols-4 gap-4 border-b border-border bg-muted/30 p-5 text-sm font-bold">
             <div></div>
@@ -106,6 +107,7 @@ export function PricingPreview() {
               </div>
             </div>
           ))}
+          </div>
         </div>
 
         {/* CTA */}

@@ -70,6 +70,55 @@ const memberSchema = z.object({
 });
 type MemberForm = z.infer<typeof memberSchema>;
 
+// ── Renewal card (responsive) ─────────────────────────────────────
+
+function RenewalMemberCard({
+  member,
+  dateLabel,
+  actionLabel,
+  actionIcon: ActionIcon,
+  actionVariant = "outline",
+  onAction,
+}: {
+  member: Member;
+  dateLabel: string;
+  actionLabel: string;
+  actionIcon: React.ComponentType<{ className?: string }>;
+  actionVariant?: "default" | "outline";
+  onAction: () => void;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="font-medium text-sm">{member.name}</p>
+            <p className="text-xs text-muted-foreground break-words">
+              {member.email} · {dateLabel}: {formatDate(member.renewal_date)}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:shrink-0">
+            <span
+              className={`inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-xs font-medium ${tierBadgeVariant(member.tier)}`}
+            >
+              {member.tier}
+            </span>
+            <Button
+              size="sm"
+              variant={actionVariant}
+              className="w-full sm:w-auto"
+              onClick={onAction}
+            >
+              <ActionIcon className="h-3.5 w-3.5 mr-1.5" />
+              {actionLabel}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────
 
 export default function MembershipPage() {
@@ -141,7 +190,7 @@ export default function MembershipPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
           <Card key={card.label}>
             <CardContent className="p-4">
@@ -159,7 +208,7 @@ export default function MembershipPage() {
 
       {/* Tabs */}
       <Tabs value={addTab} onValueChange={setAddTab} className="space-y-4">
-        <TabsList>
+        <TabsList className="flex h-auto w-full flex-wrap gap-1">
           <TabsTrigger value="directory">Directory</TabsTrigger>
           <TabsTrigger value="renewals">
             Renewals
@@ -199,7 +248,7 @@ export default function MembershipPage() {
           </div>
 
           <Card>
-            <CardContent className="p-0">
+            <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -287,30 +336,19 @@ export default function MembershipPage() {
             ) : (
               <div className="space-y-2">
                 {expiringMembers.map((member) => (
-                  <Card key={member.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {member.email} · Renewal: {formatDate(member.renewal_date)}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${tierBadgeVariant(member.tier)}`}>
-                            {member.tier}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => toast.success(`Renewal reminder sent to ${member.name}`, { description: `Email sent to ${member.email}` })}
-                          >
-                            <Mail className="h-3.5 w-3.5 mr-1.5" /> Send Reminder
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <RenewalMemberCard
+                    key={member.id}
+                    member={member}
+                    dateLabel="Renewal"
+                    actionLabel="Send Reminder"
+                    actionIcon={Mail}
+                    actionVariant="outline"
+                    onAction={() =>
+                      toast.success(`Renewal reminder sent to ${member.name}`, {
+                        description: `Email sent to ${member.email}`,
+                      })
+                    }
+                  />
                 ))}
               </div>
             )}
@@ -327,29 +365,19 @@ export default function MembershipPage() {
             ) : (
               <div className="space-y-2">
                 {lapsedMembers.map((member) => (
-                  <Card key={member.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {member.email} · Expired: {formatDate(member.renewal_date)}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${tierBadgeVariant(member.tier)}`}>
-                            {member.tier}
-                          </span>
-                          <Button
-                            size="sm"
-                            onClick={() => toast.success(`Re-engagement email sent to ${member.name}`, { description: `Renewal offer sent to ${member.email}` })}
-                          >
-                            <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Re-Engage
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <RenewalMemberCard
+                    key={member.id}
+                    member={member}
+                    dateLabel="Expired"
+                    actionLabel="Re-Engage"
+                    actionIcon={RefreshCw}
+                    actionVariant="default"
+                    onAction={() =>
+                      toast.success(`Re-engagement email sent to ${member.name}`, {
+                        description: `Renewal offer sent to ${member.email}`,
+                      })
+                    }
+                  />
                 ))}
               </div>
             )}

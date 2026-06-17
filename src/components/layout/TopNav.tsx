@@ -18,7 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Bell, LogOut, User, Settings, Search, ExternalLink, FileText, Users, Calendar, Loader2, Shield } from "lucide-react";
+import { Bell, LogOut, User, Settings, Search, ExternalLink, FileText, Users, Calendar, Loader2, Shield, Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { getInitials } from "@/lib/utils";
 import { useState } from "react";
@@ -29,9 +30,10 @@ import { useSemanticSearch } from "@/hooks/useSemanticSearch";
 interface TopNavProps {
   sidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  isMobile?: boolean;
 }
 
-export function TopNav({ sidebarOpen = true, onToggleSidebar }: TopNavProps) {
+export function TopNav({ sidebarOpen = true, onToggleSidebar, isMobile = false }: TopNavProps) {
   const { user, profile, signOut } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -78,17 +80,30 @@ export function TopNav({ sidebarOpen = true, onToggleSidebar }: TopNavProps) {
 
   return (
     <header
-      className={`fixed right-0 top-0 z-30 h-16 border-b border-border bg-background/95 backdrop-blur-sm transition-[left] duration-200 ${
-        sidebarOpen ? "left-64" : "left-16"
-      }`}
+      className={cn(
+        "fixed right-0 top-0 z-30 h-16 border-b border-border bg-background/95 backdrop-blur-sm transition-[left] duration-200",
+        isMobile ? "left-0" : sidebarOpen ? "left-64" : "left-16"
+      )}
     >
-      <div className="flex h-full items-center justify-between px-6">
+      <div className="flex h-full items-center justify-between gap-2 px-3 sm:px-6">
+        {isMobile && onToggleSidebar && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0 text-muted-foreground hover:text-foreground"
+            onClick={onToggleSidebar}
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
+
         {/* Search */}
-        <div className="relative max-w-md flex-1">
+        <div className="relative min-w-0 flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search anything..."
+            placeholder={isMobile ? "Search..." : "Search anything..."}
             onClick={() => setSearchOpen(true)}
             readOnly
             className="h-9 w-full max-w-sm border-transparent bg-muted/50 pl-9 text-sm placeholder:text-muted-foreground/70 focus:border-border focus:bg-background cursor-pointer"

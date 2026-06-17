@@ -179,7 +179,7 @@ export function PostEventIntelligenceTab() {
   return (
     <div className="space-y-8">
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {[
           { label: "Total Attendees (YTD)", value: "281" },
           { label: "Events This Quarter", value: "2" },
@@ -199,29 +199,35 @@ export function PostEventIntelligenceTab() {
       {EVENTS.map((event) => (
         <Card key={event.id}>
           <CardContent className="p-5 space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${event.color}`}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-3">
+                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${event.color}`}>
                   <CalendarDays className={`h-6 w-6 ${event.iconColor}`} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{event.name}</h3>
-                  <p className="text-sm text-muted-foreground">{event.date} · {event.location}</p>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-lg leading-tight break-words">{event.name}</h3>
+                  <p className="mt-0.5 text-sm text-muted-foreground break-words">
+                    {event.date} · {event.location}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
                 {confirmedEvents.has(event.id) && (
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
-                    <CheckCircle className="h-3 w-3 mr-1" /> Confirmed
+                  <Badge className="bg-green-100 text-green-700 border-green-200 whitespace-normal text-center">
+                    <CheckCircle className="h-3 w-3 mr-1 shrink-0" /> Confirmed
                   </Badge>
                 )}
-                <Badge className={event.statusColor}>{event.status}</Badge>
+                <Badge className={`whitespace-normal text-center ${event.statusColor}`}>{event.status}</Badge>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">{event.summary}</p>
             {event.badges.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {event.badges.map((b) => <Badge key={b} variant="secondary">{b}</Badge>)}
+                {event.badges.map((b) => (
+                  <Badge key={b} variant="secondary" className="whitespace-normal text-center">
+                    {b}
+                  </Badge>
+                ))}
               </div>
             )}
             <div className="flex flex-wrap gap-2">
@@ -265,15 +271,19 @@ export function PostEventIntelligenceTab() {
       {/* ── Event Intelligence Panel ── */}
       <div className="border-l-4 border-indigo-400 rounded-lg border border-border bg-card">
         <button
-          className="flex w-full items-center justify-between p-4 text-left"
+          className="flex w-full flex-wrap items-center justify-between gap-2 p-4 text-left"
           onClick={() => setIntelOpen((v) => !v)}
         >
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-indigo-500" />
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <Sparkles className="h-4 w-4 shrink-0 text-indigo-500" />
             <span className="font-semibold text-sm">Event Intelligence</span>
             <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 text-[10px] px-1.5 py-0">AI</Badge>
           </div>
-          {intelOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+          {intelOpen ? (
+            <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+          )}
         </button>
 
         {intelOpen && (

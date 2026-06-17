@@ -50,7 +50,7 @@ export function ProblemSolution() {
         <div className="mx-auto mt-16 max-w-4xl">
           <div className="grid gap-4">
             {/* Header */}
-            <div className="grid grid-cols-2 gap-4 pb-2 text-sm font-bold">
+            <div className="hidden gap-4 pb-2 text-sm font-bold md:grid md:grid-cols-2">
               <div className="flex items-center gap-2 pl-4 text-destructive">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/10">
                   <X className="h-3.5 w-3.5" />
@@ -69,7 +69,7 @@ export function ProblemSolution() {
             {comparisons.map((item, index) => (
               <div 
                 key={index} 
-                className="group grid grid-cols-2 gap-4 rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-ai"
+                className="group grid grid-cols-1 gap-4 rounded-xl border border-border/50 bg-card p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-ai md:grid-cols-2"
               >
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-destructive/10">

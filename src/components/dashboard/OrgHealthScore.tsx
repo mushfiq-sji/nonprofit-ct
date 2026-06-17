@@ -71,7 +71,7 @@ export default function OrgHealthScore({ score, scoreColor, breakdown, insight }
           </div>
 
           {/* Breakdown grid */}
-          <div className="flex-1 grid grid-cols-2 gap-4">
+          <div className="flex-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {breakdown.map((item) => (
               <div key={item.label} className="space-y-1.5">
                 <div className="flex items-center justify-between">

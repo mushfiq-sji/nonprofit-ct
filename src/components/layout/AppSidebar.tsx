@@ -115,9 +115,10 @@ const EXPANDED_SECTIONS_KEY = "sidebar-expanded-sections";
 interface AppSidebarProps {
   open?: boolean;
   onToggleSidebar?: () => void;
+  isMobile?: boolean;
 }
 
-export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
+export function AppSidebar({ open = true, onToggleSidebar, isMobile = false }: AppSidebarProps) {
   const location = useLocation();
   const { profile } = useAuth();
   const { companyName } = useBranding();
@@ -261,25 +262,35 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
     ),
   ];
 
+  const showExpandedNav = isMobile || open;
+
+  const closeMobileNav = () => {
+    if (isMobile) onToggleSidebar?.();
+  };
+
   return (
     <>
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar-background transition-[width] duration-200 ease-in-out",
-        open ? "w-64" : "w-16"
+        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-[width,transform] duration-200 ease-in-out",
+        isMobile
+          ? cn("w-64", open ? "translate-x-0 shadow-xl" : "-translate-x-full")
+          : open
+            ? "w-64"
+            : "w-16"
       )}
     >
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col bg-sidebar">
         {/* Logo + sidebar toggle (expanded) / Icon only (collapsed) */}
         <div
           className={cn(
             "flex h-16 shrink-0 items-center border-b border-sidebar-border transition-[padding] duration-200",
-            open ? "justify-between gap-2 px-6" : "flex-col justify-center gap-1 px-0"
+            showExpandedNav ? "justify-between gap-2 px-6" : "flex-col justify-center gap-1 px-0"
           )}
         >
-          {open ? (
+          {showExpandedNav ? (
             <>
-              <Link to="/dashboard" className="flex min-w-0 flex-1 items-center gap-3">
+              <Link to="/dashboard" onClick={closeMobileNav} className="flex min-w-0 flex-1 items-center gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary shadow-sm">
                   <Brain className="h-5 w-5 text-primary-foreground" />
                 </div>
@@ -300,8 +311,8 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
                   size="icon"
                   className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   onClick={onToggleSidebar}
-                  title="Collapse sidebar"
-                  aria-label="Collapse sidebar"
+                  title={isMobile ? "Close menu" : "Collapse sidebar"}
+                  aria-label={isMobile ? "Close menu" : "Collapse sidebar"}
                 >
                   <PanelLeftClose className="h-4 w-4" />
                 </Button>
@@ -334,12 +345,13 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
         </div>
 
         {/* Navigation */}
-        {open ? (
+        {showExpandedNav ? (
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {/* Dashboard - Always at top */}
           <div className="mb-4">
             <Link
               to={dashboardItem.href}
+              onClick={closeMobileNav}
               className={cn(
                 "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                 isDashboardActive
@@ -382,6 +394,7 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
                         <Link
                           key={item.href}
                           to={item.href}
+                          onClick={closeMobileNav}
                           className={cn(
                             "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                             isActive
@@ -493,6 +506,7 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
                                   <Link
                                     key={child.href}
                                     to={child.href}
+                                    onClick={closeMobileNav}
                                     className={cn(
                                       "group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-all duration-150",
                                       isChildActive
@@ -522,6 +536,7 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
                         <div key={item.href}>
                           <Link
                             to={item.href}
+                            onClick={closeMobileNav}
                             className={cn(
                               "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150",
                               isActive
@@ -569,6 +584,7 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
                                   <Link
                                     key={child.href}
                                     to={child.href}
+                                    onClick={closeMobileNav}
                                     className={cn(
                                       "group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-all duration-150",
                                       isChildActive
@@ -622,8 +638,8 @@ export function AppSidebar({ open = true, onToggleSidebar }: AppSidebarProps) {
         )}
 
         {/* Footer */}
-        <div className={cn("border-t border-sidebar-border shrink-0", open ? "p-4" : "p-2")}>
-          {open ? (
+        <div className={cn("border-t border-sidebar-border shrink-0", showExpandedNav ? "p-4" : "p-2")}>
+          {showExpandedNav ? (
             <div className="rounded-lg bg-sidebar-accent/50 px-4 py-3">
               <p className="text-sm font-medium text-sidebar-foreground">Framework</p>
               <p className="text-xs text-muted-foreground">v1.0.0 - Enterprise</p>

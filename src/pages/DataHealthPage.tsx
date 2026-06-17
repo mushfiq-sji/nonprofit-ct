@@ -78,7 +78,7 @@ export default function DataHealthPage() {
   const visibleIncomplete = showMoreIncomplete ? incomplete : incomplete.slice(0, 5);
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Data Health</h1>
@@ -90,8 +90,8 @@ export default function DataHealthPage() {
       {/* Score */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center gap-6">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/30 border-4 border-green-200">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center self-center rounded-full bg-green-50 dark:bg-green-950/30 border-4 border-green-200 sm:self-auto">
               <span className="text-4xl font-bold text-green-600">{score}%</span>
             </div>
             <div className="flex-1">
@@ -125,15 +125,17 @@ export default function DataHealthPage() {
             <>
               {visibleDuplicates.map((dup) => (
                 <div key={dup.id} className="rounded-lg border p-4 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium">{dup.name}</p>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="font-medium break-words">{dup.name}</p>
                       <p className="text-sm text-muted-foreground">Record {dup.idA} vs {dup.idB}</p>
                     </div>
-                    <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 text-xs">{dup.confidence}% match</Badge>
+                    <Badge variant="outline" className="w-fit shrink-0 text-amber-600 border-amber-200 bg-amber-50 text-xs whitespace-normal">
+                      {dup.confidence}% match
+                    </Badge>
                   </div>
                   {/* Side by side */}
-                  <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-2">
                     <div className="space-y-1 rounded-lg bg-muted/50 p-3">
                       <p className="font-semibold text-muted-foreground mb-2">Record {dup.idA}</p>
                       <p><FieldCell a={dup.recordA.email} b={dup.recordB.email} value={dup.recordA.email} /></p>
@@ -149,14 +151,14 @@ export default function DataHealthPage() {
                       <p><FieldCell a={dup.recordA.created} b={dup.recordB.created} value={`Created ${dup.recordB.created}`} /></p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button size="sm" className="gap-1.5" onClick={() => handleMerge(dup.id, dup.name)}>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                    <Button size="sm" className="w-full gap-1.5 sm:w-auto" onClick={() => handleMerge(dup.id, dup.name)}>
                       <CheckCircle className="h-3.5 w-3.5" /> Approve Merge
                     </Button>
-                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => handleMarkDifferent(dup.id)}>
+                    <Button size="sm" variant="outline" className="w-full gap-1.5 sm:w-auto" onClick={() => handleMarkDifferent(dup.id)}>
                       <X className="h-3.5 w-3.5" /> Mark as Different
                     </Button>
-                    <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => setDrawerPair(dup)}>
+                    <Button size="sm" variant="ghost" className="w-full gap-1.5 sm:w-auto" onClick={() => setDrawerPair(dup)}>
                       <Eye className="h-3.5 w-3.5" /> View Details
                     </Button>
                   </div>
@@ -189,7 +191,7 @@ export default function DataHealthPage() {
                   <p className="text-sm text-muted-foreground">{alert.email} · {alert.stripeId}</p>
                   <Badge variant="outline" className="mt-2 text-amber-700 border-amber-300 bg-amber-100 text-xs">Unmatched in Salesforce</Badge>
                 </div>
-                <Button size="sm" asChild>
+                <Button size="sm" className="w-full sm:w-auto shrink-0" asChild>
                   <Link to="/reconciliation">Review in Reconciliation →</Link>
                 </Button>
               </div>
@@ -214,8 +216,8 @@ export default function DataHealthPage() {
             </div>
           ) : (
             <>
-              <div className="rounded-lg border overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto rounded-lg border">
+                <table className="w-full min-w-[520px] text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
                       <th className="px-4 py-3 text-left font-medium text-muted-foreground">Donor Name</th>
@@ -264,20 +266,35 @@ export default function DataHealthPage() {
             </div>
           ) : (
             stale.map((rec) => (
-              <div key={rec.id} className={`rounded-lg border p-4 flex items-center justify-between ${flagged.has(rec.id) ? "border-blue-300 bg-blue-50/50 dark:bg-blue-950/20" : ""}`}>
-                <div>
-                  <p className="font-medium">{rec.name}</p>
-                  <p className="text-xs text-muted-foreground">Last activity: {rec.lastActivity} · Last gift: {rec.lastGift}</p>
+              <div
+                key={rec.id}
+                className={`rounded-lg border p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${flagged.has(rec.id) ? "border-blue-300 bg-blue-50/50 dark:bg-blue-950/20" : ""}`}
+              >
+                <div className="min-w-0">
+                  <p className="font-medium break-words">{rec.name}</p>
+                  <p className="text-xs text-muted-foreground break-words">
+                    Last activity: {rec.lastActivity} · Last gift: {rec.lastGift}
+                  </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:shrink-0">
                   {flagged.has(rec.id) ? (
-                    <Badge variant="outline" className="text-blue-600 border-blue-300">Flagged ✓</Badge>
+                    <Badge variant="outline" className="w-fit text-blue-600 border-blue-300">Flagged ✓</Badge>
                   ) : (
-                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => handleFlagOutreach(rec.id)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-1.5 sm:w-auto"
+                      onClick={() => handleFlagOutreach(rec.id)}
+                    >
                       <Flag className="h-3.5 w-3.5" /> Flag for Outreach
                     </Button>
                   )}
-                  <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground" onClick={() => handleArchive(rec.id)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="w-full gap-1.5 text-muted-foreground sm:w-auto"
+                    onClick={() => handleArchive(rec.id)}
+                  >
                     <Archive className="h-3.5 w-3.5" /> Archive
                   </Button>
                 </div>
@@ -296,7 +313,7 @@ export default function DataHealthPage() {
                 <SheetTitle>{drawerPair.name} — Record Comparison</SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {[{ label: `Record ${drawerPair.idA}`, rec: drawerPair.recordA }, { label: `Record ${drawerPair.idB}`, rec: drawerPair.recordB }].map(({ label, rec }) => (
                     <div key={label} className="rounded-lg border p-4 space-y-2 text-sm">
                       <p className="font-semibold text-muted-foreground">{label}</p>
@@ -307,11 +324,11 @@ export default function DataHealthPage() {
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-2 pt-4">
-                  <Button className="flex-1" onClick={() => { handleMerge(drawerPair.id, drawerPair.name); setDrawerPair(null); }}>
+                <div className="flex flex-col gap-2 pt-4 sm:flex-row">
+                  <Button className="w-full sm:flex-1" onClick={() => { handleMerge(drawerPair.id, drawerPair.name); setDrawerPair(null); }}>
                     Keep {drawerPair.idA} — Primary
                   </Button>
-                  <Button className="flex-1" variant="secondary" onClick={() => { handleMerge(drawerPair.id, drawerPair.name); setDrawerPair(null); }}>
+                  <Button className="w-full sm:flex-1" variant="secondary" onClick={() => { handleMerge(drawerPair.id, drawerPair.name); setDrawerPair(null); }}>
                     Keep {drawerPair.idB} — Primary
                   </Button>
                 </div>
@@ -338,9 +355,9 @@ export default function DataHealthPage() {
                   </div>
                 ))}
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setCompleteModal(null)}>Cancel</Button>
-                <Button onClick={() => handleCompleteProfile(completeModal)} disabled={saving}>
+              <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => setCompleteModal(null)}>Cancel</Button>
+                <Button className="w-full sm:w-auto" onClick={() => handleCompleteProfile(completeModal)} disabled={saving}>
                   {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   {saving ? "Saving…" : "Save to Salesforce"}
                 </Button>

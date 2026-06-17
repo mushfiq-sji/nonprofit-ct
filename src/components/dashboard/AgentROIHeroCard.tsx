@@ -45,7 +45,7 @@ export default function AgentROIHeroCard({ role }: AgentROIHeroCardProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:min-w-[280px]">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:min-w-[280px]">
             <div className="rounded-lg border border-primary/10 bg-background/80 p-4 backdrop-blur-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <DollarSign className="h-4 w-4" />

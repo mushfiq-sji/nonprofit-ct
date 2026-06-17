@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { jsPDF } from "jspdf";
 import { DEMO_GRANTS_PAGE, type GrantsPageGrant } from "@/shared/data/nonprofitDemoData";
+import { cn } from "@/lib/utils";
 
 function buildReportText(g: {
   name: string; funder: string; amount: number; period: string; programOfficer: string;
@@ -158,14 +159,14 @@ export default function GrantsPage() {
   };
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Grants Management</h1>
         <p className="text-sm text-muted-foreground">Brightside Foundation · Track grants, deadlines, and fund utilization</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {[
           { label: "Active Grants", value: String(grants.length) },
           { label: "Total Grant Value", value: `$${(totalValue / 1000).toFixed(0)}K` },
@@ -186,13 +187,13 @@ export default function GrantsPage() {
         {grants.map((grant) => (
           <Card key={grant.id}>
             <CardContent className="p-5 space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
                   <h3 className="font-semibold text-lg">{grant.name}</h3>
                   <p className="text-sm text-muted-foreground">{grant.funder} · ${grant.amount.toLocaleString()} · {grant.period}</p>
                   <p className="text-xs text-muted-foreground mt-1">Program Officer: {grant.programOfficer}</p>
                 </div>
-                <Badge className={grant.status === "AT RISK" ? "bg-red-100 text-red-700 border-red-200" : "bg-green-100 text-green-700 border-green-200"}>
+                <Badge className={cn("shrink-0 self-start", grant.status === "AT RISK" ? "bg-red-100 text-red-700 border-red-200" : "bg-green-100 text-green-700 border-green-200")}>
                   {grant.status}
                 </Badge>
               </div>

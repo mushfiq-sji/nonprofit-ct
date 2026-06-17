@@ -60,14 +60,14 @@ export default function ReconciliationPage() {
   );
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Financial Reconciliation</h1>
         <p className="text-sm text-muted-foreground">Brightside Foundation · Stripe ↔ Salesforce transaction matching</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {[
           { label: "Transactions This Month", value: "847" },
           { label: "Matched", value: "846 (99.9%)" },
@@ -87,13 +87,15 @@ export default function ReconciliationPage() {
       {txn ? (
         <Card className={`border-2 ${txn.status === "under_review" ? "border-yellow-300" : "border-amber-300"}`}>
           <CardContent className="p-5 space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-semibold text-lg">{txn.amount} — {txn.date}</p>
-                <p className="text-sm text-muted-foreground">Stripe ID: {txn.stripeId}</p>
-                <p className="text-sm text-muted-foreground">Email: {txn.email}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <p className="font-semibold text-lg break-words">{txn.amount} — {txn.date}</p>
+                <p className="text-sm text-muted-foreground break-all">Stripe ID: {txn.stripeId}</p>
+                <p className="text-sm text-muted-foreground break-all">Email: {txn.email}</p>
               </div>
-              <Badge className={txn.status === "under_review" ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}>
+              <Badge
+                className={`w-fit shrink-0 whitespace-normal text-center ${txn.status === "under_review" ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}`}
+              >
                 {txn.status === "under_review" ? "UNDER FINANCE REVIEW" : "NO CRM MATCH FOUND"}
               </Badge>
             </div>
@@ -101,23 +103,23 @@ export default function ReconciliationPage() {
             <p className="text-sm text-muted-foreground italic">
               "This email address does not exist in Salesforce. Possible new donor or guest checkout."
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               {txn.status === "under_review" ? (
-                <Button size="sm" onClick={() => resolveTxn("Transaction resolved")}>
+                <Button size="sm" className="w-full sm:w-auto" onClick={() => resolveTxn("Transaction resolved")}>
                   <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> Mark as Resolved
                 </Button>
               ) : (
                 <>
-                  <Button size="sm" onClick={() => setCreateModal(true)}>
+                  <Button size="sm" className="w-full sm:w-auto" onClick={() => setCreateModal(true)}>
                     <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Create Donor Record in Salesforce
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setMatchModal(true)}>
+                  <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => setMatchModal(true)}>
                     <Search className="h-3.5 w-3.5 mr-1.5" /> Match to Existing Donor
                   </Button>
-                  <Button size="sm" variant="outline" onClick={handleFlag}>
+                  <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={handleFlag}>
                     <Flag className="h-3.5 w-3.5 mr-1.5" /> Flag for Finance Review
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => resolveTxn("Transaction resolved")}>
+                  <Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => resolveTxn("Transaction resolved")}>
                     <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> Mark as Resolved
                   </Button>
                 </>
@@ -143,50 +145,62 @@ export default function ReconciliationPage() {
         <CardContent className="space-y-2">
           {/* April */}
           <Collapsible open={aprilOpen} onOpenChange={setAprilOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full rounded-lg border p-4 hover:bg-muted/50">
-              <div className="flex items-center gap-3">
-                {aprilOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                <div className="text-left">
+            <CollapsibleTrigger className="flex w-full flex-col gap-3 rounded-lg border p-4 text-left hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-start gap-3 sm:items-center">
+                {aprilOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+                <div className="min-w-0">
                   <p className="font-medium">April 2026</p>
-                  <p className="text-xs text-muted-foreground">847 transactions · $142,340 total · {pendingCount} pending</p>
+                  <p className="text-xs text-muted-foreground break-words">
+                    847 transactions · $142,340 total · {pendingCount} pending
+                  </p>
                 </div>
               </div>
-              <Badge className={pendingCount === 0 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}>
+              <Badge
+                className={`w-fit shrink-0 whitespace-normal ${pendingCount === 0 ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}
+              >
                 {pendingCount === 0 ? "100% matched ✓" : "99.9% matched"}
               </Badge>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2">
-              <Button variant="outline" size="sm" className="mb-3" onClick={() => setTxnDrawer(true)}>View All Transactions</Button>
+              <Button variant="outline" size="sm" className="mb-3 w-full sm:w-auto" onClick={() => setTxnDrawer(true)}>
+                View All Transactions
+              </Button>
             </CollapsibleContent>
           </Collapsible>
 
           {/* March */}
           <Collapsible open={marchOpen} onOpenChange={setMarchOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full rounded-lg border p-4 hover:bg-muted/50">
-              <div className="flex items-center gap-3">
-                {marchOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                <div className="text-left">
+            <CollapsibleTrigger className="flex w-full flex-col gap-3 rounded-lg border p-4 text-left hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-start gap-3 sm:items-center">
+                {marchOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+                <div className="min-w-0">
                   <p className="font-medium">March 2026</p>
-                  <p className="text-xs text-muted-foreground">923 transactions · $158,200 total · 0 pending</p>
+                  <p className="text-xs text-muted-foreground break-words">
+                    923 transactions · $158,200 total · 0 pending
+                  </p>
                 </div>
               </div>
-              <Badge className="bg-green-100 text-green-700">100% matched ✓</Badge>
+              <Badge className="w-fit shrink-0 whitespace-normal bg-green-100 text-green-700">100% matched ✓</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2">
-              <Button variant="outline" size="sm" onClick={() => setReportModal(true)}>View Report</Button>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => setReportModal(true)}>
+                View Report
+              </Button>
             </CollapsibleContent>
           </Collapsible>
 
           {/* February */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <div>
+          <div className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-start gap-3 sm:items-center">
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <div className="min-w-0">
                 <p className="font-medium">February 2026</p>
-                <p className="text-xs text-muted-foreground">891 transactions · $134,700 total · 0 pending</p>
+                <p className="text-xs text-muted-foreground break-words">
+                  891 transactions · $134,700 total · 0 pending
+                </p>
               </div>
             </div>
-            <Badge className="bg-green-100 text-green-700">100% matched ✓</Badge>
+            <Badge className="w-fit shrink-0 whitespace-normal bg-green-100 text-green-700">100% matched ✓</Badge>
           </div>
         </CardContent>
       </Card>
@@ -204,7 +218,7 @@ export default function ReconciliationPage() {
               <Label>Email</Label>
               <Input defaultValue="m.chen@outlook.com" readOnly className="bg-muted" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Amount</Label>
                 <Input defaultValue="$2,340.00" readOnly className="bg-muted" />
@@ -215,9 +229,9 @@ export default function ReconciliationPage() {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateModal(false)}>Cancel</Button>
-            <Button onClick={handleCreateRecord} disabled={saving}>
+          <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setCreateModal(false)}>Cancel</Button>
+            <Button className="w-full sm:w-auto" onClick={handleCreateRecord} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
               Create Record
             </Button>
@@ -247,8 +261,8 @@ export default function ReconciliationPage() {
               </div>
             )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setMatchModal(false)}>Cancel</Button>
+          <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setMatchModal(false)}>Cancel</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -257,8 +271,8 @@ export default function ReconciliationPage() {
       <Sheet open={txnDrawer} onOpenChange={setTxnDrawer}>
         <SheetContent className="sm:max-w-2xl overflow-y-auto">
           <SheetHeader><SheetTitle>April 2026 Transactions</SheetTitle></SheetHeader>
-          <div className="mt-4">
-            <table className="w-full text-sm">
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-2 px-2">Date</th>
@@ -297,8 +311,8 @@ export default function ReconciliationPage() {
             <p>Unresolved: 0</p>
             <p className="text-green-600 font-medium">✓ Month closed and balanced</p>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setReportModal(false)}>Close</Button>
+          <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setReportModal(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

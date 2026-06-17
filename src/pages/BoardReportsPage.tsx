@@ -158,8 +158,8 @@ export default function BoardReportsPage() {
           <CardContent className="p-8 sm:p-12 space-y-8">
             {/* Header */}
             <div className="space-y-3">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shrink-0">BF</div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function BoardReportsPage() {
             {/* Financial Snapshot */}
             <section className="space-y-3">
               <h3 className="text-base font-semibold text-foreground">Financial Snapshot</h3>
-              <div className="rounded-lg border overflow-hidden">
+              <div className="overflow-x-auto rounded-lg border">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
@@ -220,7 +220,7 @@ export default function BoardReportsPage() {
             {/* Donor Engagement */}
             <section className="space-y-3">
               <h3 className="text-base font-semibold text-foreground">Donor Engagement</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {sections.donorMetrics.map((item) => (
                   <div key={item.label} className="rounded-lg border p-3">
                     <p className="text-lg font-bold text-foreground">{item.value}</p>
@@ -234,7 +234,7 @@ export default function BoardReportsPage() {
             {/* Grant Status */}
             <section className="space-y-3">
               <h3 className="text-base font-semibold text-foreground">Grant Status</h3>
-              <div className="rounded-lg border overflow-hidden">
+              <div className="overflow-x-auto rounded-lg border">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
@@ -269,7 +269,7 @@ export default function BoardReportsPage() {
             {/* Data Health */}
             <section className="space-y-3">
               <h3 className="text-base font-semibold text-foreground">Data Health</h3>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {sections.dataHealth.map((item) => (
                   <div key={item.label} className="rounded-lg border p-3 text-center">
                     <p className="text-lg font-bold text-foreground">{item.value}</p>
@@ -282,7 +282,7 @@ export default function BoardReportsPage() {
             {/* AI Agent Activity */}
             <section className="space-y-3">
               <h3 className="text-base font-semibold text-foreground">AI Agent Activity</h3>
-              <div className="rounded-lg border overflow-hidden">
+              <div className="overflow-x-auto rounded-lg border">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">

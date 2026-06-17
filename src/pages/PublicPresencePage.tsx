@@ -98,6 +98,7 @@ export default function PublicPresencePage() {
         <Button
           variant="outline"
           size="sm"
+          className="w-full sm:w-auto shrink-0"
           onClick={() => window.open(DEMO_PUBLIC_PRESENCE.orgWebsiteUrl, "_blank", "noopener,noreferrer")}
         >
           <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
@@ -107,11 +108,22 @@ export default function PublicPresencePage() {
 
       {/* Tabs */}
       <Tabs defaultValue="visibility" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="visibility">Visibility Controls</TabsTrigger>
-          <TabsTrigger value="previews">Previews</TabsTrigger>
-          <TabsTrigger value="embed">Embed Codes</TabsTrigger>
-          <TabsTrigger value="social">Social Sharing</TabsTrigger>
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 md:inline-flex md:h-10 md:w-auto md:flex-nowrap">
+          <TabsTrigger value="visibility" className="w-full px-2 text-xs md:w-auto md:px-3 md:text-sm">
+            <span className="md:hidden">Visibility</span>
+            <span className="hidden md:inline">Visibility Controls</span>
+          </TabsTrigger>
+          <TabsTrigger value="previews" className="w-full px-2 text-xs md:w-auto md:px-3 md:text-sm">
+            Previews
+          </TabsTrigger>
+          <TabsTrigger value="embed" className="w-full px-2 text-xs md:w-auto md:px-3 md:text-sm">
+            <span className="md:hidden">Embed</span>
+            <span className="hidden md:inline">Embed Codes</span>
+          </TabsTrigger>
+          <TabsTrigger value="social" className="w-full px-2 text-xs md:w-auto md:px-3 md:text-sm">
+            <span className="md:hidden">Social</span>
+            <span className="hidden md:inline">Social Sharing</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* Visibility Controls Tab */}
@@ -160,29 +172,39 @@ export default function PublicPresencePage() {
           {/* Event Feed Preview */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-base">Public Event Feed</CardTitle>
-                <Badge variant={visibility.publicEventFeed ? "outline" : "secondary"} className={visibility.publicEventFeed ? "text-green-700 border-green-200 bg-green-50" : ""}>
+                <Badge
+                  variant={visibility.publicEventFeed ? "outline" : "secondary"}
+                  className={`w-fit shrink-0 whitespace-normal ${visibility.publicEventFeed ? "text-green-700 border-green-200 bg-green-50" : ""}`}
+                >
                   {visibility.publicEventFeed ? "Live" : "Hidden"}
                 </Badge>
               </div>
               <CardDescription>How your events appear to public visitors</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
                 {[
                   { title: "Summer Leadership Summit", date: "In 45 days", tag: "Upcoming" },
                   { title: "Monthly Community Dinner", date: "In 12 days", tag: "Free" },
                   { title: "Community Health Fair", date: "Today", tag: "Active" },
                 ].map((event) => (
-                  <div key={event.title} className="flex items-center justify-between border rounded-md bg-background p-3">
-                    <div>
-                      <p className="text-sm font-medium">{event.title}</p>
+                  <div
+                    key={event.title}
+                    className="flex flex-col gap-3 rounded-md border bg-background p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium break-words">{event.title}</p>
                       <p className="text-xs text-muted-foreground">{event.date}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs">{event.tag}</Badge>
-                      <Button size="sm" variant="outline" className="h-7 text-xs">Register</Button>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:shrink-0">
+                      <Badge variant="secondary" className="w-fit text-xs whitespace-normal">
+                        {event.tag}
+                      </Badge>
+                      <Button size="sm" variant="outline" className="h-8 w-full text-xs sm:w-auto">
+                        Register
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -193,21 +215,26 @@ export default function PublicPresencePage() {
           {/* Donation Widget Preview */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-base">Donation Widget</CardTitle>
-                <Badge variant={visibility.donationWidget ? "outline" : "secondary"} className={visibility.donationWidget ? "text-green-700 border-green-200 bg-green-50" : ""}>
+                <Badge
+                  variant={visibility.donationWidget ? "outline" : "secondary"}
+                  className={`w-fit shrink-0 whitespace-normal ${visibility.donationWidget ? "text-green-700 border-green-200 bg-green-50" : ""}`}
+                >
                   {visibility.donationWidget ? "Live" : "Hidden"}
                 </Badge>
               </div>
               <CardDescription>Embedded donate experience for your website</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border bg-muted/30 p-6 max-w-xs text-center space-y-4">
-                <p className="font-semibold">Support Brightside Foundation</p>
+              <div className="mx-auto w-full max-w-xs space-y-4 rounded-lg border bg-muted/30 p-4 text-center sm:p-6">
+                <p className="font-semibold break-words">Support Brightside Foundation</p>
                 <p className="text-xs text-muted-foreground">Your gift changes lives in our community</p>
                 <div className="grid grid-cols-3 gap-2">
                   {[25, 50, 100].map((amt) => (
-                    <Button key={amt} size="sm" variant="outline" className="text-xs">${amt}</Button>
+                    <Button key={amt} size="sm" variant="outline" className="px-2 text-xs">
+                      ${amt}
+                    </Button>
                   ))}
                 </div>
                 <Button className="w-full" size="sm">Donate Now</Button>
@@ -219,22 +246,25 @@ export default function PublicPresencePage() {
           {/* Impact Stats Preview */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-base">Impact Stats</CardTitle>
-                <Badge variant={visibility.impactStats ? "outline" : "secondary"} className={visibility.impactStats ? "text-green-700 border-green-200 bg-green-50" : ""}>
+                <Badge
+                  variant={visibility.impactStats ? "outline" : "secondary"}
+                  className={`w-fit shrink-0 whitespace-normal ${visibility.impactStats ? "text-green-700 border-green-200 bg-green-50" : ""}`}
+                >
                   {visibility.impactStats ? "Live" : "Hidden"}
                 </Badge>
               </div>
               <CardDescription>Live numbers shown on your public website</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-4 rounded-lg border bg-muted/30 p-4">
+              <div className="grid grid-cols-1 gap-4 rounded-lg border bg-muted/30 p-4 sm:grid-cols-3">
                 {[
                   { value: "1,010+", label: "People Served" },
                   { value: "4,320", label: "Volunteer Hours" },
                   { value: "$284K", label: "Funds Raised" },
                 ].map((stat) => (
-                  <div key={stat.label} className="text-center">
+                  <div key={stat.label} className="rounded-md border bg-background p-3 text-center sm:border-0 sm:bg-transparent sm:p-0">
                     <p className="text-xl font-bold">{stat.value}</p>
                     <p className="text-xs text-muted-foreground">{stat.label}</p>
                   </div>
@@ -320,31 +350,38 @@ export default function PublicPresencePage() {
                 { platform: "LinkedIn", value: DEMO_PUBLIC_PRESENCE.social.linkedinUrl, icon: "in" },
                 { platform: "Instagram", value: DEMO_PUBLIC_PRESENCE.social.instagramHandle, icon: "📷" },
               ].map((social) => (
-                <div key={social.platform} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-sm font-bold shrink-0">
+                <div
+                  key={social.platform}
+                  className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-sm font-bold">
                       {social.icon}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-medium">{social.platform}</p>
-                      <p className="text-xs text-muted-foreground truncate max-w-[200px]">{social.value}</p>
+                      <p className="break-all text-xs text-muted-foreground">{social.value}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 sm:shrink-0">
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant="outline"
+                      className="flex-1 sm:flex-none"
                       onClick={() => handleCopy(social.value, `${social.platform} link`)}
                     >
-                      <Copy className="h-3.5 w-3.5" />
+                      <Copy className="h-3.5 w-3.5 mr-1.5 sm:mr-0" />
+                      <span className="sm:hidden">Copy</span>
                     </Button>
                     {social.value.startsWith("http") && (
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
+                        className="flex-1 sm:flex-none"
                         onClick={() => window.open(social.value, "_blank", "noopener,noreferrer")}
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
+                        <ExternalLink className="h-3.5 w-3.5 mr-1.5 sm:mr-0" />
+                        <span className="sm:hidden">Open</span>
                       </Button>
                     )}
                   </div>

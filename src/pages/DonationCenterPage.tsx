@@ -125,7 +125,7 @@ export default function DonationCenterPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((card) => (
           <Card key={card.label}>
             <CardContent className="p-4">
@@ -143,7 +143,7 @@ export default function DonationCenterPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="campaigns" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex h-auto w-full flex-wrap gap-1">
           <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
           <TabsTrigger value="donations">Donations</TabsTrigger>
           <TabsTrigger value="funds">Fund Breakdown</TabsTrigger>
@@ -237,7 +237,7 @@ export default function DonationCenterPage() {
             ))}
           </div>
           <Card>
-            <CardContent className="p-0">
+            <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
                   <TableRow>

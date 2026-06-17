@@ -138,23 +138,26 @@ export default function ProgramsPage() {
             return (
               <Card key={program.id} className="overflow-hidden">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-base">{program.name}</CardTitle>
-                      <CardDescription className="mt-1">{program.description}</CardDescription>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <CardTitle className="text-base leading-tight break-words">{program.name}</CardTitle>
+                      <CardDescription className="mt-1 break-words">{program.description}</CardDescription>
                     </div>
-                    <Badge variant="outline" className={`text-xs capitalize ${statusColors[program.status]}`}>
+                    <Badge
+                      variant="outline"
+                      className={`w-fit shrink-0 text-xs capitalize ${statusColors[program.status]}`}
+                    >
                       {program.status}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     <span>Lead: {program.leadStaff}</span>
-                    <span>•</span>
+                    <span className="hidden sm:inline">•</span>
                     <span>Started: {program.startDate}</span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       <span className="text-muted-foreground">Beneficiaries:</span>
@@ -186,12 +189,22 @@ export default function ProgramsPage() {
                     <Progress value={outcomePct} className="h-2" />
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2">
-                    <Button size="sm" variant="outline" onClick={() => setDetailProgram(program)}>
+                  <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                      onClick={() => setDetailProgram(program)}
+                    >
                       <Sparkles className="h-3.5 w-3.5 mr-1" />
                       Impact Summary
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleAddToGrant(program)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                      onClick={() => handleAddToGrant(program)}
+                    >
                       <FileText className="h-3.5 w-3.5 mr-1" />
                       Add to Grant Report
                     </Button>
@@ -221,7 +234,7 @@ export default function ProgramsPage() {
                     {generateImpactNarrative(detailProgram)}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-lg border p-3 text-center">
                     <p className="text-2xl font-bold text-foreground">{detailProgram.metrics.beneficiaryCount}</p>
                     <p className="text-xs text-muted-foreground">Beneficiaries Served</p>
@@ -239,14 +252,14 @@ export default function ProgramsPage() {
                     <p className="text-xs text-muted-foreground">Budget Used</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button className="flex-1" variant="outline" onClick={() => {
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button className="w-full sm:flex-1" variant="outline" onClick={() => {
                     navigator.clipboard.writeText(generateImpactNarrative(detailProgram));
                     toast.success("Impact narrative copied to clipboard");
                   }}>
                     Copy Narrative
                   </Button>
-                  <Button className="flex-1" onClick={() => {
+                  <Button className="w-full sm:flex-1" onClick={() => {
                     handleAddToGrant(detailProgram);
                     setDetailProgram(null);
                   }}>

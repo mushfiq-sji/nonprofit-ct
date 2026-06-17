@@ -52,22 +52,22 @@ export default function AgentActivityFeed() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
-            Agent Activity Feed
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-foreground flex flex-wrap items-center gap-2">
+            <Activity className="h-6 w-6 shrink-0 text-primary" />
+            <span>Agent Activity Feed</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             Real-time log of all AI agent runs across the platform
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
           <span className="text-xs text-muted-foreground flex items-center gap-1">
-            <Clock className="h-3 w-3" />
+            <Clock className="h-3 w-3 shrink-0" />
             Last refresh: {lastRefresh.toLocaleTimeString()}
           </span>
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-1" />
             Refresh
           </Button>
@@ -117,7 +117,7 @@ export default function AgentActivityFeed() {
           <CardTitle className="text-lg">Recent Agent Runs</CardTitle>
           <CardDescription>Auto-refreshes every 30 seconds</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

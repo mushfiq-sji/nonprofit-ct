@@ -147,8 +147,8 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-sidebar-border bg-sidebar-background">
-      <div className="flex h-full flex-col">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm">
+      <div className="flex h-full flex-col bg-sidebar">
         {/* Logo */}
         <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-6">
           <Link to="/admin" className="flex items-center gap-3">

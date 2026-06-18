@@ -20,6 +20,12 @@ import {
 import { cn } from "@/lib/utils";
 import { hoursAgo } from "@/shared/data/nonprofitDemoData";
 import { useNonprofitRolePermissions } from "@/hooks/useNonprofitRolePermissions";
+import { useAgentOperationalStats } from "@/hooks/useAgentOperationalStats";
+import { useMeetingSummarizer } from "@/hooks/useMeetingSummarizer";
+import { useActionItemTracker } from "@/hooks/useActionItemTracker";
+import { BRIGHTSIDE_BOARD_MEETING_SAMPLE } from "@/shared/data/brightsideBoardMeetingSample";
+
+const LIVE_OPERATIONAL_SLUGS = new Set(["meeting-intelligence", "action-item-tracker"]);
 
 /* ── activity banner messages ── */
 
@@ -33,6 +39,7 @@ const BANNER_MESSAGES = [
 /* ── Core agent last-run times (dynamic) ── */
 const CORE_LAST_RUN: Record<string, string> = {
   "meeting-intelligence": hoursAgo(0, 45),
+  "action-item-tracker": hoursAgo(1, 12),
   "crm-data-integrity": hoursAgo(1, 3),
   "reconciliation-fund-accounting": hoursAgo(3, 5),
   "grant-compliance": hoursAgo(2, 4),
@@ -143,17 +150,71 @@ function AgentBrowseCard({
   const cat = getCategoryForAgent(teamId);
   const hasOperational = !!agent.operational;
   const coreLastRun = CORE_LAST_RUN[agent.slug];
+  const liveStats = useAgentOperationalStats(agent.slug);
+  const summarizer = useMeetingSummarizer();
+  const actionTracker = useActionItemTracker();
 
   const [running, setRunning] = useState(false);
   const [lastRunOverride, setLastRunOverride] = useState<string | null>(null);
 
-  const displayLastRun = lastRunOverride ?? coreLastRun ?? hoursAgo(2, 6);
-  const displayFindings = hasOperational ? agent.operational!.itemsToReview : 0;
+  const useLiveStats =
+    LIVE_OPERATIONAL_SLUGS.has(agent.slug) &&
+    (liveStats.lastFinding != null || liveStats.lastRunAt != null);
+  const displayLastRun =
+    lastRunOverride ??
+    (useLiveStats && liveStats.lastRunLabel ? liveStats.lastRunLabel : null) ??
+    coreLastRun ??
+    hoursAgo(2, 6);
+  const displayFindings = useLiveStats
+    ? liveStats.itemsToReview
+    : hasOperational
+      ? agent.operational!.itemsToReview
+      : 0;
+  const displayTimeSavedHrs = useLiveStats
+    ? liveStats.timeSavedHrs
+    : hasOperational
+      ? agent.operational!.timeSavedHrs
+      : 0;
+  const displayFindingText = useLiveStats
+    ? liveStats.lastFinding
+    : hasOperational
+      ? agent.operational!.lastFinding
+      : null;
 
-  const handleRunNow = (e: React.MouseEvent) => {
+  const handleRunNow = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (agent.slug === "meeting-intelligence") {
-      navigate(`/agents/${agent.slug}`);
+      if (running || summarizer.isPending) return;
+      setRunning(true);
+      try {
+        await summarizer.mutateAsync(BRIGHTSIDE_BOARD_MEETING_SAMPLE);
+        setLastRunOverride("just now");
+        toast.success("Meeting Summarizer run complete", {
+          description: "Board minutes generated from sample transcript",
+        });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Summarizer run failed");
+        navigate(`/agents/${agent.slug}`);
+      } finally {
+        setRunning(false);
+      }
+      return;
+    }
+    if (agent.slug === "action-item-tracker") {
+      if (running || actionTracker.isPending) return;
+      setRunning(true);
+      try {
+        await actionTracker.mutateAsync({ useSample: true });
+        setLastRunOverride("just now");
+        toast.success("Action Item Tracker run complete", {
+          description: "Board actions scanned — review overdue and blocked items",
+        });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Tracker run failed");
+        navigate(`/agents/${agent.slug}`);
+      } finally {
+        setRunning(false);
+      }
       return;
     }
     if (running) return;
@@ -206,7 +267,11 @@ function AgentBrowseCard({
           </span>
         </div>
 
-        {hasOperational ? (
+        {displayFindingText ? (
+          <p className="text-sm text-muted-foreground leading-relaxed mt-3 line-clamp-2 italic">
+            &ldquo;{displayFindingText}&rdquo;
+          </p>
+        ) : hasOperational ? (
           <p className="text-sm text-muted-foreground leading-relaxed mt-3 line-clamp-2 italic">
             &ldquo;{agent.operational!.lastFinding}&rdquo;
           </p>
@@ -225,8 +290,8 @@ function AgentBrowseCard({
               {displayFindings} {displayFindings === 1 ? "item" : "items"} to review
             </Badge>
           )}
-          {hasOperational && (
-            <span>· Est. {agent.operational!.timeSavedHrs} hrs saved this week</span>
+          {(hasOperational || useLiveStats) && displayTimeSavedHrs > 0 && (
+            <span>· Est. {displayTimeSavedHrs} hrs saved this week</span>
           )}
         </div>
 
@@ -241,7 +306,11 @@ function AgentBrowseCard({
           >
             <Eye className="h-3 w-3 shrink-0" />
             <span className="truncate">
-              {agent.slug === "meeting-intelligence" ? "Summarize" : "View Findings"}
+              {agent.slug === "meeting-intelligence"
+                ? "Summarize"
+                : agent.slug === "action-item-tracker"
+                  ? "Track"
+                  : "View Findings"}
             </span>
           </Button>
           <Button
@@ -249,9 +318,9 @@ function AgentBrowseCard({
             variant="outline"
             className="flex-1 min-w-0 h-8 px-2 text-xs gap-1"
             onClick={handleRunNow}
-            disabled={running}
+            disabled={running || summarizer.isPending || actionTracker.isPending}
           >
-            {running ? (
+            {running || summarizer.isPending || actionTracker.isPending ? (
               <Loader2 className="h-3 w-3 shrink-0 animate-spin" />
             ) : (
               <Play className="h-3 w-3 shrink-0" />

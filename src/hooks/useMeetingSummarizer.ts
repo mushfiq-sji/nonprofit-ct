@@ -5,23 +5,27 @@
  * meeting-summarizer → event-intelligence Sonnet → Gemini Q&A fallback.
  */
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { API } from "@/shared/config/api";
+import { invalidateKeys } from "@/lib/cache";
 import {
   MEETING_SUMMARIZER_MODEL,
   buildMeetingSummarizerQuestion,
   parseMeetingSummaryResponse,
   summarizeMeetingWithClaudeSonnet,
 } from "@/lib/meetingSummarizer";
-import type { MeetingSummary } from "@/types/meeting-summary";
+import type { MeetingSummary, MeetingSummarizerAgentResponse } from "@/types/meeting-summary";
 
 export interface MeetingSummarizerResult {
   summary: MeetingSummary;
   latencyMs: number;
   model: string;
   provider: string;
+  runId?: string;
+  timeSavedMinutes?: number;
+  recommendedAction?: string;
   /** True when cloud edge functions are stale and Gemini Q&A fallback was used. */
   isGeminiFallback?: boolean;
 }
@@ -72,7 +76,20 @@ function isMeetingSummaryShape(data: unknown): data is MeetingSummary {
   );
 }
 
+function isAgentResponse(data: unknown): data is MeetingSummarizerAgentResponse {
+  return (
+    data !== null &&
+    typeof data === "object" &&
+    "run_id" in data &&
+    "summary" in data &&
+    typeof (data as MeetingSummarizerAgentResponse).run_id === "string"
+  );
+}
+
 function summaryFromEdgePayload(data: unknown): MeetingSummary {
+  if (isAgentResponse(data)) {
+    return data.summary;
+  }
   if (isMeetingSummaryShape(data)) {
     return data;
   }
@@ -80,6 +97,18 @@ function summaryFromEdgePayload(data: unknown): MeetingSummary {
     return parseMeetingSummaryResponse(String((data as { response: string }).response));
   }
   throw new Error("Unexpected response shape from AI service");
+}
+
+function resultFromAgentPayload(data: MeetingSummarizerAgentResponse, provider: string): MeetingSummarizerResult {
+  return {
+    summary: data.summary,
+    latencyMs: data.latency_ms,
+    model: data.model || MEETING_SUMMARIZER_MODEL,
+    provider,
+    runId: data.run_id,
+    timeSavedMinutes: data.time_saved_minutes,
+    recommendedAction: data.recommended_action,
+  };
 }
 
 async function invokeEdgeFunction(
@@ -120,7 +149,15 @@ async function trySummaryV2(transcript: string): Promise<MeetingSummarizerResult
 
 async function tryMeetingSummarizerEdge(transcript: string): Promise<MeetingSummarizerResult> {
   const start = Date.now();
-  const data = await invokeEdgeFunction(DEDICATED_SUMMARIZER_FN, { transcript });
+  const data = await invokeEdgeFunction(DEDICATED_SUMMARIZER_FN, {
+    transcript,
+    log_run: true,
+  });
+
+  if (isAgentResponse(data)) {
+    return resultFromAgentPayload(data, DEDICATED_SUMMARIZER_FN);
+  }
+
   const model =
     data && typeof data === "object" && "model" in data
       ? String((data as { model: string }).model)
@@ -185,6 +222,8 @@ async function tryEventIntelligenceGeminiFallback(
 }
 
 export function useMeetingSummarizer() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (transcript: string): Promise<MeetingSummarizerResult> => {
       const trimmed = transcript.trim();
@@ -195,8 +234,8 @@ export function useMeetingSummarizer() {
       }
 
       attempts.push(
-        { name: API.MEETINGS.SUMMARIZER, fn: () => trySummaryV2(trimmed) },
         { name: DEDICATED_SUMMARIZER_FN, fn: () => tryMeetingSummarizerEdge(trimmed) },
+        { name: API.MEETINGS.SUMMARIZER, fn: () => trySummaryV2(trimmed) },
         { name: API.AI.EVENT_INTELLIGENCE, fn: () => tryEventIntelligenceSonnet(trimmed) },
         {
           name: "event-intelligence-gemini-fallback",
@@ -219,6 +258,11 @@ export function useMeetingSummarizer() {
           ? `Meeting minutes unavailable. ${errors.join(" | ")}`
           : `Meeting minutes unavailable. ${LOVABLE_EDGE_DEPLOY_HINT}`
       );
+    },
+    onSuccess: (result) => {
+      if (result.runId) {
+        invalidateKeys.ai(queryClient);
+      }
     },
   });
 }

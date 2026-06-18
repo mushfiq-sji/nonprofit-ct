@@ -113,6 +113,7 @@ export async function probeMeetingSummarizerBackends(): Promise<SummarizerBacken
     ),
     await probe("meeting-summarizer", DEDICATED_SUMMARIZER_FN, {
       transcript: "health check",
+      log_run: false,
     }),
     await probe("event-intelligence (Gemini Q&A)", API.AI.EVENT_INTELLIGENCE, {
       question: "health check ping",

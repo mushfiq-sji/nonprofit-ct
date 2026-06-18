@@ -2,13 +2,22 @@
  * Meeting Summarizer Edge Function
  *
  * Accepts a raw meeting transcript and returns structured board minutes via Claude Sonnet.
- * Input:  { transcript: string }
- * Output: MeetingSummary JSON (executive_summary, decisions, action_items, attendance, key_discussion_points)
+ * Input:  { transcript?: string, meeting_id?: string, meetingId?: string, log_run?: boolean }
+ * Output: MeetingSummarizerAgentResponse when log_run is true (default), else legacy MeetingSummary JSON
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { chatCompletion, logUsage } from "../_shared/ai-provider-routing.ts";
+import {
+  completeAgentRun,
+  failAgentRun,
+  logAgentActivity,
+  resolveAgentId,
+  startAgentRun,
+} from "../_shared/agent-run-lifecycle.ts";
+
+const AGENT_SLUG = "meeting-summarizer";
 
 // Inline CORS (bundler cannot resolve imports outside functions/)
 function getCorsHeaders(origin: string | null): Record<string, string> {
@@ -44,7 +53,7 @@ async function validateRequestAuth(
   return user.id;
 }
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-20250514"; // Model pick for Shahed review: Claude Sonnet — best for long board transcripts
 const MAX_INPUT_CHARS = 12000;
 const MAX_TRANSCRIPT_CHARS = 50000;
 const LOVABLE_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
@@ -61,7 +70,9 @@ Your response must match this exact structure:
     { "task": "Description of the action", "owner": "Person name or null", "deadline": "Date or timeframe or null" }
   ],
   "attendance": ["Name (Role) — present", "Name (Role) — absent"],
-  "key_discussion_points": ["Topic discussed without a formal decision"]
+  "key_discussion_points": ["Topic discussed without a formal decision"],
+  "time_saved_minutes": 45,
+  "recommended_action": "One clear sentence telling staff what to do next with these minutes"
 }
 
 Rules:
@@ -70,6 +81,8 @@ Rules:
 - action_items: extract every assigned task with owner and deadline when stated; use null when unknown.
 - attendance: infer from roll call, introductions, or speaker presence; note absent members if mentioned.
 - key_discussion_points: substantive discussion that did not result in a recorded decision.
+- time_saved_minutes: realistic estimate of staff time saved vs writing minutes manually (typically 30–90 for board meetings).
+- recommended_action: one specific next step (e.g. assign action items, send summary to board, schedule follow-up).
 - Be factual; use names from the transcript; flag unclear items with [UNCLEAR] in the relevant field.
 - Return only the JSON object.`;
 
@@ -85,6 +98,8 @@ interface MeetingSummary {
   action_items: MeetingSummaryActionItem[];
   attendance: string[];
   key_discussion_points: string[];
+  time_saved_minutes?: number;
+  recommended_action?: string;
 }
 
 interface AiCallResult {
@@ -341,6 +356,66 @@ async function summarizeTranscript(
   );
 }
 
+async function fetchTranscriptForMeeting(
+  supabase: ReturnType<typeof createClient>,
+  meetingId: string
+): Promise<{ transcript: string; meetingTitle: string | null }> {
+  const { data: meeting } = await supabase
+    .from("meetings")
+    .select("id, title")
+    .eq("id", meetingId)
+    .maybeSingle();
+
+  if (!meeting) {
+    throw new Error("Meeting not found");
+  }
+
+  const { data: transcriptRow } = await supabase
+    .from("meeting_transcripts")
+    .select("content")
+    .eq("meeting_id", meetingId)
+    .maybeSingle();
+
+  let transcriptContent = transcriptRow?.content?.trim() ?? "";
+
+  if (!transcriptContent) {
+    const { data: zoomFile } = await supabase
+      .from("zoom_files")
+      .select("transcript_text")
+      .eq("meeting_id", meetingId)
+      .not("transcript_text", "is", null)
+      .limit(1)
+      .maybeSingle();
+
+    transcriptContent = zoomFile?.transcript_text?.trim() ?? "";
+  }
+
+  if (!transcriptContent) {
+    throw new Error("No transcript found for this meeting");
+  }
+
+  return { transcript: transcriptContent, meetingTitle: meeting.title ?? null };
+}
+
+function normalizeSummary(summary: MeetingSummary): MeetingSummary {
+  const actionCount = summary.action_items?.length ?? 0;
+  const decisionCount = summary.decisions?.length ?? 0;
+  const defaultTimeSaved = Math.min(90, Math.max(25, 20 + actionCount * 5 + decisionCount * 3));
+
+  return {
+    ...summary,
+    time_saved_minutes:
+      typeof summary.time_saved_minutes === "number" && summary.time_saved_minutes > 0
+        ? Math.round(summary.time_saved_minutes)
+        : defaultTimeSaved,
+    recommended_action:
+      summary.recommended_action?.trim() ||
+      (actionCount > 0
+        ? `Review and assign ${actionCount} extracted action item${actionCount === 1 ? "" : "s"} to owners.`
+        : "Share the executive summary with the board and file minutes in the board packet."),
+  };
+}
+
 serve(async (req) => {
   const origin = req.headers.get("Origin");
   const corsHeaders = getCorsHeaders(origin);
@@ -367,17 +442,38 @@ serve(async (req) => {
   }
 
   try {
-    let body: { transcript?: string };
+    let body: {
+      transcript?: string;
+      meeting_id?: string;
+      meetingId?: string;
+      log_run?: boolean;
+    };
     try {
       body = await req.json();
     } catch {
       return jsonResponse({ error: "invalid_json", message: "Invalid JSON body" }, 400, corsHeaders);
     }
 
-    const transcript = typeof body.transcript === "string" ? body.transcript.trim() : "";
+    const logRun = body.log_run !== false;
+    const meetingId =
+      typeof body.meeting_id === "string"
+        ? body.meeting_id.trim()
+        : typeof body.meetingId === "string"
+          ? body.meetingId.trim()
+          : "";
+
+    let transcript = typeof body.transcript === "string" ? body.transcript.trim() : "";
+    let meetingTitle: string | null = null;
+
+    if (!transcript && meetingId) {
+      const fetched = await fetchTranscriptForMeeting(supabase, meetingId);
+      transcript = fetched.transcript;
+      meetingTitle = fetched.meetingTitle;
+    }
+
     if (!transcript) {
       return jsonResponse(
-        { error: "missing_transcript", message: "transcript is required" },
+        { error: "missing_transcript", message: "transcript or meeting_id is required" },
         400,
         corsHeaders
       );
@@ -394,26 +490,104 @@ serve(async (req) => {
       );
     }
 
-    const { content, inputTokens, outputTokens, provider } = await summarizeTranscript(
-      supabase,
-      transcript
-    );
-    const summary = parseSummaryContent(content);
+    const startTime = Date.now();
+    let runId: string | null = null;
+    const agentId = logRun && authUserId ? await resolveAgentId(supabase, AGENT_SLUG) : null;
 
-    console.log(`[meeting-summarizer] Success via ${provider}`);
+    if (logRun && authUserId && agentId) {
+      runId = await startAgentRun(supabase, {
+        agentId,
+        userId: authUserId,
+        input: {
+          meeting_id: meetingId || null,
+          transcript_chars: transcript.length,
+          meeting_title: meetingTitle,
+        },
+        context: { agent_slug: AGENT_SLUG, meeting_id: meetingId || null },
+      });
+    }
 
-    await logUsage(
-      supabase,
-      authUserId,
-      null,
-      "meeting-summarizer",
-      inputTokens,
-      outputTokens,
-      0,
-      0
-    );
+    try {
+      const { content, inputTokens, outputTokens, provider } = await summarizeTranscript(
+        supabase,
+        transcript
+      );
+      const summary = normalizeSummary(parseSummaryContent(content));
+      const latencyMs = Date.now() - startTime;
 
-    return jsonResponse(summary, 200, corsHeaders);
+      console.log(`[meeting-summarizer] Success via ${provider}`);
+
+      await logUsage(
+        supabase,
+        authUserId,
+        null,
+        AGENT_SLUG,
+        inputTokens,
+        outputTokens,
+        0,
+        0
+      );
+
+      if (runId && authUserId && agentId) {
+        const findingsCount =
+          summary.action_items.length + summary.decisions.length + summary.key_discussion_points.length;
+
+        await completeAgentRun(supabase, {
+          runId,
+          output: summary as unknown as Record<string, unknown>,
+          metadata: {
+            agent_slug: AGENT_SLUG,
+            time_saved_minutes: summary.time_saved_minutes,
+            recommended_action: summary.recommended_action,
+            findings_count: findingsCount,
+            meeting_id: meetingId || null,
+            meeting_title: meetingTitle,
+          },
+          modelUsed: MODEL,
+          providerUsed: provider,
+          latencyMs,
+          tokenMetrics: { prompt_tokens: inputTokens, completion_tokens: outputTokens },
+        });
+
+        await logAgentActivity(supabase, authUserId, {
+          agent_slug: AGENT_SLUG,
+          agent_run_id: runId,
+          time_saved_minutes: summary.time_saved_minutes ?? 0,
+          recommended_action: summary.recommended_action ?? "",
+          findings_count: findingsCount,
+          meeting_id: meetingId || undefined,
+          model: MODEL,
+          provider,
+        });
+      }
+
+      if (logRun && runId) {
+        return jsonResponse(
+          {
+            run_id: runId,
+            summary,
+            time_saved_minutes: summary.time_saved_minutes,
+            recommended_action: summary.recommended_action,
+            model: MODEL,
+            provider,
+            latency_ms: latencyMs,
+            meeting_id: meetingId || null,
+          },
+          200,
+          corsHeaders
+        );
+      }
+
+      // Legacy shape for health checks / DeploymentStatus probes
+      return jsonResponse(summary, 200, corsHeaders);
+    } catch (innerError) {
+      if (runId) {
+        const latencyMs = Date.now() - startTime;
+        const message = innerError instanceof Error ? innerError.message : "Unknown error";
+        await failAgentRun(supabase, { runId, errorMessage: message, latencyMs });
+      }
+      throw innerError;
+    }
   } catch (error) {
     console.error("[meeting-summarizer] Error:", error);
     const message = error instanceof Error ? error.message : "Unknown error";

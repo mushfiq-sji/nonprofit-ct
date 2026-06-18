@@ -135,6 +135,7 @@ export const queryKeys = {
     agentAnalytics: (days: number) => ["ai", "agentAnalytics", days] as const,
     agentAnalyticsDetail: (agentId: string, days: number) =>
       ["ai", "agentAnalyticsDetail", agentId, days] as const,
+    operational: (uiSlug: string) => ["ai", "operational", uiSlug] as const,
     emailDraftingStats: (days: number) => ["ai", "emailDraftingStats", days] as const,
     dealCoachingStats: (days?: number) => ["ai", "dealCoachingStats", days ?? 90] as const,
     chat: (sessionId: string) => ["ai", "chat", sessionId] as const,
@@ -316,9 +317,14 @@ export const invalidateKeys = {
   roles: (queryClient: any) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.admin.roles });
   },
-  ai: (queryClient: any) => {
+  ai: (queryClient: any, agentId?: string) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.ai.agents });
     queryClient.invalidateQueries({ queryKey: queryKeys.ai.agentCategories });
+    queryClient.invalidateQueries({ queryKey: ["ai", "runs"] });
+    queryClient.invalidateQueries({ queryKey: ["ai", "operational"] });
+    if (agentId) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ai.runs(agentId) });
+    }
   },
   promptTemplates: (queryClient: any) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.ai.promptTemplates });

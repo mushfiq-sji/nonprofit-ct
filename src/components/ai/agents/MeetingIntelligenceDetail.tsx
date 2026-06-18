@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   CheckSquare,
@@ -10,6 +11,8 @@ import {
   Users,
   Gavel,
   MessageSquare,
+  Clock,
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,13 +52,25 @@ function SummaryOutput({
   model,
   provider,
   isGeminiFallback,
+  timeSavedMinutes,
+  recommendedAction,
+  runId,
 }: {
   summary: MeetingSummary;
   latencyMs: number;
   model: string;
   provider: string;
   isGeminiFallback?: boolean;
+  timeSavedMinutes?: number;
+  recommendedAction?: string;
+  runId?: string;
 }) {
+  const navigate = useNavigate();
+  const displayTimeSaved =
+    timeSavedMinutes ?? summary.time_saved_minutes ?? null;
+  const displayAction =
+    recommendedAction ?? summary.recommended_action ?? null;
+
   return (
     <div className="space-y-6">
       {isGeminiFallback && (
@@ -86,7 +101,42 @@ function SummaryOutput({
         <Badge variant="outline">
           {summary.decisions.length} decision{summary.decisions.length !== 1 ? "s" : ""}
         </Badge>
+        {displayTimeSaved != null && displayTimeSaved > 0 && (
+          <Badge className="gap-1 bg-green-600 hover:bg-green-600 text-white border-0">
+            <Clock className="h-3 w-3" />
+            ~{displayTimeSaved} min saved
+          </Badge>
+        )}
+        {runId && (
+          <Badge variant="outline" className="font-mono text-[10px]">
+            run logged
+          </Badge>
+        )}
       </div>
+
+      {displayAction && (
+        <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20 dark:border-green-900">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <ArrowRight className="h-4 w-4 text-green-700 dark:text-green-400" />
+              Recommended next step
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-foreground">{displayAction}</p>
+            {summary.action_items.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                onClick={() => navigate("/actions")}
+              >
+                Open action items
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="border-primary/20">
         <CardHeader className="pb-3">
@@ -210,6 +260,9 @@ export default function MeetingIntelligenceDetail() {
     model: string;
     provider: string;
     isGeminiFallback?: boolean;
+    runId?: string;
+    timeSavedMinutes?: number;
+    recommendedAction?: string;
   } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState(0);
@@ -407,6 +460,9 @@ export default function MeetingIntelligenceDetail() {
               model={result.model}
               provider={result.provider}
               isGeminiFallback={result.isGeminiFallback}
+              timeSavedMinutes={result.timeSavedMinutes}
+              recommendedAction={result.recommendedAction}
+              runId={result.runId}
             />
           </div>
         </>

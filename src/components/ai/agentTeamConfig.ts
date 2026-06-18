@@ -263,6 +263,33 @@ export const agentTeams: Record<string, AgentTeamDef> = {
         ],
         whereToFind: { label: "Meeting Summarizer", path: "/agents/meeting-intelligence" },
       },
+      {
+        name: "Action Item Tracker",
+        slug: "action-item-tracker",
+        description:
+          "Tracks board pending actions from your task board and meeting takeaways — flags overdue and blocked items with owners, due dates, and a clear next step for staff.",
+        icon: "ListChecks",
+        operational: {
+          lastFinding:
+            "2 board actions overdue — FY27 budget draft and ED compensation review need escalation",
+          itemsToReview: 4,
+          timeSavedHrs: 1,
+        },
+        capabilities: [
+          "Scan open board and executive action items",
+          "Flag overdue items with days past due",
+          "Surface blocked items with blocker reasons",
+          "Highlight items due within 14 days",
+          "Recommend a single next step for the ED or board secretary",
+        ],
+        howToUse: [
+          "Open Action Item Tracker on the AI Agents page",
+          "Run Action Scan (sample data or live tasks)",
+          "Review overdue and blocked tables",
+          "Follow the recommended next step or open the task board",
+        ],
+        whereToFind: { label: "Action Item Tracker", path: "/agents/action-item-tracker" },
+      },
     ],
   },
 };
@@ -296,6 +323,7 @@ export const AGENT_ICON_MAP: Record<string, string> = {
   "integration-health-monitor": "Plug",
   "onboarding-checklist-ai": "ClipboardList",
   "meeting-intelligence": "FileText",
+  "action-item-tracker": "ListChecks",
 };
 
 /** Category color map keyed by team id */

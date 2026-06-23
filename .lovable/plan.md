@@ -1,133 +1,88 @@
-# Replicate `/membership` Page into Another Lovable Project
 
-Copy-paste-ready brief for rebuilding the Membership Management page 1:1 in another Lovable project.
+# Plan: Self-contained roadmap docs under `/docs/roadmap/`
 
----
+Goal: produce a folder of Cursor-ready specs. Each file must stand alone — no reference to "ePhysician" or "SJ-CT". Any agent (gstack/Cursor/Claude Code) can pick up one file and ship it without seeing the other projects or this conversation.
 
-## What `/membership` actually is
+## Folder structure to create
 
-A member directory backed by the `nonprofit_members` Supabase table.
-
-- **KPI strip** — Total Members, Active, Expiring Soon, Lapsed
-- **Directory tab** — searchable table (name / email / employer), tier filter chips (All / General / Professional / Board / Honorary), status badge per row, click row → side sheet with full profile
-- **Add Member tab** — react-hook-form + zod (name, email, tier); creates row with status `Active`
-- **Renewals callouts** — lists of expiring + lapsed members
-- Tier and status colored badges; dates formatted `MMM d, yyyy`
-
-## Database (1 table)
-
-```text
-nonprofit_members
-  id uuid pk
-  created_by uuid references auth.users
-  name text not null
-  email text not null
-  phone text
-  tier text check in ('General','Professional','Board','Honorary') default 'General'
-  status text check in ('Active','Expiring','Lapsed','Pending') default 'Active'
-  join_date date default current_date
-  renewal_date date
-  employer text
-  interests text[]
-  created_at, updated_at timestamptz
+```
+docs/roadmap/
+├── README.md                              # index + how to use with gstack/Cursor
+├── 00-vision-and-icp.md                   # product vision, ICP, success metrics, glossary
+├── 01-architecture-baseline.md            # current stack, conventions, file layout, naming
+│
+├── phase-1-foundation/
+│   ├── 00-overview.md
+│   ├── 01-service-layer-refactor.md       # src/services/*.service.ts pattern
+│   ├── 02-provider-agnostic-supabase.md   # env-driven client + bootstrap
+│   ├── 03-seed-on-boot.md                 # auto-seed demo data + 4 role users
+│   ├── 04-migration-bundle-export.md      # scripts/export-migrations.sh
+│   ├── 05-sidebar-cleanup.md              # hide legacy modules behind flag
+│   ├── 06-demo-persona-switcher.md        # 1-click ED/DD/FM/OM login
+│   └── 07-reset-demo-button.md            # admin wipe + reseed
+│
+├── phase-2-named-agents/
+│   ├── 00-overview.md                     # agent contract template
+│   ├── 01-donor-retention-agent.md
+│   ├── 02-grant-writer-agent.md
+│   ├── 03-board-reporter-agent.md
+│   ├── 04-event-roi-agent.md
+│   ├── 05-volunteer-scheduler-agent.md
+│   └── 06-data-health-agent.md
+│
+├── phase-3-portability/
+│   ├── 00-overview.md
+│   ├── 01-crm-adapter-interface.md        # NPSP / Bloomerang / LGL / HubSpot / CSV
+│   ├── 02-email-adapter.md                # SendGrid / Resend / Mailgun
+│   ├── 03-payment-ingest-adapter.md       # Stripe / Donorbox / Givebutter / CSV
+│   ├── 04-integration-advisor-agent.md    # 3-question wizard
+│   ├── 05-secrets-self-service-page.md
+│   └── 06-self-host-guide.md              # docs/SELF_HOST.md content spec
+│
+├── phase-4-marketplace-compliance/
+│   ├── 00-overview.md
+│   ├── 01-module-marketplace-v1.md
+│   ├── 02-form-990-audit-pack.md
+│   ├── 03-donor-pii-guardrails.md
+│   ├── 04-public-board-share-link.md
+│   ├── 05-pricing-and-billing.md
+│   └── 06-onboarding-wizard.md
+│
+└── templates/
+    ├── module-spec-template.md            # the shape every spec follows
+    ├── agent-spec-template.md             # agent input/output/KPI contract
+    └── handoff-prompt-template.md         # paste-into-Cursor prompt
 ```
 
-RLS on, `FOR ALL TO authenticated USING (true) WITH CHECK (true)`, GRANT to `authenticated` + `service_role`, `updated_at` trigger.
+## Spec template each module file follows (so Cursor/gstack can execute)
 
-## File layout to create
+Every module file uses this exact 10-section structure:
 
-```text
-src/
-  pages/MembershipPage.tsx
-  hooks/useMembers.ts            # React Query CRUD hooks
-supabase/migrations/<ts>_nonprofit_members.sql
-```
+1. **Goal** — one sentence outcome
+2. **User story** — "As a {role}, I want {outcome} so that {value}"
+3. **KPI moved** — what number changes after ship
+4. **Scope** — bullet list of what's IN
+5. **Out of scope** — explicit OUT list
+6. **Files to create / change** — exact paths under `src/`, `supabase/functions/`, `supabase/migrations/`
+7. **Data model** — table SQL (CREATE / ALTER) with RLS + GRANT block matching project rules
+8. **API surface** — edge function signatures (input JSON, output JSON, errors)
+9. **UI spec** — page route, components, states (empty / loading / error / success), copy
+10. **Acceptance criteria** — checklist a reviewer can tick off
+11. **Cursor handoff prompt** — copy-paste block that includes context + the gstack flow (`/plan-eng-review` → build → `/review` → `/ship` → `/document-release`)
 
-Add route:
-```tsx
-<Route path="/membership" element={<MembershipPage />} />
-```
+## Self-containment rules I will follow
+- No mention of ePhysician, SJ-CT, or other projects.
+- Each spec restates the relevant subset of project conventions (stack, naming, RLS+GRANT pattern, activity logging, validation) at the top so it works without other files.
+- Every file references only: this project's existing tables, this project's existing edge functions, and the Lovable + Supabase + Lovable AI docs (with links).
+- Templates double as a library: a new module can be added by copying `templates/module-spec-template.md`.
 
-## The prompt to paste into the other Lovable project
+## What I will NOT do in this pass
+- Implement any code.
+- Touch database schema.
+- Add screenshots/diagrams (text-first; can add later).
 
-> Assumes the target project already has Lovable Cloud + shadcn/ui + React Query + React Router + React Hook Form + Zod. If not, prepend: "First enable Lovable Cloud."
+## Deliverable
+~30 markdown files under `docs/roadmap/`, each runnable independently in Cursor + gstack.
 
-```text
-Build a Membership Management page at /membership that exactly matches this spec.
-
-DATABASE (one migration, RLS on, GRANT to authenticated + service_role, updated_at trigger)
-- nonprofit_members(
-    id uuid pk default gen_random_uuid(),
-    created_by uuid references auth.users,
-    name text not null,
-    email text not null,
-    phone text,
-    tier text not null default 'General' check (tier in ('General','Professional','Board','Honorary')),
-    status text not null default 'Active' check (status in ('Active','Expiring','Lapsed','Pending')),
-    join_date date default current_date,
-    renewal_date date,
-    employer text,
-    interests text[] default '{}',
-    created_at timestamptz default now(),
-    updated_at timestamptz default now()
-  )
-Policy: FOR ALL TO authenticated USING (true) WITH CHECK (true).
-
-HOOKS  src/hooks/useMembers.ts  (React Query, typed off Database)
-- type Member, MemberInsert, MemberUpdate
-- type MemberTier = 'General'|'Professional'|'Board'|'Honorary'
-- type MemberStatus = 'Active'|'Expiring'|'Lapsed'|'Pending'
-- useMembers({ search?, tier?, status? })   // ilike on name/email/employer; eq on tier/status when not 'All'
-- useMemberById(id)
-- useCreateMember, useUpdateMember, useDeleteMember
-All mutations invalidate the list and show a shadcn/sonner toast on success/error.
-
-PAGE  src/pages/MembershipPage.tsx
-- Header: Users icon + "Membership" + subtitle
-- KPI cards row (4): Total Members, Active, Expiring Soon, Lapsed (icons: Users, UserCheck, Clock, UserX)
-- Tabs: "Directory" | "Add Member" | "Renewals"
-- Directory tab:
-  * Search input (name / email / employer) + tier filter chips (All, General, Professional, Board, Honorary)
-  * Table columns: Name, Email, Tier (badge), Status (badge), Renewal date, Employer
-  * Row click → Sheet (right) with full member profile: name, email, phone, tier, status, join_date, renewal_date, employer, interests chips
-- Add Member tab:
-  * react-hook-form + zod schema { name: min(2), email: email(), tier: enum }
-  * On submit: createMember.mutateAsync({ ..., status: 'Active', created_by: user.id }), reset form, switch back to Directory
-- Renewals tab:
-  * Two cards: "Expiring Soon" (status='Expiring') and "Lapsed" (status='Lapsed') with member rows + "Send renewal" button (toast only, no email yet)
-
-BADGE COLORS
-- Tier: General gray, Professional blue, Board purple, Honorary amber
-- Status: Active green, Expiring amber, Lapsed red, Pending blue
-
-CONVENTIONS
-- shadcn components only (Card, Tabs, Table, Sheet, Badge, Button, Input, Label, Select, Form)
-- Dates: toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
-- All colors via semantic tokens from index.css — no raw text-white/bg-black in components other than the badge maps above
-- Toasts via sonner (or @/hooks/use-toast)
-- No edge functions, no auth changes
-```
-
-## Steps to run it
-
-1. Open the other Lovable project's chat.
-2. Paste the prompt block above. Approve the migration when prompted.
-3. After `src/integrations/supabase/types.ts` regenerates, Lovable builds the page + hook.
-4. Smoke test:
-   - Add a member → appears in directory with `Active` badge
-   - Search by name / employer → filters correctly
-   - Click row → side sheet opens with full profile
-   - Switch to Renewals tab → empty until you flip a row's `status` to `Expiring` / `Lapsed` in the DB
-
-## Optional follow-ups (second prompt)
-
-- Edit / delete from the side sheet
-- Bulk CSV import
-- "Send renewal" actually emails (Resend edge function)
-- Engagement score column (linked to events / donations)
-
-## Out of scope
-
-- Payments / dues collection
-- Email sending
-- Public member directory (no auth)
+## Approve to proceed
+Say "go" and I will create the full tree in one batch. If you want to trim phases (e.g. skip Phase 4) or reorder, tell me before I start.

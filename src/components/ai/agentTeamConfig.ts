@@ -5,8 +5,6 @@
  * Used by the Browse page, Detail page, Dashboard card, and contextual banners.
  */
 
-import { hoursAgo } from "@/shared/data/nonprofitDemoData";
-
 export interface AgentOperationalMeta {
   lastFinding: string;
   itemsToReview: number;
@@ -21,9 +19,7 @@ export interface AgentTeamAgent {
   capabilities?: string[];
   howToUse?: string[];
   whereToFind?: { label: string; path: string };
-  /** Operational metadata for the 5 core nonprofit agents */
   operational?: AgentOperationalMeta;
-  /** Optional permission key for role-based gating. Agents without this always show. */
   permissionKey?: string;
 }
 
@@ -39,21 +35,139 @@ export interface AgentTeamDef {
 
 export const TEAM_DISPLAY_ORDER = [
   "meetings",
+  "meeting-intelligence",
   "executive",
   "fundraising",
   "finance-grants",
+  "people-ops",
   "data-ops",
   "reporting",
 ] as const;
 
-/** Short badge label on agent cards */
 export const TEAM_BADGE_LABELS: Record<string, string> = {
   meetings: "Meetings",
+  "meeting-intelligence": "Meetings",
   executive: "Executive",
   fundraising: "Fundraising",
   "finance-grants": "Finance",
+  "people-ops": "People & Ops",
   "data-ops": "Operations",
   reporting: "Reporting",
+};
+
+const DONOR_ENGAGEMENT_AGENT: AgentTeamAgent = {
+  name: "Donor Engagement Agent",
+  slug: "donor-engagement",
+  description:
+    "Analyzes giving history, segments donors by tier, identifies lapsed donors (12+ months no gift), and suggests re-engagement actions.",
+  icon: "Heart",
+  operational: {
+    lastFinding:
+      "5 donors lapsed 12+ months — Patricia Osei and William Davis are high-priority major gifts for outreach",
+    itemsToReview: 5,
+    timeSavedHrs: 1.5,
+  },
+  capabilities: [
+    "Analyze giving history and lifetime value across your donor portfolio",
+    "Segment donors by tier (major, mid-level, annual, lapsed)",
+    "Flag lapsed donors with no gift in 12+ months",
+    "Recommend re-engagement actions: call, email, or letter per donor",
+    "Estimate revenue at risk from disengaged relationships",
+  ],
+  howToUse: [
+    "Open Donor Engagement Agent on the AI Agents page",
+    "Run Engagement Scan against your donation history",
+    "Review lapsed and at-risk donors by tier",
+    "Follow suggested outreach and open Donor Retention to act",
+  ],
+  whereToFind: { label: "Donor Engagement", path: "/agents/donor-engagement" },
+};
+
+const GRANT_WRITER_AGENT: AgentTeamAgent = {
+  name: "Grant Writer Agent",
+  slug: "grant-writer-agent",
+  description:
+    "Drafts grant narrative sections — need statement, outcomes, and budget justification — from your org data and program info.",
+  icon: "PenTool",
+  operational: {
+    lastFinding:
+      "Kresge Foundation Q2 report — Statement of Need and Budget Justification sections ready to draft",
+    itemsToReview: 2,
+    timeSavedHrs: 3,
+  },
+  capabilities: [
+    "Draft Statement of Need from program impact data",
+    "Generate outcomes and evaluation narratives tied to active programs",
+    "Produce budget justification aligned to grant award and utilization",
+    "Pull context from grants pipeline and program catalog",
+    "Export section drafts for funder submissions",
+  ],
+  howToUse: [
+    "Open Grant Writer Agent on the AI Agents page",
+    "Select an active grant and relevant programs",
+    "Choose a narrative section to generate",
+    "Review, edit, and copy the draft into your proposal",
+  ],
+  whereToFind: { label: "Grant Writer Agent", path: "/agents/grant-writer-agent" },
+};
+
+const BOARD_MEETING_SUMMARIZER_AGENT: AgentTeamAgent = {
+  name: "Board Meeting Summarizer",
+  slug: "board-meeting-summarizer",
+  description:
+    "Processes board meeting transcripts into structured minutes, formal decisions, and action items with owners and deadlines.",
+  icon: "FileText",
+  operational: {
+    lastFinding:
+      "Q2 board meeting minutes available — load the June board transcript or paste your own",
+    itemsToReview: 0,
+    timeSavedHrs: 1.5,
+  },
+  capabilities: [
+    "Extract formal board decisions from raw transcripts",
+    "Identify action items with owner names and deadlines",
+    "Record attendance from roll call and speaker presence",
+    "Summarize key discussion points without decisions",
+    "Produce a three-sentence executive summary for the ED",
+  ],
+  howToUse: [
+    "Open Board Meeting Summarizer on the AI Agents page",
+    "Paste a board transcript or load your recent Q2 board meeting",
+    "Click Generate Minutes and review structured output",
+    "Copy sections into your board packet or CRM notes",
+  ],
+  whereToFind: {
+    label: "Board Meeting Summarizer",
+    path: "/agents/board-meeting-summarizer",
+  },
+};
+
+const VOLUNTEER_COORDINATOR_AGENT: AgentTeamAgent = {
+  name: "Volunteer Coordinator Agent",
+  slug: "volunteer-coordinator",
+  description:
+    "Matches volunteers to events by skills and availability, tracks hours, and sends shift reminders.",
+  icon: "HandHeart",
+  operational: {
+    lastFinding:
+      "3 upcoming shifts need coverage — Spring Gala setup has 2 skill-matched volunteers available",
+    itemsToReview: 3,
+    timeSavedHrs: 2,
+  },
+  capabilities: [
+    "Match volunteers to open shifts by skills and availability",
+    "Track total hours per volunteer across events",
+    "Flag upcoming shifts that need coverage or confirmation",
+    "Draft shift reminder messages for coordinators",
+    "Surface volunteers who are also donors for stewardship crossover",
+  ],
+  howToUse: [
+    "Open Volunteer Coordinator Agent on the AI Agents page",
+    "Review upcoming shifts and suggested volunteer matches",
+    "Confirm assignments or send shift reminders",
+    "Open Volunteers module to update roster and log hours",
+  ],
+  whereToFind: { label: "Volunteer Coordinator", path: "/agents/volunteer-coordinator" },
 };
 
 export const agentTeams: Record<string, AgentTeamDef> = {
@@ -121,6 +235,15 @@ export const agentTeams: Record<string, AgentTeamDef> = {
       },
     ],
   },
+  "meeting-intelligence": {
+    id: "meeting-intelligence",
+    name: "Meeting Intelligence Team",
+    tagline: "Turn board meeting transcripts into structured minutes and follow-ups",
+    accentColor: "border-b-violet-500",
+    gradientFrom: "262 83% 58%",
+    gradientTo: "239 84% 67%",
+    agents: [BOARD_MEETING_SUMMARIZER_AGENT],
+  },
   executive: {
     id: "executive",
     name: "Executive Intelligence",
@@ -187,11 +310,13 @@ export const agentTeams: Record<string, AgentTeamDef> = {
   fundraising: {
     id: "fundraising",
     name: "Fundraising & Donors",
-    tagline: "Donor retention, churn risk, and post-event engagement intelligence",
+    tagline: "Donor engagement, retention, churn risk, and grant narrative intelligence",
     accentColor: "border-b-rose-500",
     gradientFrom: "330 80% 55%",
     gradientTo: "350 75% 50%",
     agents: [
+      DONOR_ENGAGEMENT_AGENT,
+      GRANT_WRITER_AGENT,
       {
         name: "Donor Churn Risk Detector",
         slug: "donor-churn-risk",
@@ -329,6 +454,15 @@ export const agentTeams: Record<string, AgentTeamDef> = {
       },
     ],
   },
+  "people-ops": {
+    id: "people-ops",
+    name: "People and Operations",
+    tagline: "Volunteer matching, hours tracking, and shift coordination",
+    accentColor: "border-b-sky-500",
+    gradientFrom: "200 70% 45%",
+    gradientTo: "210 75% 55%",
+    agents: [VOLUNTEER_COORDINATOR_AGENT],
+  },
   "data-ops": {
     id: "data-ops",
     name: "Data & Operations",
@@ -448,12 +582,10 @@ export const allTeams: AgentTeamDef[] = TEAM_DISPLAY_ORDER.map(
   (id) => agentTeams[id]
 ).filter((t): t is AgentTeamDef => t != null);
 
-/** Find which team an agent belongs to */
 export function findTeamForAgent(slug: string): AgentTeamDef | undefined {
   return allTeams.find((t) => t.agents.some((a) => a.slug === slug));
 }
 
-/** Find an agent + its team by slug */
 export function findAgentBySlug(
   slug: string
 ): { agent: AgentTeamAgent; team: AgentTeamDef } | undefined {
@@ -464,8 +596,11 @@ export function findAgentBySlug(
   return undefined;
 }
 
-/** Icon slug → Lucide icon name mapping */
 export const AGENT_ICON_MAP: Record<string, string> = {
+  "donor-engagement": "Heart",
+  "grant-writer-agent": "PenTool",
+  "board-meeting-summarizer": "FileText",
+  "volunteer-coordinator": "HandHeart",
   "crm-data-integrity": "Database",
   "reconciliation-fund-accounting": "DollarSign",
   "grant-compliance": "FileText",
@@ -481,9 +616,13 @@ export const AGENT_ICON_MAP: Record<string, string> = {
   "action-item-tracker": "ListChecks",
 };
 
-/** Category color map keyed by team id */
 export const CATEGORY_COLORS: Record<string, { from: string; to: string; badge: string }> = {
   meetings: {
+    from: "262 83% 58%",
+    to: "239 84% 67%",
+    badge: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
+  },
+  "meeting-intelligence": {
     from: "262 83% 58%",
     to: "239 84% 67%",
     badge: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
@@ -502,6 +641,11 @@ export const CATEGORY_COLORS: Record<string, { from: string; to: string; badge: 
     from: "150 70% 40%",
     to: "170 75% 50%",
     badge: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  },
+  "people-ops": {
+    from: "200 70% 45%",
+    to: "210 75% 55%",
+    badge: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300",
   },
   "data-ops": {
     from: "215 70% 45%",

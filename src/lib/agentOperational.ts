@@ -2,6 +2,9 @@
  * Maps nonprofit agent UI slugs (agentTeamConfig) to ai_agents DB slugs.
  */
 export const AGENT_UI_TO_DB_SLUG: Record<string, string> = {
+  "donor-engagement": "donor-churn-risk",
+  "board-meeting-summarizer": "meeting-summarizer",
+  "grant-writer-agent": "grant-writer",
   "meeting-intelligence": "meeting-summarizer",
   "action-item-tracker": "action-item-tracker",
   "executive-daily-briefer": "executive-daily-briefer",

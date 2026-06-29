@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   CheckSquare,
-  ClipboardList,
+  Copy,
+  FileDown,
   FileText,
   Info,
   Loader2,
@@ -40,6 +41,8 @@ import {
   BRIGHTSIDE_BOARD_MEETING_TITLE,
 } from "@/shared/data/brightsideBoardMeetingSample";
 import type { MeetingSummary } from "@/types/meeting-summary";
+import { formatMeetingSummaryAsText } from "@/lib/agentDummyData";
+import { toast } from "sonner";
 
 function formatLatency(ms: number): string {
   if (ms < 1000) return `${ms}ms`;
@@ -85,6 +88,31 @@ function SummaryOutput({
         </Alert>
       )}
       <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5"
+          onClick={() => {
+            navigator.clipboard.writeText(formatMeetingSummaryAsText(summary));
+            toast.success("Minutes copied to clipboard");
+          }}
+        >
+          <Copy className="h-3.5 w-3.5" />
+          Copy minutes
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5"
+          onClick={() =>
+            toast.success("Minutes exported", {
+              description: "PDF saved to Downloads (demo)",
+            })
+          }
+        >
+          <FileDown className="h-3.5 w-3.5" />
+          Export PDF
+        </Button>
         <Badge variant="secondary" className="gap-1">
           <Sparkles className="h-3 w-3" />
           Generated in {formatLatency(latencyMs)}
@@ -385,12 +413,13 @@ export default function MeetingIntelligenceDetail() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" />
-            Meeting Transcript
+            <FileText className="h-5 w-5" />
+            Board meeting transcript
           </CardTitle>
           <CardDescription>
-            Paste a board meeting transcript or load your recent Q2 board meeting to generate
-            structured minutes — decisions, action items, attendance, and discussion highlights.
+            Paste a board meeting transcript or load your recent Q2 board meeting. The agent
+            produces structured minutes with decisions, action items (owners and deadlines),
+            attendance, and discussion highlights.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

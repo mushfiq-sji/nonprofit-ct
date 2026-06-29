@@ -126,6 +126,44 @@ export const CLIENT_AGENT_FALLBACKS = {
       "Prioritize calls to Patricia Osei and William Davis before Friday's development standup.",
   } satisfies DonorChurnRiskResult,
 
+  "donor-engagement": {
+    summary:
+      "5 donors scanned — 2 high-risk major donors represent $13,900 in revenue at risk. Personal outreach recommended within 7 days.",
+    at_risk_donors: [
+      {
+        id: "d-003",
+        name: "Patricia Osei",
+        risk_score: 88,
+        risk_level: "high",
+        days_since_last_gift: 290,
+        last_gift_amount: 1000,
+        total_giving: 5400,
+        segment: "Major Donor",
+        signals: ["290 days since last gift", "Major donor stewardship gap"],
+        recommended_outreach: "ED personal call — reference Community Health Initiative impact",
+      },
+      {
+        id: "d-006",
+        name: "William Davis",
+        risk_score: 92,
+        risk_level: "high",
+        days_since_last_gift: 350,
+        last_gift_amount: 2000,
+        total_giving: 8500,
+        segment: "Major Donor",
+        signals: ["350 days lapsed", "Highest lifetime value at risk"],
+        recommended_outreach: "Schedule in-person lunch — share Spring Gala outcomes",
+      },
+    ],
+    total_scanned: 5,
+    high_risk_count: 2,
+    medium_risk_count: 2,
+    revenue_at_risk: 13900,
+    time_saved_minutes: 25,
+    recommended_action:
+      "Prioritize calls to Patricia Osei and William Davis before Friday's development standup.",
+  } satisfies DonorChurnRiskResult,
+
   "strategic-insights": {
     summary:
       "Kresge Q1 report is the most urgent grant deliverable while two major donors show elevated lapse risk. Cross-link grant narrative work with major-donor outreach this week.",

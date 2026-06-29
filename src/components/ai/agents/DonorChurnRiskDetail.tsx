@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  AlertCircle,
   ArrowRight,
   Clock,
+  Download,
   Heart,
   Loader2,
+  Mail,
   Sparkles,
   TrendingDown,
 } from "lucide-react";
@@ -25,6 +26,7 @@ import { useDonorChurnRisk, type DonorChurnRiskRunResult } from "@/hooks/useDono
 import { useLiveAgentDetailBootstrap } from "@/hooks/useLiveAgentDetailBootstrap";
 import type { DonorChurnRiskResult } from "@/types/donor-churn-risk";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 function riskBadgeClass(level: string): string {
   if (level === "high") return "bg-red-100 text-red-800 dark:bg-red-950/30";
@@ -128,12 +130,35 @@ function ChurnOutput({
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Heart className="h-5 w-5 text-rose-500" />
-            At-risk donors
-          </CardTitle>
-          <CardDescription>Sorted by churn risk score — highest first</CardDescription>
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Heart className="h-5 w-5 text-rose-500" />
+              At-risk & lapsed donors
+            </CardTitle>
+            <CardDescription>Segmented by tier — sorted by engagement risk, highest first</CardDescription>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 gap-1.5"
+            onClick={() => {
+              const csv = [
+                "Name,Segment,Risk,Days Lapsed,Lifetime Giving,Recommended Outreach",
+                ...data.at_risk_donors.map(
+                  (d) =>
+                    `"${d.name}","${d.segment}","${d.risk_level}",${d.days_since_last_gift},${d.total_giving},"${d.recommended_outreach.replace(/"/g, '""')}"`
+                ),
+              ].join("\n");
+              navigator.clipboard.writeText(csv);
+              toast.success("Donor list exported", {
+                description: `${data.at_risk_donors.length} at-risk donors copied as CSV`,
+              });
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export list
+          </Button>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -144,6 +169,7 @@ function ChurnOutput({
                 <TableHead>Days lapsed</TableHead>
                 <TableHead>Lifetime</TableHead>
                 <TableHead>Outreach</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,6 +188,21 @@ function ChurnOutput({
                   <TableCell className="text-sm">${donor.total_giving.toLocaleString()}</TableCell>
                   <TableCell className="text-xs text-muted-foreground max-w-xs">
                     {donor.recommended_outreach}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs gap-1"
+                      onClick={() =>
+                        toast.success(`Draft email ready for ${donor.name}`, {
+                          description: donor.recommended_outreach,
+                        })
+                      }
+                    >
+                      <Mail className="h-3 w-3" />
+                      Draft email
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -214,11 +255,11 @@ export default function DonorChurnRiskDetail() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-rose-500" />
-            Churn Risk Scan
+            Donor Engagement Scan
           </CardTitle>
           <CardDescription>
-            Analyzes your donation history to flag at-risk relationships, estimate revenue
-            exposure, and recommend personalized outreach for major and mid-level donors.
+            Analyzes giving history, segments donors by tier, flags lapsed donors (12+ months
+            without a gift), and recommends personalized re-engagement actions.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -231,7 +272,7 @@ export default function DonorChurnRiskDetail() {
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                Run Churn Scan
+                Run Engagement Scan
               </>
             )}
           </Button>

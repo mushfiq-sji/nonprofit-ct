@@ -31,6 +31,9 @@ import { useStrategicInsights } from "@/hooks/useStrategicInsights";
 import { BRIGHTSIDE_BOARD_MEETING_SAMPLE } from "@/shared/data/brightsideBoardMeetingSample";
 
 const LIVE_OPERATIONAL_SLUGS = new Set([
+  "donor-engagement",
+  "grant-writer-agent",
+  "board-meeting-summarizer",
   "meeting-intelligence",
   "action-item-tracker",
   "executive-daily-briefer",
@@ -43,6 +46,10 @@ type AgentFilter = "all" | "live" | "findings";
 /* ── activity banner messages ── */
 
 const BANNER_MESSAGES = [
+  "Donor Engagement Agent: 5 donors lapsed 12+ months — run an engagement scan to prioritize outreach",
+  "Grant Writer Agent: Kresge Q2 Statement of Need ready to draft from your program data",
+  "Board Meeting Summarizer: paste a board transcript and get structured minutes in under 30 seconds",
+  "Volunteer Coordinator: 3 upcoming shifts — skill-matched volunteers available for Spring Gala setup",
   "Meeting Summarizer: paste a board transcript and get structured minutes in under 30 seconds",
   "CRM Data Integrity Agent found 3 potential duplicate records — Sarah Chen and Michael Torres flagged",
   "Grant Compliance Agent: Kresge Foundation report due in 8 days — utilization at 61%",
@@ -51,6 +58,10 @@ const BANNER_MESSAGES = [
 
 /* ── Core agent last-run times (dynamic) ── */
 const CORE_LAST_RUN: Record<string, string> = {
+  "donor-engagement": hoursAgo(0, 30),
+  "grant-writer-agent": hoursAgo(1, 5),
+  "board-meeting-summarizer": hoursAgo(0, 50),
+  "volunteer-coordinator": hoursAgo(2, 10),
   "meeting-intelligence": hoursAgo(0, 45),
   "action-item-tracker": hoursAgo(1, 12),
   "executive-daily-briefer": hoursAgo(2, 5),
@@ -226,7 +237,7 @@ function AgentBrowseCard({
       navigate(path, { state: agentRunResult ? { agentRunResult } : { autoRun: true } });
     };
 
-    if (agent.slug === "meeting-intelligence") {
+    if (agent.slug === "board-meeting-summarizer" || agent.slug === "meeting-intelligence") {
       if (running || summarizer.isPending) return;
       setRunning(true);
       try {
@@ -265,7 +276,7 @@ function AgentBrowseCard({
       }
       return;
     }
-    if (agent.slug === "donor-churn-risk") {
+    if (agent.slug === "donor-engagement" || agent.slug === "donor-churn-risk") {
       if (running || churnRisk.isPending) return;
       setRunning(true);
       try {
@@ -276,6 +287,14 @@ function AgentBrowseCard({
       } finally {
         setRunning(false);
       }
+      return;
+    }
+    if (agent.slug === "grant-writer-agent") {
+      goToDetail(`/agents/${agent.slug}`);
+      return;
+    }
+    if (agent.slug === "volunteer-coordinator") {
+      goToDetail(`/agents/${agent.slug}`);
       return;
     }
     if (agent.slug === "strategic-insights") {
@@ -390,17 +409,21 @@ function AgentBrowseCard({
           >
             <Eye className="h-3 w-3 shrink-0" />
             <span className="truncate">
-              {agent.slug === "meeting-intelligence"
+              {agent.slug === "board-meeting-summarizer" || agent.slug === "meeting-intelligence"
                 ? "Summarize"
                 : agent.slug === "action-item-tracker"
                   ? "Track"
                   : agent.slug === "executive-daily-briefer"
                     ? "Brief"
-                    : agent.slug === "donor-churn-risk"
+                    : agent.slug === "donor-engagement" || agent.slug === "donor-churn-risk"
                       ? "Scan"
-                      : agent.slug === "strategic-insights"
-                        ? "Insights"
-                        : "View Findings"}
+                      : agent.slug === "grant-writer-agent"
+                        ? "Draft"
+                        : agent.slug === "volunteer-coordinator"
+                          ? "Coordinate"
+                          : agent.slug === "strategic-insights"
+                            ? "Insights"
+                            : "View Findings"}
             </span>
           </Button>
           <Button

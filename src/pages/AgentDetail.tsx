@@ -25,6 +25,8 @@ import ActionItemTrackerDetail from "@/components/ai/agents/ActionItemTrackerDet
 import ExecutiveDailyBrieferDetail from "@/components/ai/agents/ExecutiveDailyBrieferDetail";
 import DonorChurnRiskDetail from "@/components/ai/agents/DonorChurnRiskDetail";
 import StrategicInsightsDetail from "@/components/ai/agents/StrategicInsightsDetail";
+import GrantWriterAgentDetail from "@/components/ai/agents/GrantWriterAgentDetail";
+import VolunteerCoordinatorDetail from "@/components/ai/agents/VolunteerCoordinatorDetail";
 
 function getIcon(name: string) {
   return (icons as Record<string, React.ComponentType<{ className?: string }>>)[name] ?? Bot;
@@ -60,12 +62,10 @@ export default function AgentDetail() {
 
   return (
     <div className="space-y-6">
-      {/* Back link */}
       <Button variant="ghost" size="sm" onClick={() => navigate("/agents")} className="gap-1.5">
         <ArrowLeft className="h-4 w-4" /> All Agents
       </Button>
 
-      {/* Hero */}
       <Card className="overflow-hidden rounded-2xl border border-border shadow-sm">
         <div
           className="h-[132px] sm:h-[148px] relative"
@@ -84,7 +84,6 @@ export default function AgentDetail() {
         </div>
 
         <div className="bg-card px-6 pb-6">
-          {/* Icon overlapping the banner, left aligned */}
           <div
             className="relative z-20 -mt-6 w-[72px] h-[72px] rounded-2xl flex items-center justify-center ring-4 ring-background shadow-lg"
             style={{
@@ -94,7 +93,6 @@ export default function AgentDetail() {
             <Icon className="h-8 w-8 text-white" />
           </div>
 
-          {/* Title block below the icon, CTA on the right */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-2 min-w-0">
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{agent.name}</h1>
@@ -121,7 +119,6 @@ export default function AgentDetail() {
             )}
           </div>
 
-          {/* Mobile CTA */}
           {agent.whereToFind && (
             <Button
               className="w-full mt-4 sm:hidden gap-2 shadow-sm"
@@ -137,8 +134,15 @@ export default function AgentDetail() {
         </div>
       </Card>
 
-      {/* Custom detail pages for specific agents */}
-      {slug === "crm-data-integrity" ? (
+      {slug === "donor-engagement" ? (
+        <DonorChurnRiskDetail />
+      ) : slug === "grant-writer-agent" ? (
+        <GrantWriterAgentDetail />
+      ) : slug === "board-meeting-summarizer" ? (
+        <MeetingIntelligenceDetail />
+      ) : slug === "volunteer-coordinator" ? (
+        <VolunteerCoordinatorDetail />
+      ) : slug === "crm-data-integrity" ? (
         <CRMDataIntegrityDetail />
       ) : slug === "reconciliation-fund-accounting" ? (
         <ReconciliationDetail />
@@ -163,12 +167,9 @@ export default function AgentDetail() {
       ) : slug === "donor-lapse-detection" ? (
         <DonorLapseDetectionDetail />
       ) : (
-        /* Content grid — default layout */
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main column */}
           <div className="lg:col-span-2 space-y-4">
             <Accordion type="multiple" defaultValue={["capabilities", "how-to-use", "where"]}>
-              {/* Capabilities */}
               {agent.capabilities && agent.capabilities.length > 0 && (
                 <AccordionItem value="capabilities" className="border rounded-xl px-5 bg-card shadow-sm">
                   <AccordionTrigger className="hover:no-underline">
@@ -197,7 +198,6 @@ export default function AgentDetail() {
                 </AccordionItem>
               )}
 
-              {/* How to use */}
               {agent.howToUse && agent.howToUse.length > 0 && (
                 <AccordionItem value="how-to-use" className="border rounded-xl px-5 bg-card shadow-sm mt-4">
                   <AccordionTrigger className="hover:no-underline">
@@ -221,7 +221,6 @@ export default function AgentDetail() {
                 </AccordionItem>
               )}
 
-              {/* Where to find */}
               {agent.whereToFind && (
                 <AccordionItem value="where" className="border rounded-xl px-5 bg-card shadow-sm mt-4">
                   <AccordionTrigger className="hover:no-underline">
@@ -247,7 +246,6 @@ export default function AgentDetail() {
               )}
             </Accordion>
 
-            {/* Recent Activity Log */}
             <Card className="rounded-xl border-border shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -271,9 +269,7 @@ export default function AgentDetail() {
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-4">
-            {/* Info card */}
             <Card className="rounded-2xl">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Agent Info</CardTitle>
@@ -306,7 +302,6 @@ export default function AgentDetail() {
               </CardContent>
             </Card>
 
-            {/* Related agents */}
             {siblings.length > 0 && (
               <Card className="rounded-2xl">
                 <CardHeader className="pb-2">

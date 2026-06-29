@@ -191,7 +191,7 @@ export default function ExecutiveDailyBrieferDetail() {
   const handleGenerate = async () => {
     setResult(null);
     try {
-      const data = await briefer.mutateAsync();
+      const data = await briefer.mutateAsync(undefined);
       applyRunResult(data);
     } catch {
       // Hook resolves with client fallback.
@@ -199,7 +199,7 @@ export default function ExecutiveDailyBrieferDetail() {
   };
 
   useLiveAgentDetailBootstrap({
-    run: () => briefer.mutateAsync(),
+    run: () => briefer.mutateAsync(undefined),
     apply: applyRunResult,
   });
 

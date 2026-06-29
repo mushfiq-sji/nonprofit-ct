@@ -243,7 +243,7 @@ function AgentBrowseCard({
       if (running || actionTracker.isPending) return;
       setRunning(true);
       try {
-        const data = await actionTracker.mutateAsync();
+        const data = await actionTracker.mutateAsync(undefined);
         goToDetail(`/agents/${agent.slug}`, data);
       } catch {
         goToDetail(`/agents/${agent.slug}`);
@@ -256,7 +256,7 @@ function AgentBrowseCard({
       if (running || dailyBriefer.isPending) return;
       setRunning(true);
       try {
-        const data = await dailyBriefer.mutateAsync();
+        const data = await dailyBriefer.mutateAsync(undefined);
         goToDetail(`/agents/${agent.slug}`, data);
       } catch {
         goToDetail(`/agents/${agent.slug}`);
@@ -269,7 +269,7 @@ function AgentBrowseCard({
       if (running || churnRisk.isPending) return;
       setRunning(true);
       try {
-        const data = await churnRisk.mutateAsync();
+        const data = await churnRisk.mutateAsync(undefined);
         goToDetail(`/agents/${agent.slug}`, data);
       } catch {
         goToDetail(`/agents/${agent.slug}`);

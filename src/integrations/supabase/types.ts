@@ -2659,40 +2659,133 @@ export type Database = {
       nonprofit_events: {
         Row: {
           capacity: number
+          cover_gallery_image_id: string | null
           created_at: string | null
           created_by: string | null
           date: string
           description: string | null
+          event_end_time: string | null
+          event_time: string | null
+          expectations_heading: string | null
           fund_raised: number | null
+          hero_cta_label: string
+          highlights: Json
           id: string
+          is_public: boolean
           location: string | null
+          map_embed_url: string | null
+          payment_instructions: string | null
+          registration_url: string | null
+          secondary_gallery_image_id: string | null
+          slug: string | null
           status: string
+          tagline: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
           capacity?: number
+          cover_gallery_image_id?: string | null
           created_at?: string | null
           created_by?: string | null
           date: string
           description?: string | null
+          event_end_time?: string | null
+          event_time?: string | null
+          expectations_heading?: string | null
           fund_raised?: number | null
+          hero_cta_label?: string
+          highlights?: Json
           id?: string
+          is_public?: boolean
           location?: string | null
+          map_embed_url?: string | null
+          payment_instructions?: string | null
+          registration_url?: string | null
+          secondary_gallery_image_id?: string | null
+          slug?: string | null
           status?: string
+          tagline?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
           capacity?: number
+          cover_gallery_image_id?: string | null
           created_at?: string | null
           created_by?: string | null
           date?: string
           description?: string | null
+          event_end_time?: string | null
+          event_time?: string | null
+          expectations_heading?: string | null
           fund_raised?: number | null
+          hero_cta_label?: string
+          highlights?: Json
           id?: string
+          is_public?: boolean
           location?: string | null
+          map_embed_url?: string | null
+          payment_instructions?: string | null
+          registration_url?: string | null
+          secondary_gallery_image_id?: string | null
+          slug?: string | null
           status?: string
+          tagline?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nonprofit_events_cover_gallery_image_id_fkey"
+            columns: ["cover_gallery_image_id"]
+            isOneToOne: false
+            referencedRelation: "nonprofit_gallery_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nonprofit_events_secondary_gallery_image_id_fkey"
+            columns: ["secondary_gallery_image_id"]
+            isOneToOne: false
+            referencedRelation: "nonprofit_gallery_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nonprofit_gallery_images: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string
+          is_published: boolean
+          storage_path: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url: string
+          is_published?: boolean
+          storage_path: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_published?: boolean
+          storage_path?: string
           title?: string
           updated_at?: string | null
         }

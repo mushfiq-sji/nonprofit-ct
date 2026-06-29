@@ -196,7 +196,7 @@ export default function DonorChurnRiskDetail() {
   const handleScan = async () => {
     setResult(null);
     try {
-      const data = await churn.mutateAsync();
+      const data = await churn.mutateAsync(undefined);
       applyRunResult(data);
     } catch {
       // Hook resolves with client fallback.
@@ -204,7 +204,7 @@ export default function DonorChurnRiskDetail() {
   };
 
   useLiveAgentDetailBootstrap({
-    run: () => churn.mutateAsync(),
+    run: () => churn.mutateAsync(undefined),
     apply: applyRunResult,
   });
 

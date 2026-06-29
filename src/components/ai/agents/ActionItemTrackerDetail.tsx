@@ -230,7 +230,7 @@ export default function ActionItemTrackerDetail() {
   const handleScan = async () => {
     setResult(null);
     try {
-      const data = await tracker.mutateAsync();
+      const data = await tracker.mutateAsync(undefined);
       applyRunResult(data);
     } catch {
       // Hook resolves with client fallback.
@@ -238,7 +238,7 @@ export default function ActionItemTrackerDetail() {
   };
 
   useLiveAgentDetailBootstrap({
-    run: () => tracker.mutateAsync(),
+    run: () => tracker.mutateAsync(undefined),
     apply: applyRunResult,
   });
 

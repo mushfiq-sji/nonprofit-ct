@@ -2539,6 +2539,101 @@ export type Database = {
           },
         ]
       }
+      nonprofit_event_landing_page_activity: {
+        Row: {
+          action: string
+          created_at: string
+          created_by: string | null
+          event_id: string
+          event_title: string
+          id: string
+          landing_page_id: string | null
+          page_layout: string | null
+          summary: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          event_title: string
+          id?: string
+          landing_page_id?: string | null
+          page_layout?: string | null
+          summary: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          event_title?: string
+          id?: string
+          landing_page_id?: string | null
+          page_layout?: string | null
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nonprofit_event_landing_page_activity_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "nonprofit_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nonprofit_event_landing_page_activity_landing_page_id_fkey"
+            columns: ["landing_page_id"]
+            isOneToOne: false
+            referencedRelation: "nonprofit_event_landing_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nonprofit_event_landing_pages: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          event_id: string
+          event_title: string
+          id: string
+          is_published: boolean
+          page_layout: string
+          slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          event_title: string
+          id?: string
+          is_published?: boolean
+          page_layout?: string
+          slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          event_title?: string
+          id?: string
+          is_published?: boolean
+          page_layout?: string
+          slug?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nonprofit_event_landing_pages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "nonprofit_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nonprofit_event_registrants: {
         Row: {
           checked_in: boolean | null
@@ -2658,6 +2753,7 @@ export type Database = {
       }
       nonprofit_events: {
         Row: {
+          banner_image_url: string | null
           capacity: number
           cover_gallery_image_id: string | null
           created_at: string | null
@@ -2674,6 +2770,7 @@ export type Database = {
           is_public: boolean
           location: string | null
           map_embed_url: string | null
+          page_layout: string
           payment_instructions: string | null
           registration_url: string | null
           secondary_gallery_image_id: string | null
@@ -2684,6 +2781,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          banner_image_url?: string | null
           capacity?: number
           cover_gallery_image_id?: string | null
           created_at?: string | null
@@ -2700,6 +2798,7 @@ export type Database = {
           is_public?: boolean
           location?: string | null
           map_embed_url?: string | null
+          page_layout?: string
           payment_instructions?: string | null
           registration_url?: string | null
           secondary_gallery_image_id?: string | null
@@ -2710,6 +2809,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          banner_image_url?: string | null
           capacity?: number
           cover_gallery_image_id?: string | null
           created_at?: string | null
@@ -2726,6 +2826,7 @@ export type Database = {
           is_public?: boolean
           location?: string | null
           map_embed_url?: string | null
+          page_layout?: string
           payment_instructions?: string | null
           registration_url?: string | null
           secondary_gallery_image_id?: string | null

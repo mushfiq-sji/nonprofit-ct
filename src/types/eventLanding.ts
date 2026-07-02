@@ -19,6 +19,7 @@ export interface EventLandingView {
   location: string | null;
   cover_image_url: string | null;
   secondary_image_url: string | null;
+  page_layout: "classic" | "split" | "minimal";
   status: "upcoming" | "active" | "past";
   registration_url: string | null;
   tagline: string | null;

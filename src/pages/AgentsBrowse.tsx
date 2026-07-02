@@ -71,6 +71,7 @@ const CORE_LAST_RUN: Record<string, string> = {
   "reconciliation-fund-accounting": hoursAgo(3, 5),
   "grant-compliance": hoursAgo(2, 4),
   "event-intelligence": hoursAgo(5, 7),
+  "event-page-designer": hoursAgo(1, 15),
   "board-reporting": hoursAgo(1, 2),
   "grant-budget-watcher": hoursAgo(2, 4),
   "integration-health-monitor": hoursAgo(1, 3),

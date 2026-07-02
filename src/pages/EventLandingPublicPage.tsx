@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { EventLandingPage } from "@/components/events/EventLandingPage";
+import { EventPageDesignerPresence } from "@/components/events/EventPageDesignerPresence";
 import { useEventLandingBySlug } from "@/hooks/useNonprofitEvents";
 
 export default function EventLandingPublicPage() {
@@ -17,8 +18,11 @@ export default function EventLandingPublicPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4 p-6">
+        <EventPageDesignerPresence
+          isBusy
+          status="Loading your event page…"
+        />
       </div>
     );
   }

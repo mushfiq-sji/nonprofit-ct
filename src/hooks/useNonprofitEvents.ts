@@ -4,9 +4,9 @@
  * NOTE: Uses "nonprofit_events" table, separate from "events" table (post-event intelligence).
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { queryKeys, invalidateKeys } from "@/lib/cache";
+import { queryKeys, invalidateKeys, cacheConfig } from "@/lib/cache";
 import { useToast } from "@/hooks/use-toast";
 import { logCrud } from "@/lib/activity-logger";
 import { galleryPathsFromRows, mapEventToLandingView } from "@/lib/eventLandingMapper";
@@ -33,6 +33,10 @@ export interface NonprofitEventFilters {
 export function useNonprofitEvents(filters?: NonprofitEventFilters) {
   return useQuery({
     queryKey: queryKeys.nonprofit.events.list(filters),
+    staleTime: cacheConfig.staleTime.medium,
+    gcTime: cacheConfig.gcTime.long,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
     queryFn: async (): Promise<NonprofitEvent[]> => {
       let q = supabase
         .from("nonprofit_events")

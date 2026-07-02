@@ -199,6 +199,11 @@ export const queryKeys = {
       speakers: (eventId: string) => ["nonprofit", "events", "speakers", eventId] as const,
       agenda: (eventId: string) => ["nonprofit", "events", "agenda", eventId] as const,
       ticketTypes: (eventId: string) => ["nonprofit", "events", "ticketTypes", eventId] as const,
+      bySlug: (slug: string) => ["nonprofit", "events", "bySlug", slug] as const,
+    },
+    gallery: {
+      all: ["nonprofit", "gallery"] as const,
+      list: (filters?: Record<string, unknown>) => ["nonprofit", "gallery", "list", filters] as const,
     },
     campaigns: {
       all: ["nonprofit", "campaigns"] as const,
@@ -354,6 +359,9 @@ export const invalidateKeys = {
   },
   nonprofitEvents: (queryClient: any) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.nonprofit.events.all });
+  },
+  nonprofitGallery: (queryClient: any) => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.nonprofit.gallery.all });
   },
   nonprofitCampaigns: (queryClient: any) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.nonprofit.campaigns.all });

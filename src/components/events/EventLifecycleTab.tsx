@@ -11,10 +11,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  CalendarPlus, Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2, Mic2, Clock, Ticket, ArrowRight,
+  CalendarPlus, Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2, Mic2, Clock, Ticket, ArrowRight, Pencil, Globe, Trash2, LayoutTemplate, MoreHorizontal,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,13 +31,41 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  useNonprofitEvents, useCreateNonprofitEvent, useEventRegistrants, useToggleCheckin,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  useNonprofitEvents, useCreateNonprofitEvent, useUpdateNonprofitEvent, useDeleteNonprofitEvent, useEventRegistrants, useToggleCheckin,
   useEventSpeakers, useEventAgendaItems, useEventTicketTypes,
   type NonprofitEvent, type ManagedEventStatus,
 } from "@/hooks/useNonprofitEvents";
+import { useGalleryImages } from "@/hooks/useGalleryImages";
+import { GalleryImagePicker, resolveEventCoverUrl } from "@/components/gallery/GalleryImagePicker";
+import { EventLandingPageSheet } from "@/components/events/EventLandingPageSheet";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCanEditContent } from "@/hooks/useCanEditContent";
+import { buildEventSlug } from "@/lib/eventSlug";
+import {
+  DEFAULT_EVENT_HIGHLIGHTS,
+  DEFAULT_EXPECTATIONS_HEADING,
+  DEFAULT_PAYMENT_INSTRUCTIONS,
+} from "@/lib/eventLandingDefaults";
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -48,25 +83,51 @@ function formatDate(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 }
 
+/** Convert stored event time to value for <input type="time"> */
+function timeToInputValue(time: string | null | undefined): string {
+  if (!time) return "";
+  const h24 = time.match(/^(\d{1,2}):(\d{2})$/);
+  if (h24) return `${h24[1].padStart(2, "0")}:${h24[2]}`;
+  const h12 = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (h12) {
+    let h = parseInt(h12[1], 10);
+    const m = h12[2];
+    if (h12[3].toUpperCase() === "PM" && h !== 12) h += 12;
+    if (h12[3].toUpperCase() === "AM" && h === 12) h = 0;
+    return `${String(h).padStart(2, "0")}:${m}`;
+  }
+  return time;
+}
+
 // ── Form schema ───────────────────────────────────────────────────
 
 const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   date: z.string().min(1, "Date is required"),
+  event_time: z.string().optional(),
   location: z.string().min(3, "Location is required"),
   capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
   description: z.string().optional(),
+  registration_url: z.union([z.literal(""), z.string().url("Enter a valid URL")]).optional(),
 });
 type EventForm = z.infer<typeof eventSchema>;
+
+const editEventSchema = eventSchema.extend({
+  status: z.enum(["Upcoming", "Active", "Past"]),
+  is_public: z.boolean(),
+});
+type EditEventForm = z.infer<typeof editEventSchema>;
 
 // ── Sub-component: Registrations Sheet ───────────────────────────
 
 function RegistrationsSheet({
   event,
   onClose,
+  canEdit,
 }: {
   event: NonprofitEvent | null;
   onClose: () => void;
+  canEdit: boolean;
 }) {
   const { data: registrants = [], isLoading } = useEventRegistrants(event?.id ?? null);
   const toggleCheckin = useToggleCheckin();
@@ -124,7 +185,7 @@ function RegistrationsSheet({
                         <TableCell>
                           {reg.checked_in ? (
                             <CheckCircle2 className="h-4 w-4 text-green-600" />
-                          ) : (
+                          ) : canEdit ? (
                             <Button
                               size="sm"
                               variant="outline"
@@ -140,6 +201,8 @@ function RegistrationsSheet({
                             >
                               Check In
                             </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -291,13 +354,23 @@ export function EventLifecycleTab({
   onViewPostEvent?: () => void;
 }) {
   const { user } = useAuth();
+  const canEdit = useCanEditContent();
   const [statusFilter, setStatusFilter] = useState<ManagedEventStatus | "All">("All");
   const [detailEvent, setDetailEvent] = useState<NonprofitEvent | null>(null);
   const [registrationsEvent, setRegistrationsEvent] = useState<NonprofitEvent | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<NonprofitEvent | null>(null);
+  const [createCoverImageId, setCreateCoverImageId] = useState<string | null>(null);
+  const [editCoverImageId, setEditCoverImageId] = useState<string | null>(null);
+  const [deleteEvent, setDeleteEvent] = useState<NonprofitEvent | null>(null);
+  const [landingPageEvent, setLandingPageEvent] = useState<NonprofitEvent | null>(null);
 
   const { data: allEvents = [], isLoading } = useNonprofitEvents();
+  const { data: galleryImages = [] } = useGalleryImages();
   const createEvent = useCreateNonprofitEvent();
+  const updateEvent = useUpdateNonprofitEvent();
+  const deleteEventMutation = useDeleteNonprofitEvent();
 
   const filteredEvents = statusFilter === "All"
     ? allEvents
@@ -305,21 +378,101 @@ export function EventLifecycleTab({
 
   const form = useForm<EventForm>({
     resolver: zodResolver(eventSchema),
-    defaultValues: { title: "", date: "", location: "", capacity: 100, description: "" },
+    defaultValues: { title: "", date: "", event_time: "", location: "", capacity: 100, description: "", registration_url: "" },
   });
 
+  const editForm = useForm<EditEventForm>({
+    resolver: zodResolver(editEventSchema),
+    defaultValues: {
+      title: "",
+      date: "",
+      event_time: "",
+      location: "",
+      capacity: 100,
+      description: "",
+      registration_url: "",
+      status: "Upcoming",
+      is_public: false,
+    },
+  });
+
+  const openEditDialog = (event: NonprofitEvent) => {
+    setEditingEvent(event);
+    setEditCoverImageId(event.cover_gallery_image_id ?? null);
+    editForm.reset({
+      title: event.title,
+      date: event.date,
+      event_time: timeToInputValue(event.event_time),
+      location: event.location ?? "",
+      capacity: event.capacity,
+      description: event.description ?? "",
+      registration_url: event.registration_url ?? "",
+      status: event.status as ManagedEventStatus,
+      is_public: event.is_public ?? false,
+    });
+    setEditOpen(true);
+  };
+
   const onCreateSubmit = async (data: EventForm) => {
-    await createEvent.mutateAsync({
+    const created = await createEvent.mutateAsync({
       title: data.title,
       date: data.date,
+      event_time: data.event_time?.trim() || null,
       location: data.location,
       capacity: data.capacity,
       description: data.description ?? null,
+      registration_url: data.registration_url?.trim() || null,
       status: "Upcoming",
+      cover_gallery_image_id: createCoverImageId,
       created_by: user?.id ?? null,
+      slug: buildEventSlug(data.title),
+      highlights: DEFAULT_EVENT_HIGHLIGHTS,
+      payment_instructions: DEFAULT_PAYMENT_INSTRUCTIONS,
+      expectations_heading: DEFAULT_EXPECTATIONS_HEADING,
+      hero_cta_label: "Join Us",
+    });
+    await updateEvent.mutateAsync({
+      id: created.id,
+      data: { slug: buildEventSlug(data.title, created.id) },
     });
     setCreateOpen(false);
+    setCreateCoverImageId(null);
     form.reset();
+  };
+
+  const onEditSubmit = async (data: EditEventForm) => {
+    if (!editingEvent) return;
+    await updateEvent.mutateAsync({
+      id: editingEvent.id,
+      data: {
+        title: data.title,
+        date: data.date,
+        event_time: data.event_time?.trim() || null,
+        location: data.location,
+        capacity: data.capacity,
+        description: data.description ?? null,
+        registration_url: data.registration_url?.trim() || null,
+        status: data.status,
+        cover_gallery_image_id: editCoverImageId,
+        is_public: data.is_public,
+      },
+    });
+    setEditOpen(false);
+    setEditingEvent(null);
+    setEditCoverImageId(null);
+    editForm.reset();
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!deleteEvent) return;
+    await deleteEventMutation.mutateAsync({ id: deleteEvent.id, title: deleteEvent.title });
+    if (detailEvent?.id === deleteEvent.id) setDetailEvent(null);
+    if (registrationsEvent?.id === deleteEvent.id) setRegistrationsEvent(null);
+    if (editingEvent?.id === deleteEvent.id) {
+      setEditOpen(false);
+      setEditingEvent(null);
+    }
+    setDeleteEvent(null);
   };
 
   const statusFilters: Array<ManagedEventStatus | "All"> = ["All", "Upcoming", "Active", "Past"];
@@ -345,9 +498,11 @@ export function EventLifecycleTab({
             </Button>
           ))}
         </div>
+        {canEdit && (
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4 mr-2" /> New Event
         </Button>
+        )}
       </div>
 
       {/* Event list */}
@@ -362,16 +517,38 @@ export function EventLifecycleTab({
               {allEvents.length === 0 ? "No events yet — create the first one!" : "No events in this category"}
             </p>
           ) : (
-            filteredEvents.map((event) => (
+            filteredEvents.map((event) => {
+              const coverUrl = resolveEventCoverUrl(
+                event.cover_gallery_image_id,
+                galleryImages,
+              );
+
+              return (
               <Card key={event.id}>
                 <CardContent className="p-5">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div className="flex flex-1 min-w-0 gap-4">
+                      {coverUrl && (
+                        <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                          <img src={coverUrl} alt="" className="h-full w-full object-cover" />
+                        </div>
+                      )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold">{event.title}</h3>
                         <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${statusColor(event.status)}`}>
                           {event.status}
                         </span>
+                        {event.is_public && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+                            <Globe className="h-3 w-3" /> Published
+                          </span>
+                        )}
+                        {event.slug && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                            <LayoutTemplate className="h-3 w-3" /> Landing Page
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-3 mt-1.5 text-sm text-muted-foreground flex-wrap">
                         <span className="flex items-center gap-1">
@@ -408,27 +585,60 @@ export function EventLifecycleTab({
                         </Button>
                       )}
                     </div>
+                    </div>
 
-                    <div className="flex gap-2 sm:flex-col shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setDetailEvent(event)}
-                      >
-                        <Eye className="h-3.5 w-3.5 mr-1.5" /> Details
-                      </Button>
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setRegistrationsEvent(event)}
                       >
-                        <ClipboardList className="h-3.5 w-3.5 mr-1.5" /> Registrations
+                        <ClipboardList className="h-3.5 w-3.5 sm:mr-1.5" />
+                        <span className="hidden sm:inline">Registrations</span>
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setLandingPageEvent(event)}
+                      >
+                        <LayoutTemplate className="h-3.5 w-3.5 sm:mr-1.5" />
+                        <span className="hidden sm:inline">Landing</span>
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="outline" className="px-2.5">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">More actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setDetailEvent(event)}>
+                            <Eye className="h-4 w-4 mr-2" /> Details
+                          </DropdownMenuItem>
+                          {canEdit && (
+                            <DropdownMenuItem onClick={() => openEditDialog(event)}>
+                              <Pencil className="h-4 w-4 mr-2" /> Edit event
+                            </DropdownMenuItem>
+                          )}
+                          {canEdit && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDeleteEvent(event)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" /> Delete
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))
+              );
+            })
           )}
         </div>
       )}
@@ -440,10 +650,25 @@ export function EventLifecycleTab({
       <RegistrationsSheet
         event={registrationsEvent}
         onClose={() => setRegistrationsEvent(null)}
+        canEdit={canEdit}
+      />
+
+      {/* Landing Page Sheet */}
+      <EventLandingPageSheet
+        event={landingPageEvent}
+        onClose={() => setLandingPageEvent(null)}
+        canEdit={canEdit}
       />
 
       {/* Create Event Dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      {canEdit && (
+      <Dialog open={createOpen} onOpenChange={(open) => {
+        setCreateOpen(open);
+        if (!open) {
+          setCreateCoverImageId(null);
+          form.reset();
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Create New Event</DialogTitle>
@@ -464,6 +689,11 @@ export function EventLifecycleTab({
               )}
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="ev-time">Time (optional)</Label>
+              <Input id="ev-time" type="time" {...form.register("event_time")} />
+              <p className="text-xs text-muted-foreground">Shown on bspcommunity.org/programs when published.</p>
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="ev-location">Location</Label>
               <Input id="ev-location" placeholder="Venue name or address" {...form.register("location")} />
               {form.formState.errors.location && (
@@ -478,6 +708,23 @@ export function EventLifecycleTab({
               <Label htmlFor="ev-desc">Description (optional)</Label>
               <Textarea id="ev-desc" placeholder="Describe your event…" rows={3} {...form.register("description")} />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ev-registration-url">Registration link (optional)</Label>
+              <Input
+                id="ev-registration-url"
+                type="url"
+                placeholder="https://example.com/register"
+                {...form.register("registration_url")}
+              />
+              {form.formState.errors.registration_url && (
+                <p className="text-xs text-destructive">{form.formState.errors.registration_url.message}</p>
+              )}
+            </div>
+            <GalleryImagePicker
+              value={createCoverImageId}
+              onChange={setCreateCoverImageId}
+              label="Cover image (from gallery)"
+            />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
               <Button type="submit" disabled={createEvent.isPending}>
@@ -491,6 +738,143 @@ export function EventLifecycleTab({
           </form>
         </DialogContent>
       </Dialog>
+      )}
+
+      {canEdit && (
+      <Dialog open={editOpen} onOpenChange={(open) => {
+        setEditOpen(open);
+        if (!open) {
+          setEditingEvent(null);
+          setEditCoverImageId(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Event</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-title">Event Title</Label>
+              <Input id="edit-ev-title" {...editForm.register("title")} />
+              {editForm.formState.errors.title && (
+                <p className="text-xs text-destructive">{editForm.formState.errors.title.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-date">Date</Label>
+              <Input id="edit-ev-date" type="date" {...editForm.register("date")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-time">Time (optional)</Label>
+              <Input id="edit-ev-time" type="time" {...editForm.register("event_time")} />
+              <p className="text-xs text-muted-foreground">Shown on bspcommunity.org/programs when published.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-location">Location</Label>
+              <Input id="edit-ev-location" {...editForm.register("location")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-capacity">Capacity</Label>
+              <Input id="edit-ev-capacity" type="number" min={1} {...editForm.register("capacity")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-status">Status</Label>
+              <Select
+                value={editForm.watch("status")}
+                onValueChange={(value) => editForm.setValue("status", value as ManagedEventStatus)}
+              >
+                <SelectTrigger id="edit-ev-status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Upcoming">Upcoming</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Past">Past</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-desc">Description (optional)</Label>
+              <Textarea id="edit-ev-desc" rows={3} {...editForm.register("description")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-registration-url">Registration link (optional)</Label>
+              <Input
+                id="edit-ev-registration-url"
+                type="url"
+                placeholder="https://example.com/register"
+                {...editForm.register("registration_url")}
+              />
+              {editForm.formState.errors.registration_url && (
+                <p className="text-xs text-destructive">{editForm.formState.errors.registration_url.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Powers the Register button on bspcommunity.org/programs.
+              </p>
+            </div>
+            <GalleryImagePicker
+              value={editCoverImageId}
+              onChange={setEditCoverImageId}
+              label="Cover image (from gallery)"
+            />
+            <div className="flex items-center justify-between rounded-lg border px-3 py-3">
+              <div className="space-y-0.5">
+                <Label htmlFor="edit-ev-public">Show on BSP community site</Label>
+                <p className="text-xs text-muted-foreground">
+                  When enabled, this event appears on bspcommunity.org/programs.
+                </p>
+              </div>
+              <Switch
+                id="edit-ev-public"
+                checked={editForm.watch("is_public")}
+                onCheckedChange={(checked) => editForm.setValue("is_public", checked)}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={updateEvent.isPending}>
+                {updateEvent.isPending ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving…</>
+                ) : (
+                  "Save changes"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      )}
+
+      {canEdit && (
+      <AlertDialog open={!!deleteEvent} onOpenChange={(open) => !open && setDeleteEvent(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete event?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <strong>{deleteEvent?.title}</strong> and all related
+              registrations, speakers, agenda items, and ticket types. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteEventMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteEventMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                void handleDeleteEvent();
+              }}
+            >
+              {deleteEventMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Deleting…</>
+              ) : (
+                "Delete event"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      )}
     </div>
   );
 }

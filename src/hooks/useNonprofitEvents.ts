@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { queryKeys, invalidateKeys } from "@/lib/cache";
 import { useToast } from "@/hooks/use-toast";
 import { logCrud } from "@/lib/activity-logger";
+import { galleryPathsFromRows, mapEventToLandingView } from "@/lib/eventLandingMapper";
 import type { Database } from "@/integrations/supabase/types";
 
 export type NonprofitEvent = Database["public"]["Tables"]["nonprofit_events"]["Row"];
@@ -132,6 +133,47 @@ export function useEventTicketTypes(eventId: string | null) {
   });
 }
 
+export function useEventLandingBySlug(slug: string) {
+  return useQuery({
+    queryKey: queryKeys.nonprofit.events.bySlug(slug),
+    queryFn: async () => {
+      const { data: event, error } = await supabase
+        .from("nonprofit_events")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (error) throw error;
+      if (!event) return null;
+
+      const row = event as NonprofitEvent;
+
+      const { data: ticketTypes, error: ticketError } = await supabase
+        .from("nonprofit_event_ticket_types")
+        .select("*")
+        .eq("event_id", row.id)
+        .order("price", { ascending: true });
+      if (ticketError) throw ticketError;
+
+      const imageIds = [row.cover_gallery_image_id, row.secondary_gallery_image_id].filter(
+        (id): id is string => Boolean(id),
+      );
+
+      let galleryPaths: Record<string, string> = {};
+      if (imageIds.length > 0) {
+        const { data: images, error: galleryError } = await supabase
+          .from("nonprofit_gallery_images")
+          .select("id, storage_path")
+          .in("id", imageIds);
+        if (galleryError) throw galleryError;
+        galleryPaths = galleryPathsFromRows(images ?? []);
+      }
+
+      return mapEventToLandingView(row, (ticketTypes ?? []) as EventTicketType[], galleryPaths);
+    },
+    enabled: !!slug,
+  });
+}
+
 export function useCreateNonprofitEvent() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -180,6 +222,31 @@ export function useUpdateNonprofitEvent() {
     },
     onError: (error: Error) => {
       toast({ title: "Error", description: error.message || "Failed to update event", variant: "destructive" });
+    },
+  });
+}
+
+export function useDeleteNonprofitEvent() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (event: Pick<NonprofitEvent, "id" | "title">): Promise<string> => {
+      const { error } = await supabase
+        .from("nonprofit_events")
+        .delete()
+        .eq("id", event.id);
+      if (error) throw error;
+      return event.id;
+    },
+    onSuccess: (eventId, event) => {
+      invalidateKeys.nonprofitEvents(queryClient);
+      queryClient.removeQueries({ queryKey: queryKeys.nonprofit.events.detail(eventId) });
+      logCrud("delete", "nonprofit_event", eventId, { title: event.title });
+      toast({ title: "Event deleted", description: `${event.title} has been removed.` });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to delete event", variant: "destructive" });
     },
   });
 }
@@ -234,6 +301,57 @@ export function useToggleCheckin() {
     },
     onError: (error: Error) => {
       toast({ title: "Error", description: error.message || "Failed to update check-in", variant: "destructive" });
+    },
+  });
+}
+
+export interface TicketTypeInput {
+  tier: string;
+  price: number;
+  capacity?: number;
+}
+
+export function useUpsertEventTicketTypes() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({
+      eventId,
+      ticketTypes,
+    }: {
+      eventId: string;
+      ticketTypes: TicketTypeInput[];
+    }): Promise<void> => {
+      const { error: deleteError } = await supabase
+        .from("nonprofit_event_ticket_types")
+        .delete()
+        .eq("event_id", eventId);
+      if (deleteError) throw deleteError;
+
+      if (ticketTypes.length === 0) return;
+
+      const rows = ticketTypes.map((t) => ({
+        event_id: eventId,
+        tier: t.tier,
+        price: t.price,
+        capacity: t.capacity ?? 100,
+        sold: 0,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("nonprofit_event_ticket_types")
+        .insert(rows);
+      if (insertError) throw insertError;
+    },
+    onSuccess: (_data, { eventId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.nonprofit.events.ticketTypes(eventId),
+      });
+      toast({ title: "Ticket types saved" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to save ticket types", variant: "destructive" });
     },
   });
 }

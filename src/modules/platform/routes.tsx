@@ -58,6 +58,7 @@ import DonationCenterPage from "@/pages/DonationCenterPage";
 import PublicPresencePage from "@/pages/PublicPresencePage";
 import ImpactDashboardPage from "@/pages/ImpactDashboardPage";
 import AIEngagementScoringPage from "@/pages/AIEngagementScoringPage";
+import EventLandingPublicPage from "@/pages/EventLandingPublicPage";
 
 /**
  * Public routes - no auth required
@@ -73,6 +74,7 @@ export const publicRoutes = (
     <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     <Route path="/pricing" element={<Pricing />} />
+    <Route path="/events/:slug" element={<EventLandingPublicPage />} />
   </>
 );
 

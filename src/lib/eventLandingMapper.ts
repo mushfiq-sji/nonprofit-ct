@@ -32,11 +32,23 @@ function parseHighlights(raw: unknown): EventHighlight[] {
     }));
 }
 
+import type { EventPageLayoutId } from "@/lib/eventPageLayouts";
+
+function parsePageLayout(raw: string | null | undefined): EventPageLayoutId {
+  if (raw === "split" || raw === "minimal" || raw === "classic") return raw;
+  return "classic";
+}
+
 export function mapEventToLandingView(
   event: NonprofitEvent,
   ticketTypes: EventTicketType[],
   galleryPaths: Record<string, string>,
 ): EventLandingView {
+  const bannerFromGallery = event.cover_gallery_image_id
+    ? galleryPaths[event.cover_gallery_image_id] ?? null
+    : null;
+  const coverUrl = event.banner_image_url?.trim() || bannerFromGallery;
+
   return {
     id: event.id,
     slug: event.slug ?? event.id,
@@ -46,12 +58,11 @@ export function mapEventToLandingView(
     time: formatEventTime(event.event_time),
     end_time: formatEventTime(event.event_end_time),
     location: event.location,
-    cover_image_url: event.cover_gallery_image_id
-      ? galleryPaths[event.cover_gallery_image_id] ?? null
-      : null,
+    cover_image_url: coverUrl,
     secondary_image_url: event.secondary_gallery_image_id
       ? galleryPaths[event.secondary_gallery_image_id] ?? null
       : null,
+    page_layout: parsePageLayout(event.page_layout),
     status: mapStatus(event.status),
     registration_url: event.registration_url,
     tagline: event.tagline,

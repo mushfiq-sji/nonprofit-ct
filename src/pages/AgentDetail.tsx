@@ -19,6 +19,7 @@ import CRMDataIntegrityDetail from "@/components/ai/agents/CRMDataIntegrityDetai
 import ReconciliationDetail from "@/components/ai/agents/ReconciliationDetail";
 import GrantComplianceDetail from "@/components/ai/agents/GrantComplianceDetail";
 import EventIntelligenceDetail from "@/components/ai/agents/EventIntelligenceDetail";
+import EventPageDesignerDetail from "@/components/ai/agents/EventPageDesignerDetail";
 import BoardReportingDetail from "@/components/ai/agents/BoardReportingDetail";
 import MeetingIntelligenceDetail from "@/components/ai/agents/MeetingIntelligenceDetail";
 import ActionItemTrackerDetail from "@/components/ai/agents/ActionItemTrackerDetail";
@@ -150,6 +151,8 @@ export default function AgentDetail() {
         <GrantComplianceDetail />
       ) : slug === "event-intelligence" ? (
         <EventIntelligenceDetail />
+      ) : slug === "event-page-designer" ? (
+        <EventPageDesignerDetail />
       ) : slug === "board-reporting" ? (
         <BoardReportingDetail />
       ) : slug === "meeting-intelligence" ? (

@@ -30,3 +30,6 @@ docs/original/
 docs/development/
 .internal-only
 CLAUDE.MD
+
+# Generated migration bundle (npm run migrations:concat)
+supabase/bootstrap-all-migrations.sql

@@ -23,6 +23,21 @@ export function isAppAdmin(role?: string | null): boolean {
   return role === "admin" || role === "moderator";
 }
 
+const NONPROFIT_CONTENT_EDITOR_ROLES = new Set([
+  "executive_director",
+  "development_director",
+  "finance_manager",
+  "operations_manager",
+  "owner",
+  "pm",
+  "ic",
+]);
+
+/** True when the user has a nonprofit dashboard role that may edit live community data. */
+export function isNonprofitContentEditor(agencyRole?: string | null): boolean {
+  return agencyRole != null && NONPROFIT_CONTENT_EDITOR_ROLES.has(agencyRole);
+}
+
 /** Pick the highest-privilege app role when a user has multiple rows in user_roles. */
 export function pickHighestAppRole(
   roles: Array<{ role: string }> | null | undefined

@@ -5,24 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Brain, Shield, Building2, FolderKanban, DollarSign, Settings, LogOut, User } from "lucide-react";
+import { Loader2, Brain, LogOut, User } from "lucide-react";
 
-const TEST_ACCOUNTS = [
-  { label: "Executive Director", email: "director@nonprofitai.software", role: "executive_director", icon: Building2, color: "border-blue-500/30 hover:bg-blue-500/10" },
-  { label: "Development Director", email: "development@nonprofitai.software", role: "development_director", icon: FolderKanban, color: "border-green-500/30 hover:bg-green-500/10" },
-  { label: "Finance Manager", email: "finance@nonprofitai.software", role: "finance_manager", icon: DollarSign, color: "border-amber-500/30 hover:bg-amber-500/10" },
-  { label: "Operations Manager", email: "operations@nonprofitai.software", role: "operations_manager", icon: Settings, color: "border-teal-500/30 hover:bg-teal-500/10" },
-] as const;
-
-const TEST_PASSWORD = "Demo@123"; // Must match docs/public_website/features.md; ensure demo users exist in Supabase Auth.
+const DEMO_EMAIL = "director@nonprofitai.software";
+const DEMO_PASSWORD = "Demo@123"; // Must match docs/public_website/features.md; ensure demo users exist in Supabase Auth.
 const isProduction = typeof window !== "undefined" && window.location.hostname === "spark-start-kit-86.lovable.app";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [quickLoading, setQuickLoading] = useState<string | null>(null);
+  const [quickLoading, setQuickLoading] = useState(false);
   const [error, setError] = useState("");
   const { user, signIn, signInWithGoogle, signOut } = useAuth();
   const navigate = useNavigate();
@@ -55,17 +48,17 @@ export default function Login() {
     }
   };
 
-  const handleQuickLogin = async (acctEmail: string) => {
-    setQuickLoading(acctEmail);
+  const handleQuickLogin = async () => {
+    setQuickLoading(true);
     setError("");
     try {
       if (user) await signOut();
-      await signIn(acctEmail, TEST_PASSWORD);
+      await signIn(DEMO_EMAIL, DEMO_PASSWORD);
       navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || "Quick login failed");
     } finally {
-      setQuickLoading(null);
+      setQuickLoading(false);
     }
   };
 
@@ -97,34 +90,25 @@ export default function Login() {
         {!isProduction && (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">🧪 Quick Login</CardTitle>
-              <CardDescription className="text-xs">Switch between test accounts instantly</CardDescription>
+              <CardTitle className="text-sm font-semibold">Quick Login</CardTitle>
+              <CardDescription className="text-xs">Sign in with the demo account</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-2 pb-4">
-              {TEST_ACCOUNTS.map((acct) => {
-                const Icon = acct.icon;
-                const isLoading = quickLoading === acct.email;
-                const isActive = user?.email === acct.email;
-                return (
-                  <button
-                    key={acct.email}
-                    type="button"
-                    onClick={() => handleQuickLogin(acct.email)}
-                    disabled={!!quickLoading}
-                    className={`relative flex items-center gap-2 rounded-lg border p-3 text-left transition-all ${acct.color} disabled:opacity-50 ${isActive ? "ring-2 ring-primary" : ""}`}
-                  >
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin shrink-0" /> : <Icon className="h-4 w-4 shrink-0" />}
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-semibold truncate">{acct.label}</span>
-                        <Badge variant="outline" className="text-[9px] px-1 py-0">{acct.role}</Badge>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground truncate">{acct.email}</p>
-                    </div>
-                    {isActive && <Badge className="absolute -top-1.5 -right-1.5 text-[9px] px-1 py-0">Active</Badge>}
-                  </button>
-                );
-              })}
+            <CardContent className="pb-4">
+              <Button
+                type="button"
+                className="h-10 w-full font-medium"
+                onClick={handleQuickLogin}
+                disabled={quickLoading || loading}
+              >
+                {quickLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
             </CardContent>
           </Card>
         )}

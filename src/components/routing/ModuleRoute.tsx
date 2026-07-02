@@ -67,7 +67,7 @@ export function ModuleRoute({
     }
   }, [modulesLoading, moduleId, hasModule]);
 
-  if (loading || flagsLoading || modulesLoading) {
+  if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -75,19 +75,19 @@ export function ModuleRoute({
     );
   }
 
-  if (moduleId && !isModuleBundled(moduleId)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiresFeatureFlag && !isFeatureEnabled(requiresFeatureFlag)) {
+  if (moduleId && !isModuleBundled(moduleId)) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  if (moduleId && !hasModule(moduleId)) {
+  if (requiresFeatureFlag && !flagsLoading && !isFeatureEnabled(requiresFeatureFlag)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (moduleId && !modulesLoading && !hasModule(moduleId)) {
     return <Navigate to="/dashboard" replace />;
   }
 

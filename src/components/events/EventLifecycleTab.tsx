@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  CalendarPlus, Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2, Mic2, Clock, Ticket, ArrowRight, Pencil, Globe, Trash2, LayoutTemplate, MoreHorizontal,
+  Calendar, MapPin, Users, Plus, Eye, ClipboardList, CheckCircle2, DollarSign, Loader2, Mic2, Clock, Ticket, ArrowRight, Pencil, Globe, Trash2, LayoutTemplate, MoreHorizontal,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,21 +51,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  useNonprofitEvents, useCreateNonprofitEvent, useUpdateNonprofitEvent, useDeleteNonprofitEvent, useEventRegistrants, useToggleCheckin,
+  useNonprofitEvents, useUpdateNonprofitEvent, useDeleteNonprofitEvent, useEventRegistrants, useToggleCheckin,
   useEventSpeakers, useEventAgendaItems, useEventTicketTypes,
   type NonprofitEvent, type ManagedEventStatus,
 } from "@/hooks/useNonprofitEvents";
-import { useGalleryImages } from "@/hooks/useGalleryImages";
-import { GalleryImagePicker, resolveEventCoverUrl } from "@/components/gallery/GalleryImagePicker";
-import { EventLandingPageSheet } from "@/components/events/EventLandingPageSheet";
+import { resolveEventBannerUrl } from "@/lib/eventBanner";
+import { hasEventLandingPage } from "@/lib/eventLandingStatus";
+import { CreateEventDialog } from "@/components/events/CreateEventDialog";
+import { EventListSkeleton } from "@/components/events/EventListSkeleton";
+import { EventLandingPageDialog } from "@/components/events/EventLandingPageDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCanEditContent } from "@/hooks/useCanEditContent";
-import { buildEventSlug } from "@/lib/eventSlug";
-import {
-  DEFAULT_EVENT_HIGHLIGHTS,
-  DEFAULT_EXPECTATIONS_HEADING,
-  DEFAULT_PAYMENT_INSTRUCTIONS,
-} from "@/lib/eventLandingDefaults";
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -110,11 +106,11 @@ const eventSchema = z.object({
   description: z.string().optional(),
   registration_url: z.union([z.literal(""), z.string().url("Enter a valid URL")]).optional(),
 });
-type EventForm = z.infer<typeof eventSchema>;
 
 const editEventSchema = eventSchema.extend({
   status: z.enum(["Upcoming", "Active", "Past"]),
   is_public: z.boolean(),
+  banner_image_url: z.union([z.literal(""), z.string().url("Enter a valid image URL")]).optional(),
 });
 type EditEventForm = z.infer<typeof editEventSchema>;
 
@@ -361,25 +357,18 @@ export function EventLifecycleTab({
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<NonprofitEvent | null>(null);
-  const [createCoverImageId, setCreateCoverImageId] = useState<string | null>(null);
-  const [editCoverImageId, setEditCoverImageId] = useState<string | null>(null);
   const [deleteEvent, setDeleteEvent] = useState<NonprofitEvent | null>(null);
   const [landingPageEvent, setLandingPageEvent] = useState<NonprofitEvent | null>(null);
 
-  const { data: allEvents = [], isLoading } = useNonprofitEvents();
-  const { data: galleryImages = [] } = useGalleryImages();
-  const createEvent = useCreateNonprofitEvent();
+  const { data: allEvents = [], isPending, isFetching, isError, error } = useNonprofitEvents();
   const updateEvent = useUpdateNonprofitEvent();
   const deleteEventMutation = useDeleteNonprofitEvent();
+
+  const showInitialLoader = isPending && allEvents.length === 0;
 
   const filteredEvents = statusFilter === "All"
     ? allEvents
     : allEvents.filter((e) => e.status === statusFilter);
-
-  const form = useForm<EventForm>({
-    resolver: zodResolver(eventSchema),
-    defaultValues: { title: "", date: "", event_time: "", location: "", capacity: 100, description: "", registration_url: "" },
-  });
 
   const editForm = useForm<EditEventForm>({
     resolver: zodResolver(editEventSchema),
@@ -391,6 +380,7 @@ export function EventLifecycleTab({
       capacity: 100,
       description: "",
       registration_url: "",
+      banner_image_url: "",
       status: "Upcoming",
       is_public: false,
     },
@@ -398,7 +388,6 @@ export function EventLifecycleTab({
 
   const openEditDialog = (event: NonprofitEvent) => {
     setEditingEvent(event);
-    setEditCoverImageId(event.cover_gallery_image_id ?? null);
     editForm.reset({
       title: event.title,
       date: event.date,
@@ -407,37 +396,11 @@ export function EventLifecycleTab({
       capacity: event.capacity,
       description: event.description ?? "",
       registration_url: event.registration_url ?? "",
+      banner_image_url: event.banner_image_url ?? "",
       status: event.status as ManagedEventStatus,
       is_public: event.is_public ?? false,
     });
     setEditOpen(true);
-  };
-
-  const onCreateSubmit = async (data: EventForm) => {
-    const created = await createEvent.mutateAsync({
-      title: data.title,
-      date: data.date,
-      event_time: data.event_time?.trim() || null,
-      location: data.location,
-      capacity: data.capacity,
-      description: data.description ?? null,
-      registration_url: data.registration_url?.trim() || null,
-      status: "Upcoming",
-      cover_gallery_image_id: createCoverImageId,
-      created_by: user?.id ?? null,
-      slug: buildEventSlug(data.title),
-      highlights: DEFAULT_EVENT_HIGHLIGHTS,
-      payment_instructions: DEFAULT_PAYMENT_INSTRUCTIONS,
-      expectations_heading: DEFAULT_EXPECTATIONS_HEADING,
-      hero_cta_label: "Join Us",
-    });
-    await updateEvent.mutateAsync({
-      id: created.id,
-      data: { slug: buildEventSlug(data.title, created.id) },
-    });
-    setCreateOpen(false);
-    setCreateCoverImageId(null);
-    form.reset();
   };
 
   const onEditSubmit = async (data: EditEventForm) => {
@@ -452,14 +415,13 @@ export function EventLifecycleTab({
         capacity: data.capacity,
         description: data.description ?? null,
         registration_url: data.registration_url?.trim() || null,
+        banner_image_url: data.banner_image_url?.trim() || null,
         status: data.status,
-        cover_gallery_image_id: editCoverImageId,
         is_public: data.is_public,
       },
     });
     setEditOpen(false);
     setEditingEvent(null);
-    setEditCoverImageId(null);
     editForm.reset();
   };
 
@@ -500,28 +462,39 @@ export function EventLifecycleTab({
         </div>
         {canEdit && (
         <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" /> New Event
+          <Plus className="h-4 w-4 mr-2" /> Create Event
         </Button>
         )}
       </div>
 
       {/* Event list */}
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+      {isError ? (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="p-6 space-y-2">
+            <p className="font-medium text-foreground">Could not load events</p>
+            <p className="text-sm text-muted-foreground">
+              {error instanceof Error && /does not exist|42P01/i.test(error.message)
+                ? "The events tables are missing. In Lovable SQL Editor, run supabase/seed/09-nonprofit-events-schema-bootstrap.sql, then supabase/seed/13-nonprofit-events.sql."
+                : error instanceof Error
+                  ? error.message
+                  : "Something went wrong loading events from the database."}
+            </p>
+          </CardContent>
+        </Card>
+      ) : showInitialLoader ? (
+        <EventListSkeleton rows={4} />
       ) : (
         <div className="space-y-4">
+          {isFetching && allEvents.length > 0 && (
+            <p className="text-xs text-muted-foreground text-center">Refreshing events…</p>
+          )}
           {filteredEvents.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
               {allEvents.length === 0 ? "No events yet — create the first one!" : "No events in this category"}
             </p>
           ) : (
             filteredEvents.map((event) => {
-              const coverUrl = resolveEventCoverUrl(
-                event.cover_gallery_image_id,
-                galleryImages,
-              );
+              const coverUrl = resolveEventBannerUrl(event);
 
               return (
               <Card key={event.id}>
@@ -544,7 +517,7 @@ export function EventLifecycleTab({
                             <Globe className="h-3 w-3" /> Published
                           </span>
                         )}
-                        {event.slug && (
+                        {hasEventLandingPage(event) && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
                             <LayoutTemplate className="h-3 w-3" /> Landing Page
                           </span>
@@ -653,91 +626,19 @@ export function EventLifecycleTab({
         canEdit={canEdit}
       />
 
-      {/* Landing Page Sheet */}
-      <EventLandingPageSheet
+      {/* Landing Page — centered popup (layout pick + settings) */}
+      <EventLandingPageDialog
         event={landingPageEvent}
         onClose={() => setLandingPageEvent(null)}
         canEdit={canEdit}
       />
 
-      {/* Create Event Dialog */}
       {canEdit && (
-      <Dialog open={createOpen} onOpenChange={(open) => {
-        setCreateOpen(open);
-        if (!open) {
-          setCreateCoverImageId(null);
-          form.reset();
-        }
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create New Event</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={form.handleSubmit(onCreateSubmit)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-title">Event Title</Label>
-              <Input id="ev-title" placeholder="Annual Fundraising Gala" {...form.register("title")} />
-              {form.formState.errors.title && (
-                <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-date">Date</Label>
-              <Input id="ev-date" type="date" {...form.register("date")} />
-              {form.formState.errors.date && (
-                <p className="text-xs text-destructive">{form.formState.errors.date.message}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-time">Time (optional)</Label>
-              <Input id="ev-time" type="time" {...form.register("event_time")} />
-              <p className="text-xs text-muted-foreground">Shown on bspcommunity.org/programs when published.</p>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-location">Location</Label>
-              <Input id="ev-location" placeholder="Venue name or address" {...form.register("location")} />
-              {form.formState.errors.location && (
-                <p className="text-xs text-destructive">{form.formState.errors.location.message}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-capacity">Capacity</Label>
-              <Input id="ev-capacity" type="number" min={1} {...form.register("capacity")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-desc">Description (optional)</Label>
-              <Textarea id="ev-desc" placeholder="Describe your event…" rows={3} {...form.register("description")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-registration-url">Registration link (optional)</Label>
-              <Input
-                id="ev-registration-url"
-                type="url"
-                placeholder="https://example.com/register"
-                {...form.register("registration_url")}
-              />
-              {form.formState.errors.registration_url && (
-                <p className="text-xs text-destructive">{form.formState.errors.registration_url.message}</p>
-              )}
-            </div>
-            <GalleryImagePicker
-              value={createCoverImageId}
-              onChange={setCreateCoverImageId}
-              label="Cover image (from gallery)"
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={createEvent.isPending}>
-                {createEvent.isPending ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating…</>
-                ) : (
-                  <><CalendarPlus className="h-4 w-4 mr-2" /> Create Event</>
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <CreateEventDialog
+        open={createOpen}
+        userId={user?.id}
+        onOpenChange={setCreateOpen}
+      />
       )}
 
       {canEdit && (
@@ -745,7 +646,6 @@ export function EventLifecycleTab({
         setEditOpen(open);
         if (!open) {
           setEditingEvent(null);
-          setEditCoverImageId(null);
         }
       }}>
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
@@ -798,6 +698,18 @@ export function EventLifecycleTab({
               <Textarea id="edit-ev-desc" rows={3} {...editForm.register("description")} />
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="edit-ev-banner">Banner Image URL</Label>
+              <Input
+                id="edit-ev-banner"
+                type="url"
+                placeholder="https://example.com/event-banner.jpg"
+                {...editForm.register("banner_image_url")}
+              />
+              {editForm.formState.errors.banner_image_url && (
+                <p className="text-xs text-destructive">{editForm.formState.errors.banner_image_url.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="edit-ev-registration-url">Registration link (optional)</Label>
               <Input
                 id="edit-ev-registration-url"
@@ -809,14 +721,9 @@ export function EventLifecycleTab({
                 <p className="text-xs text-destructive">{editForm.formState.errors.registration_url.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Powers the Register button on bspcommunity.org/programs.
+                Powers the Register button on the public event page.
               </p>
             </div>
-            <GalleryImagePicker
-              value={editCoverImageId}
-              onChange={setEditCoverImageId}
-              label="Cover image (from gallery)"
-            />
             <div className="flex items-center justify-between rounded-lg border px-3 py-3">
               <div className="space-y-0.5">
                 <Label htmlFor="edit-ev-public">Show on BSP community site</Label>

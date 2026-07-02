@@ -369,6 +369,32 @@ export const agentTeams: Record<string, AgentTeamDef> = {
         ],
         whereToFind: { label: "Events", path: "/events" },
       },
+      {
+        name: "Event Page Designer",
+        slug: "event-page-designer",
+        description:
+          "Applies layout templates, default copy, and registration structure when you build public event landing pages from Event Management.",
+        icon: "LayoutTemplate",
+        operational: {
+          lastFinding:
+            "Summer Leadership Summit landing page published — Classic Hero layout with 3 highlight cards and registration tiers applied",
+          itemsToReview: 1,
+          timeSavedHrs: 2,
+        },
+        capabilities: [
+          "Apply Classic, Full-Width Banner, or Minimal Focus layout templates",
+          "Pre-fill hero tagline, expectations heading, and highlight bullets per template",
+          "Structure registration fees and payment instructions on the public page",
+          "Generate SEO-friendly slugs and publish-ready landing URLs",
+        ],
+        howToUse: [
+          "Open Events → Manage tab and click Landing on an event",
+          "Choose a layout template (first-time setup only)",
+          "Review and edit banner URL, copy, and registration settings",
+          "Publish the landing page and share the public URL",
+        ],
+        whereToFind: { label: "Events", path: "/events?tab=manage" },
+      },
     ],
   },
   "finance-grants": {
@@ -608,6 +634,7 @@ export const AGENT_ICON_MAP: Record<string, string> = {
   "donor-churn-risk": "Heart",
   "strategic-insights": "BookOpen",
   "event-intelligence": "Calendar",
+  "event-page-designer": "LayoutTemplate",
   "board-reporting": "BarChart3",
   "grant-budget-watcher": "AlertTriangle",
   "integration-health-monitor": "Plug",
